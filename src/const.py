@@ -1,4 +1,4 @@
-VERSION="v0.3.260"
+VERSION="v0.3.273"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -254,15 +254,18 @@ CONST_INSTALL_CONFIGS = [
     ('CollectorProcessingInterval','60'),
     ('SendErrorsToCloudApi','0'),
     ('RemoveMulticastFlows','1'),
-    ('TagEntries', ''), #x
-    ('AlertOnCustomTagList',''),  #x
-    ('AlertOnCustomTags','0'), #x
+    ('TagEntries', ''), 
+    ('AlertOnCustomTagList',''),  
+    ('AlertOnCustomTags','0'), 
     ('SendConfigurationToCloudApi','0'),
-    ('ApprovedHighRiskDestinations', ''), # x
+    ('ApprovedHighRiskDestinations', ''), 
     ('IgnoreListEntries', '[]'),
-    ('MaxMindAPIKey', ''),  # x
+    ('MaxMindAPIKey', ''),  
     ('RemoveLinkLocalFlows', '0'),
     ('ImportServicesList','1'),
     ('TelegramEnabled', '0'),
     ('ImportAsnDatabase', '1'),
+    ('PiHoleDnsFetchRecordSize', '10000'),
+    ('PiHoleDnsFetchInterval', '3600'),
+    ('TrafficStatsPurgeIntervalDays','31')
 ]

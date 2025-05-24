@@ -33,7 +33,7 @@ def get_localhost_by_ip(ip_address):
 
         cursor = conn.cursor()
         
-        # Query for the specific IP address using run_timed_query
+        # Query for the specific IP address - direct execution
         query = """
             SELECT ip_address, first_seen, original_flow, 
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
@@ -42,23 +42,24 @@ def get_localhost_by_ip(ip_address):
             WHERE ip_address = ?
         """
         
-        rows, query_time = run_timed_query(
-            cursor,
-            query,
-            (ip_address,),
-            description=f"get_localhost_{ip_address}"
-        )
+        # Execute the query directly
+        cursor.execute(query, (ip_address,))
         
-        # Check if any rows were returned
-        if not rows:
-            log_info(logger, f"[INFO] No localhost found with IP address: {ip_address} (query took {query_time:.2f} ms)")
+        # Fetch the result
+        row = cursor.fetchone()
+        
+        # Check if any row was returned
+        if not row:
+            log_info(logger, f"[INFO] No localhost found with IP address: {ip_address}")
             return None
-            
-        # Return the first row since we're querying by primary key
-        row = rows[0]
         
-        log_info(logger, f"[INFO] Retrieved details for localhost with IP: {ip_address} in {query_time:.2f} ms")
-        return row
+        # Get column names from cursor description
+        columns = [column[0] for column in cursor.description]
+        
+        # Convert row to dictionary with column names
+        result = dict(zip(columns, row))
+            
+        return result
         
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while retrieving localhost with IP {ip_address}: {e}")

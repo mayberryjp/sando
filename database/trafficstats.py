@@ -29,8 +29,11 @@ def delete_old_traffic_stats():
 
         cursor = conn.cursor()
 
+        config_dict = get_config_settings()
+        purge_time_delta = config_dict.get('TrafficStatsPurgeIntervalDays', 31)
+
         # Calculate the cutoff timestamp (31 days ago)
-        cutoff_date = (datetime.now() - timedelta(days=31)).strftime('%Y-%m-%d')
+        cutoff_date = (datetime.now() - timedelta(days=purge_time_delta)).strftime('%Y-%m-%d')
 
         # Delete records older than the cutoff timestamp
         cursor.execute(f"""

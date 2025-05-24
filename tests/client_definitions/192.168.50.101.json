@@ -1,12 +1,12 @@
 {
     "ip_address": "192.168.50.101",
-    "export_date": "2025-05-24T19:26:44.641422",
+    "export_date": "2025-05-24T19:55:22.243995",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.101",
-        "mac_address": "7c:66:ef:cb:69:e4",
-        "mac_vendor": "Hon Hai Precision IND.CO.,LTD",
-        "dhcp_hostname": "refrigerator.832-5.com",
+        "mac_address": null,
+        "mac_vendor": null,
+        "dhcp_hostname": null,
         "dns_hostname": "refrigerator.832-5.com.",
         "os_fingerprint": null,
         "lease_hostname": "refrigerator",
@@ -16,9 +16,9 @@
     "dns_queries": [
         {
             "domain": "hms.cloudlabs.sharp.co.jp",
-            "times_queried": 11,
-            "first_query": "2025-05-24 19:18:36",
-            "last_query": "2025-05-24 19:18:36"
+            "times_queried": 17,
+            "first_query": "2025-05-24 19:45:43",
+            "last_query": "2025-05-24 19:45:43"
         }
     ],
     "flows": [
@@ -29,7 +29,7 @@
             "flow_count": 118,
             "total_packets": 3669,
             "total_bytes": 2968488,
-            "first_seen": "2025-05-24 19:11:32",
+            "first_seen": "2025-05-24 19:38:17",
             "last_seen": "2025-04-20T07:41:15.600000+00:00"
         },
         {
@@ -39,7 +39,7 @@
             "flow_count": 79,
             "total_packets": 2802,
             "total_bytes": 2258510,
-            "first_seen": "2025-05-24 19:11:31",
+            "first_seen": "2025-05-24 19:38:17",
             "last_seen": "2025-04-20T06:26:15.849000+00:00"
         },
         {
@@ -49,7 +49,7 @@
             "flow_count": 171,
             "total_packets": 3746,
             "total_bytes": 1429977,
-            "first_seen": "2025-05-24 19:11:31",
+            "first_seen": "2025-05-24 19:38:17",
             "last_seen": "2025-04-20T06:23:42.446000+00:00"
         },
         {
@@ -59,7 +59,7 @@
             "flow_count": 1,
             "total_packets": 1933,
             "total_bytes": 91639,
-            "first_seen": "2025-05-24 19:11:30",
+            "first_seen": "2025-05-24 19:38:16",
             "last_seen": "2025-04-19T23:52:32.294000+00:00"
         },
         {
@@ -69,7 +69,7 @@
             "flow_count": 1,
             "total_packets": 1200,
             "total_bytes": 56691,
-            "first_seen": "2025-05-24 19:11:30",
+            "first_seen": "2025-05-24 19:38:16",
             "last_seen": "2025-04-20T14:03:54.761000+00:00"
         },
         {
@@ -79,7 +79,7 @@
             "flow_count": 1,
             "total_packets": 91,
             "total_bytes": 6326,
-            "first_seen": "2025-05-24 19:11:29",
+            "first_seen": "2025-05-24 19:38:15",
             "last_seen": "2025-04-20T06:25:55.575000+00:00"
         }
     ],

@@ -1,7 +1,7 @@
-
 import sys
 import os
 from pathlib import Path
+import threading
 current_dir = Path(__file__).resolve().parent
 parent_dir = str(current_dir.parent)
 if parent_dir not in sys.path:
@@ -25,6 +25,39 @@ from init import *
 if (IS_CONTAINER):
     REINITIALIZE_DB=os.getenv("REINITIALIZE_DB", CONST_REINITIALIZE_DB)
 
+def pihole_logs_thread():
+    """
+    Thread function to fetch Pihole DNS logs every hour.
+    """
+    logger = logging.getLogger(__name__)
+    log_info(logger, "[INFO] Starting hourly Pihole DNS logs fetch thread")
+    config_dict = get_config_settings()
+
+    # Hourly interval in seconds
+    pihole_fetch_interval = config_dict.get('PiholeFetchInterval', 3600)
+    
+    while True:
+        try:
+            config_dict = get_config_settings()
+
+            if not config_dict:
+                log_error(logger, "[ERROR] Failed to load configuration settings in Pihole fetch thread")
+                time.sleep(60)  # Wait a minute before retrying
+                continue
+                
+            if config_dict.get('StorePiHoleDnsQueryHistory', 0) > 0:
+                log_info(logger, "[INFO] Fetching Pihole DNS query history (hourly)...")
+                fetch_size = config_dict.get('PiHoleDnsFetchRecordSize', 10000)
+                get_pihole_ftl_logs(fetch_size, config_dict)
+                log_info(logger, "[INFO] Pihole DNS query history fetch completed")
+                
+        except Exception as e:
+            log_error(logger, f"[ERROR] Error during hourly Pihole data fetch: {e}")
+        
+        # Wait for the next interval
+        log_info(logger, f"[INFO] Pihole thread sleeping for {pihole_fetch_interval} seconds")
+        time.sleep(pihole_fetch_interval)
+
 def main():
     """
     Main program to fetch and update external data at a fixed interval.
@@ -36,18 +69,20 @@ def main():
         log_error(logger, "[ERROR] Failed to load configuration settings")
         exit(1)
 
-    fetch_interval = config_dict.get('IntegrationFetchInterval',86400)
-    # Fixed interval in seconds (e.g., 24 hours = 86400 seconds)
-
+    fetch_interval = config_dict.get('IntegrationFetchInterval', 86400)
+    
+    # Start the Pihole logs fetch thread
+    pihole_thread = threading.Thread(target=pihole_logs_thread, daemon=True)
+    pihole_thread.start()
+    log_info(logger, "[INFO] Started hourly Pihole DNS logs fetch thread")
+    
     while True:
-
         try:
             log_info(logger,"[INFO] Deleting old traffic stats...")
             delete_old_traffic_stats()
             log_info(logger, "[INFO] Finished deleting old traffic stats.")
         except Exception as e:
             log_error(logger, f"[ERROR] Error during deleting old traffic stats: {e}")
-
 
         config_dict = get_config_settings()
         if not config_dict:
@@ -84,14 +119,6 @@ def main():
                 log_info(logger, "[INFO] Fetching and updating reputation list...")
                 import_reputation_list(config_dict)
                 log_info(logger, "[INFO] Reputation list update finished.")
-        except Exception as e:
-            log_error(logger, f"[ERROR] Error during data fetch: {e}")
-
-        try: 
-            if config_dict.get('StorePiHoleDnsQueryHistory', 0) > 0:
-                log_info(logger, "[INFO] Fetching pihole dns query history...")
-                get_pihole_ftl_logs(50000,config_dict)
-                log_info(logger, "[INFO] Pihole dns query history finished.")
         except Exception as e:
             log_error(logger, f"[ERROR] Error during data fetch: {e}")
 

@@ -65,4 +65,8 @@ CONST_DEFAULT_CONFIGS = [
     ('ImportServicesList','1'),
     ('TelegramEnabled', '0'),
     ('ImportAsnDatabase', '1'),
+    ('PiHoleDnsFetchRecordSize', '10000'),
+    ('PiHoleDnsFetchInterval', '3600'),
+    ('TrafficStatsPurgeIntervalDays','31')
+
 ]
