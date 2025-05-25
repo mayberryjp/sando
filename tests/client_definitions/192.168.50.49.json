@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.49",
-    "export_date": "2025-05-24T19:55:22.791086",
+    "export_date": "2025-05-25T19:53:24.273486",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.49",
@@ -15,10 +15,10 @@
     },
     "dns_queries": [
         {
-            "domain": "time.google.com",
+            "domain": "pool.ntp.org",
             "times_queried": 2,
-            "first_query": "2025-05-24 19:45:44",
-            "last_query": "2025-05-24 19:45:44"
+            "first_query": "2025-05-25 07:39:52",
+            "last_query": "2025-05-25 07:39:52"
         }
     ],
     "flows": [
@@ -29,7 +29,7 @@
             "flow_count": 1,
             "total_packets": 57424,
             "total_bytes": 26488861,
-            "first_seen": "2025-05-24 19:38:15",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-19T13:22:16.746000+00:00"
         },
         {
@@ -39,7 +39,7 @@
             "flow_count": 1,
             "total_packets": 44025,
             "total_bytes": 20242227,
-            "first_seen": "2025-05-24 19:38:16",
+            "first_seen": "2025-05-25 07:33:10",
             "last_seen": "2025-04-20T12:10:21.814000+00:00"
         },
         {
@@ -49,7 +49,7 @@
             "flow_count": 1,
             "total_packets": 43,
             "total_bytes": 3268,
-            "first_seen": "2025-05-24 19:38:15",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-20T13:55:20.933000+00:00"
         },
         {
@@ -59,7 +59,7 @@
             "flow_count": 1,
             "total_packets": 37,
             "total_bytes": 2812,
-            "first_seen": "2025-05-24 19:38:15",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-20T06:24:16.200000+00:00"
         },
         {
@@ -69,7 +69,7 @@
             "flow_count": 1,
             "total_packets": 18,
             "total_bytes": 1368,
-            "first_seen": "2025-05-24 19:38:15",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-20T08:09:16.803000+00:00"
         },
         {
@@ -79,7 +79,7 @@
             "flow_count": 1,
             "total_packets": 14,
             "total_bytes": 1064,
-            "first_seen": "2025-05-24 19:38:15",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-20T08:24:32.537000+00:00"
         },
         {
@@ -89,7 +89,7 @@
             "flow_count": 1,
             "total_packets": 14,
             "total_bytes": 1064,
-            "first_seen": "2025-05-24 19:38:15",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-20T06:54:16.038000+00:00"
         },
         {
@@ -99,7 +99,7 @@
             "flow_count": 1,
             "total_packets": 13,
             "total_bytes": 988,
-            "first_seen": "2025-05-24 19:38:15",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-20T08:09:31.853000+00:00"
         },
         {
@@ -109,7 +109,7 @@
             "flow_count": 1,
             "total_packets": 11,
             "total_bytes": 836,
-            "first_seen": "2025-05-24 19:38:15",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-20T10:25:03.033000+00:00"
         },
         {
@@ -119,7 +119,7 @@
             "flow_count": 1,
             "total_packets": 10,
             "total_bytes": 760,
-            "first_seen": "2025-05-24 19:38:15",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-20T11:40:03.716000+00:00"
         },
         {
@@ -129,7 +129,7 @@
             "flow_count": 1,
             "total_packets": 3,
             "total_bytes": 228,
-            "first_seen": "2025-05-24 19:38:16",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-20T16:40:36.416000+00:00"
         },
         {
@@ -139,7 +139,7 @@
             "flow_count": 1,
             "total_packets": 2,
             "total_bytes": 152,
-            "first_seen": "2025-05-24 19:38:16",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-20T15:10:36.505000+00:00"
         },
         {
@@ -149,7 +149,7 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "first_seen": "2025-05-24 19:38:17",
+            "first_seen": "2025-05-25 07:33:10",
             "last_seen": "2025-04-21T14:41:16.446000+00:00"
         },
         {
@@ -159,7 +159,7 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "first_seen": "2025-05-24 19:38:17",
+            "first_seen": "2025-05-25 07:33:10",
             "last_seen": "2025-04-21T11:26:14.465000+00:00"
         }
     ],

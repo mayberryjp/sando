@@ -38,7 +38,7 @@ def export_client_definition(client_ip):
         
         # Get host information from localhosts.db
         host_record = get_localhost_by_ip(client_ip)
-
+        print(f"Host record for {client_ip}: {host_record}")
         if host_record:
             client_data["host_info"] = {
                 "ip_address": host_record[0],

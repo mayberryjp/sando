@@ -53,13 +53,8 @@ def get_localhost_by_ip(ip_address):
             log_info(logger, f"[INFO] No localhost found with IP address: {ip_address}")
             return None
         
-        # Get column names from cursor description
-        columns = [column[0] for column in cursor.description]
-        
-        # Convert row to dictionary with column names
-        result = dict(zip(columns, row))
             
-        return result
+        return row
         
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while retrieving localhost with IP {ip_address}: {e}")

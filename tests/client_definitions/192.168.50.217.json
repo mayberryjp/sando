@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.217",
-    "export_date": "2025-05-24T19:55:08.942951",
+    "export_date": "2025-05-25T19:53:11.385353",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.217",
@@ -8,7 +8,7 @@
         "mac_vendor": null,
         "dhcp_hostname": null,
         "dns_hostname": "slzb-06p7.local.",
-        "os_fingerprint": null,
+        "os_fingerprint": "OSRAM_embedded_None_92",
         "lease_hostname": "slzb-06p7",
         "icon": null,
         "local_description": null
@@ -16,9 +16,9 @@
     "dns_queries": [
         {
             "domain": "google.com",
-            "times_queried": 2,
-            "first_query": "2025-05-24 19:45:45",
-            "last_query": "2025-05-24 19:45:45"
+            "times_queried": 3,
+            "first_query": "2025-05-25 07:39:52",
+            "last_query": "2025-05-25 07:39:52"
         }
     ],
     "flows": [
@@ -29,7 +29,7 @@
             "flow_count": 1,
             "total_packets": 49,
             "total_bytes": 14755,
-            "first_seen": "2025-05-24 19:38:15",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-20T07:06:30.756000+00:00"
         },
         {
@@ -39,7 +39,7 @@
             "flow_count": 2,
             "total_packets": 25,
             "total_bytes": 2402,
-            "first_seen": "2025-05-24 19:38:16",
+            "first_seen": "2025-05-25 07:33:10",
             "last_seen": "2025-04-20T08:29:18.989000+00:00"
         },
         {
@@ -49,7 +49,7 @@
             "flow_count": 1,
             "total_packets": 4,
             "total_bytes": 184,
-            "first_seen": "2025-05-24 19:38:16",
+            "first_seen": "2025-05-25 07:33:09",
             "last_seen": "2025-04-20T17:00:37.082000+00:00"
         }
     ],
