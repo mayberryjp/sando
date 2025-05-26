@@ -17,7 +17,7 @@ from database.core import create_table, connect_to_db, delete_all_records, get_r
 
 from src.client import export_client_definition
 from integrations.geolocation import load_geolocation_data, create_geolocation_db
-from integrations.dns import dns_lookup  # Import the dns_lookup function from dns.py
+from integrations.dns import dns_lookup, resolve_empty_dns_responses  # Import the dns_lookup function from dns.py
 from integrations.piholedhcp import get_pihole_dhcp_leases, get_pihole_network_devices
 from integrations.nmap_fingerprint import os_fingerprint
 from integrations.reputation import import_reputation_list, load_reputation_data
@@ -262,7 +262,7 @@ def log_test_results(start_time, end_time, duration, total_rows, filtered_rows, 
                 "ignorelist": get_row_count(CONST_CONSOLIDATED_DB, 'ignorelist'),                                             
                 "localhosts": get_row_count(CONST_CONSOLIDATED_DB, 'localhosts'),
                 "newflows": get_row_count(CONST_CONSOLIDATED_DB, 'newflows'),
-                "pihole": get_row_count(CONST_CONSOLIDATED_DB, "pihole"),  
+                "dnsqueries": get_row_count(CONST_CONSOLIDATED_DB, "dnsqueries"),  
                 "reputationlist": get_row_count(CONST_CONSOLIDATED_DB, "reputationlist"),
                 "services": get_row_count(CONST_CONSOLIDATED_DB, "services"),
                 "tornodes": get_row_count(CONST_CONSOLIDATED_DB, "tornodes"),
@@ -342,7 +342,7 @@ def main():
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_GEOLOCATION_SQL, "geolocation")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_REPUTATIONLIST_SQL, "reputationlist")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_TORNODES_SQL, "tornodes")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_PIHOLE_SQL, "pihole")
+    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_DNSQUERIES_SQL, "dnsqueries")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_IPASN_SQL, "ipasn")
 
@@ -492,6 +492,11 @@ def main():
     start = datetime.now()
     get_pihole_ftl_logs(10000,config_dict)
     detection_durations['retrieve_pihole_dns_query_logs'] = int((datetime.now() - start).total_seconds())
+
+    log_info(logger, "[INFO] Preparing to resolve unresolved dns entries...")
+    start = datetime.now()
+    resolve_empty_dns_responses(config_dict)
+    detection_durations['resolve_empty_dns_responses'] = int((datetime.now() - start).total_seconds())
 
     log_info(logger, "[INFO] Preparing to detect reputation list flows...")
     start = datetime.now()

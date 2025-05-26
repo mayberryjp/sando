@@ -19,6 +19,7 @@ from integrations.reputation import import_reputation_list
 from integrations.piholedns import get_pihole_ftl_logs
 from integrations.services import create_services_db
 from integrations.ipasn import create_asn_database
+from integrations.dns import resolve_empty_dns_responses
 from src.const import CONST_REINITIALIZE_DB, CONST_CONSOLIDATED_DB, IS_CONTAINER
 from init import *
 
@@ -50,7 +51,12 @@ def pihole_logs_thread():
                 fetch_size = config_dict.get('PiHoleDnsFetchRecordSize', 10000)
                 get_pihole_ftl_logs(fetch_size, config_dict)
                 log_info(logger, "[INFO] Pihole DNS query history fetch completed")
-                
+
+            if config_dict.get('PerformDnsResponseLookupsForInvestigations', 0) > 0 and config_dict.get('DnsResponseLookupResolver', None):
+                log_info(logger, "[INFO] Preparing to resolve unresolved dns entries...")
+                resolve_empty_dns_responses(config_dict)
+                log_info(logger, "[INFO] Pihole DNS query history fetch completed")
+
         except Exception as e:
             log_error(logger, f"[ERROR] Error during hourly Pihole data fetch: {e}")
         

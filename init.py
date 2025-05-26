@@ -34,7 +34,7 @@ from src.const import (
     CONST_CREATE_TRAFFICSTATS_SQL,
     CONST_INSTALL_CONFIGS,
     CONST_CREATE_TORNODES_SQL,
-    CONST_CREATE_PIHOLE_SQL,
+    CONST_CREATE_DNSQUERIES_SQL,
     CONST_LINK_LOCAL_RANGE,
     CONST_SITE,
     IS_CONTAINER,
@@ -108,9 +108,12 @@ from database.configuration import (
     update_config_setting
 )
 
-from database.pihole import (
+from database.dnsqueries import (
     get_client_dns_queries,
-    insert_pihole_query
+    insert_dns_query,
+    insert_dns_queries_batch,
+    get_dnsqueries_without_responses,
+    update_dns_query_response
 )
 
 # Localhost functions

@@ -83,8 +83,8 @@ def log_error(logger, message):
             log_warn(logger, f"[WARN] Failed to send error report to cloud API {url}: {e}")
     else:
         insert_action_detached(f"A fatal error occured in one of the system processes. It is suggested to turn on 'Send Errors To Cloud API' in settings in order to get these errors automatically sent to the developers. Error is as follows: [{timestamp}] {script_name}[/{file_name}/{line_number}] {message}")
-    if SITE=="TESTPPE":
-        exit(0)
+  #  if SITE=="TESTPPE":
+     #   exit(0)
 
 
 def log_warn(logger, message):

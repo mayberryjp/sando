@@ -30,8 +30,6 @@ parent_dir = str(current_dir.parent)
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
-# Import the database functions
-from database.pihole import insert_pihole_query, insert_pihole_queries_batch
 
 class SinkholeResolver:
     def __init__(self, listen_ip="0.0.0.0", port=53, ttl=60, batch_interval_minutes=29):
@@ -147,22 +145,14 @@ class SinkholeResolver:
                 # Otherwise, iterate through and insert individually
                 success_count = 0
                 error_count = 0
-                
-                # Check if batch insert function exists
-                if hasattr(sys.modules['database.pihole'], 'insert_pihole_queries_batch'):
-                    # Use batch insert
-                    success, count = insert_pihole_queries_batch(current_batch)
-                    if success:
-                        success_count = count
-                    else:
-                        error_count = len(current_batch)
+
+                # Use batch insert
+                success, count = insert_dns_queries_batch(current_batch, "sinkholedns")
+                if success:
+                    success_count = count
                 else:
-                    # Fall back to individual inserts
-                    for query in current_batch:
-                        if insert_pihole_query(query['client_ip'], query['domain'], query['blocked']):
-                            success_count += 1
-                        else:
-                            error_count += 1
+                    error_count = len(current_batch)
+
                 
                 log_info(logger, f"[INFO] Batch processing complete. Success: {success_count}, Errors: {error_count}")
                 

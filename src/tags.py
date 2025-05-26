@@ -8,11 +8,8 @@ src_dir = f"{parent_dir}/src"
 if str(src_dir) not in sys.path:
     sys.path.insert(0, str(src_dir))
 sys.path.insert(0, "/database")
-import time
 import logging
-from integrations.dns import dns_lookup  # Import the dns_lookup function from dns.py
-from integrations.piholedhcp import get_pihole_dhcp_leases, get_pihole_network_devices
-from integrations.nmap_fingerprint import os_fingerprint
+
 
 from init import *
 

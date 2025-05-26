@@ -12,9 +12,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from init import *
 
 
-def insert_pihole_query(client_ip, domain, times_seen=1):
+def insert_dns_query(client_ip, domain, times_seen, datasource):
     """
-    Insert or update a DNS query record in the pihole database.
+    Insert or update a DNS query record in the dnsqueries database.
     
     Args:
         client_ip (str): The IP address of the client that made the DNS query
@@ -27,23 +27,23 @@ def insert_pihole_query(client_ip, domain, times_seen=1):
     logger = logging.getLogger(__name__)
     
     try:
-        # Connect to the pihole database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "pihole")
+        # Connect to the dnsqueries database
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
         if not conn:
-            log_error(logger, "[ERROR] Unable to connect to pihole database.")
+            log_error(logger, "[ERROR] Unable to connect to dnsqueries database.")
             return False
             
         cursor = conn.cursor()
         
         # Insert or update the DNS query record
         cursor.execute("""
-            INSERT INTO pihole (client_ip, domain, type, times_seen, first_seen, last_seen)
-            VALUES (?, ?, 'A', ?, datetime('now', 'localtime'), datetime('now', 'localtime'))
-            ON CONFLICT(client_ip, domain, type)
+            INSERT INTO dnsqueries (client_ip, domain, type, times_seen, first_seen, last_seen, datasource)
+            VALUES (?, ?, 'A', ?, datetime('now', 'localtime'), datetime('now', 'localtime'), ?)
+            ON CONFLICT(client_ip, domain, type, datasource)
             DO UPDATE SET
                 last_seen = datetime('now', 'localtime'),
                 times_seen = times_seen + excluded.times_seen
-        """, (client_ip, domain, times_seen))
+        """, (client_ip, domain, times_seen, datasource))
         
         # Commit the changes
         conn.commit()
@@ -77,8 +77,8 @@ def get_client_dns_queries(client_ip):
     
     try:
 
-        # Connect to the pihole database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "pihole")
+        # Connect to the dnsqueries database
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
         if not conn:
             log_error(logger, f"[ERROR] Unable to connect to Pi-hole database.")
             return []
@@ -90,7 +90,7 @@ def get_client_dns_queries(client_ip):
             SELECT domain, sum(times_seen) as query_count, 
                    MAX(last_seen) as last_query,
                    MIN(first_seen) as first_query
-            FROM pihole 
+            FROM dnsqueries 
             WHERE client_ip = ?
             GROUP BY domain
             ORDER BY query_count DESC
@@ -112,9 +112,9 @@ def get_client_dns_queries(client_ip):
             disconnect_from_db(conn)
 
 
-def insert_pihole_queries_batch(queries):
+def insert_dns_queries_batch(queries, datasource):
     """
-    Insert or update multiple DNS query records in the pihole database in a single batch operation.
+    Insert or update multiple DNS query records in the dnsqueries database in a single batch operation.
     
     Args:
         queries (list): List of dictionaries containing DNS query information.
@@ -129,10 +129,10 @@ def insert_pihole_queries_batch(queries):
         return True, 0
     
     try:
-        # Connect to the pihole database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "pihole")
+        # Connect to the dnsqueries database
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
         if not conn:
-            log_error(logger, "[ERROR] Unable to connect to pihole database for batch insert.")
+            log_error(logger, "[ERROR] Unable to connect to dnsqueries database for batch insert.")
             return False, 0
             
         cursor = conn.cursor()
@@ -147,7 +147,7 @@ def insert_pihole_queries_batch(queries):
             if not client_ip or not domain:
                 continue
                 
-            batch_data.append((client_ip, domain, 'A', times_seen))
+            batch_data.append((client_ip, domain, 'A', times_seen, datasource))
         
         # Check if we have any valid records after filtering
         if not batch_data:
@@ -155,9 +155,9 @@ def insert_pihole_queries_batch(queries):
             
         # Execute the batch insert with ON CONFLICT handling
         cursor.executemany("""
-            INSERT INTO pihole (client_ip, domain, type, times_seen, first_seen, last_seen)
-            VALUES (?, ?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'))
-            ON CONFLICT(client_ip, domain, type)
+            INSERT INTO dnsqueries (client_ip, domain, type, times_seen, first_seen, last_seen, datasource)
+            VALUES (?, ?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'), ?)
+            ON CONFLICT(client_ip, domain, type, datasource)
             DO UPDATE SET
                 last_seen = datetime('now', 'localtime'),
                 times_seen = times_seen + excluded.times_seen
@@ -171,11 +171,106 @@ def insert_pihole_queries_batch(queries):
         return True, record_count
         
     except sqlite3.Error as e:
-        log_error(logger, f"[ERROR] Database error during pihole batch insert: {e}")
+        log_error(logger, f"[ERROR] Database error during dnsqueries batch insert: {e}")
         return False, 0
     except Exception as e:
-        log_error(logger, f"[ERROR] Unexpected error during pihole batch insert: {e}")
+        log_error(logger, f"[ERROR] Unexpected error during dnsqueries batch insert: {e}")
         return False, 0
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)
+
+
+def update_dns_query_response(response, id):
+    """
+    Update the response field for a specific DNS query record.
+    
+    Args:
+        client_ip (str): The IP address of the client that made the DNS query
+        domain (str): The domain name that was queried
+        query_type (str): The type of query (e.g., 'A', 'AAAA', 'MX')
+        response (str): The DNS response to store
+        
+    Returns:
+        bool: True if the update was successful, False otherwise
+    """
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Connect to the dnsqueries database
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to dnsqueries database.")
+            return False
+            
+        cursor = conn.cursor()
+
+        # Update the response field for the matching record
+        cursor.execute("""
+            UPDATE dnsqueries
+            SET response = ?
+            WHERE id = ?
+        """, (response, id))
+                
+        # Commit the changes
+        conn.commit()
+        
+        return True
+        
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while updating DNS query response: {e}")
+        return False
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while updating DNS query response: {e}")
+        return False
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)
+
+def get_dnsqueries_without_responses():
+    """
+    Retrieve DNS queries where the response is NULL or empty.
+    
+    Args:
+        limit (int, optional): Maximum number of records to return. Default is 100.
+        offset (int, optional): Number of records to skip for pagination. Default is 0.
+        
+    Returns:
+        list: A list of dictionaries containing DNS query records with empty responses,
+              ordered by last_seen descending.
+              Returns an empty list if no data is found or an error occurs.
+    """
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Connect to the dnsqueries database
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to dnsqueries database.")
+            return []
+
+        cursor = conn.cursor()
+        
+        # Query for DNS queries with NULL or empty responses
+        cursor.execute("""
+            SELECT id, domain, type
+            FROM dnsqueries 
+            WHERE response IS NULL OR response = ''
+            ORDER BY last_seen DESC
+        """)
+        
+        rows = cursor.fetchall()
+        # Fetch results and convert to list of dictionaries
+
+        log_info(logger, f"[INFO] Retrieved {len(rows)} DNS queries with empty responses")
+        return rows
+        
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while retrieving DNS queries without responses: {e}")
+        return []
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while retrieving DNS queries without responses: {e}")
+        return []
     finally:
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)

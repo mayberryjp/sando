@@ -1,4 +1,4 @@
-VERSION="v0.3.364"
+VERSION="v0.3.421"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -175,16 +175,28 @@ CONST_CREATE_TORNODES_SQL = '''
     )
 '''
 
-CONST_CREATE_PIHOLE_SQL = '''
-    CREATE TABLE IF NOT EXISTS pihole (
-        client_ip TEXT,
-        times_seen INTEGER DEFAULT 0,
-        last_seen TEXT,
-        first_seen TEXT,
-        type TEXT,
-        domain TEXT,
-        PRIMARY KEY (client_ip, domain, type)
-    )
+CONST_CREATE_DNSQUERIES_SQL = '''
+CREATE TABLE IF NOT EXISTS dnsqueries (
+    id INTEGER,
+    client_ip TEXT NOT NULL,
+    times_seen INTEGER DEFAULT 0,
+    last_seen TEXT,
+    first_seen TEXT,
+    type TEXT NOT NULL,
+    domain TEXT NOT NULL,
+    response TEXT,
+    datasource TEXT NOT NULL,
+    PRIMARY KEY (client_ip, domain, type, datasource),
+    UNIQUE (id)
+);
+
+CREATE TRIGGER IF NOT EXISTS auto_increment_dnsqueries_id
+AFTER INSERT ON dnsqueries
+BEGIN
+    UPDATE dnsqueries 
+    SET id = (SELECT COALESCE(MAX(id), 0) + 1 FROM dnsqueries)
+    WHERE rowid = NEW.rowid AND id IS NULL;
+END;
 '''
 
 CONST_CREATE_ACTIONS_SQL = '''
@@ -269,4 +281,6 @@ CONST_INSTALL_CONFIGS = [
     ('PiHoleDnsFetchInterval', '3600'),
     ('TrafficStatsPurgeIntervalDays','31'),
     ('SinkHoleDns', '0'),
+    ('DnsResponseLookupResolver',''),
+    ('PerformDnsResponseLookupsForInvestigations','0')
 ]

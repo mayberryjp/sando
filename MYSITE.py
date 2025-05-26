@@ -69,4 +69,6 @@ CONST_DEFAULT_CONFIGS = [
     ('PiHoleDnsFetchInterval', '3600'),
     ('TrafficStatsPurgeIntervalDays','31'),
     ('SinkHoleDns', '0'),
+    ('DnsResponseLookupResolver',''),
+    ('PerformDnsResponseLookupsForInvestigations','0')
 ]

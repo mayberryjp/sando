@@ -152,7 +152,7 @@ def get_pihole_ftl_logs(page_size, config_dict):
         for client_ip, domains in client_data.items():
             for domain, times_seen in domains.items():
                 try:
-                    insert_pihole_query(client_ip, domain, times_seen)
+                    insert_dns_query(client_ip, domain, times_seen, "pihole")
                 except sqlite3.Error as e:
                     log_error(logger, f"[ERROR] Failed to update database for client_ip: {client_ip}, domain: {domain}, Error: {e}")
 

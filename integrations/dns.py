@@ -16,6 +16,115 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from init import *
 
 
+def resolve_empty_dns_responses(config_dict):
+    """
+    Retrieve DNS queries with no responses, perform DNS lookups on them,
+    and update the dnsqueries table with the results.
+    
+    Args:
+        dns_servers (list): DNS servers to use for lookups. If None, uses config settings.
+        config_dict (dict): Configuration dictionary.
+        batch_size (int): Number of queries to process in each batch.
+        
+    Returns:
+        dict: Statistics about the resolution process.
+    """
+    logger = logging.getLogger(__name__)
+    log_info(logger, "[INFO] Starting DNS resolution for queries with empty responses")
+    
+    # Initialize stats
+    stats = {
+        "processed": 0,
+        "successful": 0,
+        "failed": 0
+    }
+    
+    try:
+        dns_servers_str = config_dict.get('DnsResponseLookupResolver', None)
+        dns_servers = dns_servers_str.split(',')
+        
+        # Get queries with empty responses
+        empty_queries = get_dnsqueries_without_responses()
+        
+        if not empty_queries:
+            log_info(logger, "[INFO] No DNS queries with empty responses found")
+            return stats
+            
+        log_info(logger, f"[INFO] Found {len(empty_queries)} DNS queries with empty responses")
+        
+        # Create DNS resolver
+        resolver = dns.resolver.Resolver()
+        resolver.nameservers = dns_servers
+        resolver.timeout = config_dict.get('DnsResolverTimeout', 3)
+        resolver.lifetime = config_dict.get('DnsResolverRetries', 1)
+        
+        # Process each query and update the database
+        for query in empty_queries:
+            query_id = query[0]
+            domain = query[1]
+            query_type = query[2]  # Default to A record if not specified
+            
+            try:
+                # Perform forward DNS lookup
+                #log_info(logger, f"[INFO] Resolving {domain} ({query_type})")
+                answers = resolver.resolve(domain, query_type)
+                
+                # Format the response
+                response_data = []
+                for answer in answers:
+                    response_data.append(str(answer))
+                
+                # Join multiple answers with comma
+                response = ','.join(response_data)
+                
+                # Update the database
+                success = update_dns_query_response(response, query_id)
+                
+                if success:
+                    #log_info(logger, f"[INFO] Updated response for {domain} ({query_type}): {response}")
+                    stats["successful"] += 1
+                else:
+                    log_warn(logger, f"[WARN] Failed to update response for {domain} ({query_type})")
+                    stats["failed"] += 1
+                    
+            except dns.resolver.NXDOMAIN:
+                # Update with NXDOMAIN response
+                update_dns_query_response("NXDOMAIN", query_id)
+                log_info(logger, f"[INFO] Domain {domain} not found (NXDOMAIN)")
+                stats["successful"] += 1
+                
+            except dns.resolver.Timeout:
+                update_dns_query_response("TIMEOUT", query_id)
+                log_warn(logger, f"[WARN] Timeout resolving {domain}")
+                stats["successful"] += 1
+                
+            except dns.resolver.NoAnswer:
+                update_dns_query_response("NOANSWER", query_id)
+                log_warn(logger, f"[WARN] No answer for {domain} ({query_type})")
+                stats["successful"] += 1
+                
+            except dns.resolver.NoNameservers:
+                update_dns_query_response("NONAMESERVERS", query_id)
+                log_warn(logger, f"[WARN] No nameservers for {domain}")
+                stats["successful"] += 1
+                
+            except Exception as e:
+                update_dns_query_response(f"ERROR: {str(e)[:100]}", query_id)
+                log_error(logger, f"[ERROR] Failed to resolve {domain}: {e}")
+                stats["failed"] += 1
+                
+            stats["processed"] += 1
+            
+        log_info(logger, f"[INFO] DNS resolution complete. Processed: {stats['processed']}, "
+                         f"Successful: {stats['successful']}, Failed: {stats['failed']}")
+        
+        return stats
+        
+    except Exception as e:
+        log_error(logger, f"[ERROR] Error in DNS resolution process: {e}")
+        return stats
+
+
 def dns_lookup(ip_addresses, dns_servers, config_dict):
     """
     Perform DNS lookup for a list of IP addresses using specific DNS servers.
