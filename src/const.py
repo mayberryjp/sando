@@ -132,7 +132,7 @@ CONST_CREATE_LOCALHOSTS_SQL = """
         acknowledged INTEGER DEFAULT 0,
         threat_score INTEGER DEFAULT 1, -- New column for threat score
         alerts_enabled INTEGER DEFAULT 1,
-        management_link TEXT, -- New column for management link
+        management_link TEXT -- New column for management link
     )
 """
 
