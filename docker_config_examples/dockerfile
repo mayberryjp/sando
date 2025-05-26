@@ -17,7 +17,7 @@ RUN git clone https://github.com/mayberryjp/homelabids.git /homelabids
 WORKDIR /homelabids
 
 # Install Python dependencies
-RUN pip install --no-cache-dir schedule requests bottle dnspython python-nmap psutil
+RUN pip install --no-cache-dir schedule requests bottle dnspython python-nmap psutil dnslib
 
 # Expose the required ports
 EXPOSE 2055

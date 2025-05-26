@@ -54,6 +54,14 @@ def os_fingerprint(ip_addresses, config_dict):
             scan_result = scanner.scan(ip, arguments='-O')  # '-O' enables OS detection
             os_matches = scan_result['scan'].get(ip, {}).get('osmatch', [])
             
+            # Extract MAC address if available
+            mac_address = None
+            if ip in scan_result['scan']:
+                if 'addresses' in scan_result['scan'][ip]:
+                    mac_address = scan_result['scan'][ip]['addresses'].get('mac')
+                    if mac_address:
+                        log_info(logger, f"[INFO] Found MAC address for {ip}: {mac_address}")
+
             if os_matches:
                 # Use the highest match (first match in the list)
                 best_match = os_matches[0]
@@ -64,11 +72,13 @@ def os_fingerprint(ip_addresses, config_dict):
 
                 results.append({
                     "ip": ip,
+                    "mac_address": mac_address if mac_address else "Not available",
                     "os_fingerprint": f"{vendor}_{osfamily}_{osgen}_{accuracy}",
                 })
             else:
                 results.append({
                     "ip": ip,
+                    "mac_address": mac_address if mac_address else "Not available",
                     "os_fingerprint": "No OS fingerprint detected",
                 })
         except Exception as e:

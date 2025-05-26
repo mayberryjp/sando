@@ -25,7 +25,7 @@ def send_telegram_message(message, flow):
         try:
             
             # Create header with warning emoji and site name
-            header = f"⚠️ Security Alert - {SITE}\n\n"
+            header = f"⚠️ HomelabIDS Security Alert - {SITE}\n\n"
             formatted_message = header + message
 
             url = f"https://api.telegram.org/bot{config_dict['TelegramBotToken']}/sendMessage"

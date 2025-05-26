@@ -405,11 +405,12 @@ def log_alert_to_db(ip_address, flow, category, alert_enrichment_1, alert_enrich
         # Check the number of rows affected
         if conn.total_changes == 1:
             operation = "insert"
+            log_info(logger, f"[INFO] Alert logged to database for IP: {ip_address}, Category: {category} ({operation}).")
         else:
             operation = "update"
 
         conn.commit()
-        log_info(logger, f"[INFO] Alert logged to database for IP: {ip_address}, Category: {category} ({operation}).")
+        
         return operation
 
     except sqlite3.Error as e:

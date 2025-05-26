@@ -82,9 +82,20 @@ def do_discovery():
             ip = result["ip"]
             if ip not in combined_results:
                 combined_results[ip] = {}
+            
+            # Update OS fingerprint information
             combined_results[ip].update({
                 "os_fingerprint": result.get("os_fingerprint", combined_results[ip].get("os_fingerprint")),
             })
+            
+            # Check if we have a mac_address from nmap and if the current mac_address is empty or "Not available"
+            nmap_mac = result.get("mac_address")
+            if nmap_mac and nmap_mac != "Not available":
+                current_mac = combined_results[ip].get("mac_address")
+                # Only use the nmap MAC if we don't already have one from Pihole
+                if not current_mac or current_mac == "Not available":
+                    log_info(logger, f"[INFO] Using Nmap-discovered MAC address for {ip}: {nmap_mac}")
+                    combined_results[ip]["mac_address"] = nmap_mac
 
     # Update the localhosts database
     for ip, data in combined_results.items():

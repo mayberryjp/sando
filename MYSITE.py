@@ -67,6 +67,6 @@ CONST_DEFAULT_CONFIGS = [
     ('ImportAsnDatabase', '1'),
     ('PiHoleDnsFetchRecordSize', '10000'),
     ('PiHoleDnsFetchInterval', '3600'),
-    ('TrafficStatsPurgeIntervalDays','31')
-
+    ('TrafficStatsPurgeIntervalDays','31'),
+    ('SinkHoleDns', '0'),
 ]

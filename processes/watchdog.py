@@ -18,7 +18,7 @@ from init import *
 
 
 # List of required Python script names
-required_scripts = ["processor.py", "discovery.py", "api.py", "collector.py","fetch.py"]
+required_scripts = ["processor.py", "discovery.py", "api.py", "collector.py","fetch.py","sinkholedns.py"]
 
 def is_script_running(script_name):
     for proc in psutil.process_iter(['pid', 'name', 'cmdline']):

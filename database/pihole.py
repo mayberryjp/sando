@@ -110,3 +110,72 @@ def get_client_dns_queries(client_ip):
     finally:
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
+
+
+def insert_pihole_queries_batch(queries):
+    """
+    Insert or update multiple DNS query records in the pihole database in a single batch operation.
+    
+    Args:
+        queries (list): List of dictionaries containing DNS query information.
+                        Each dictionary should have 'client_ip', 'domain', and 'blocked' keys.
+                        
+    Returns:
+        tuple: (bool, int) - Success status and count of records processed
+    """
+    logger = logging.getLogger(__name__)
+    
+    if not queries:
+        return True, 0
+    
+    try:
+        # Connect to the pihole database
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "pihole")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to pihole database for batch insert.")
+            return False, 0
+            
+        cursor = conn.cursor()
+        
+        # Prepare the batch data
+        batch_data = []
+        for query in queries:
+            client_ip = query.get('client_ip')
+            domain = query.get('domain')
+            times_seen = query.get('times_seen', 1)
+            
+            if not client_ip or not domain:
+                continue
+                
+            batch_data.append((client_ip, domain, 'A', times_seen))
+        
+        # Check if we have any valid records after filtering
+        if not batch_data:
+            return True, 0
+            
+        # Execute the batch insert with ON CONFLICT handling
+        cursor.executemany("""
+            INSERT INTO pihole (client_ip, domain, type, times_seen, first_seen, last_seen)
+            VALUES (?, ?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'))
+            ON CONFLICT(client_ip, domain, type)
+            DO UPDATE SET
+                last_seen = datetime('now', 'localtime'),
+                times_seen = times_seen + excluded.times_seen
+        """, batch_data)
+        
+        # Commit the transaction
+        conn.commit()
+        
+        record_count = len(batch_data)
+        log_info(logger, f"[INFO] Successfully batch inserted/updated {record_count} DNS query records")
+        return True, record_count
+        
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error during pihole batch insert: {e}")
+        return False, 0
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error during pihole batch insert: {e}")
+        return False, 0
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)
