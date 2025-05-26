@@ -37,7 +37,7 @@ def get_localhost_by_ip(ip_address):
         query = """
             SELECT ip_address, first_seen, original_flow, 
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
-                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled 
+                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link
             FROM localhosts
             WHERE ip_address = ?
         """
@@ -88,7 +88,7 @@ def get_localhosts_all():
         query = """
             SELECT ip_address, first_seen, original_flow, 
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
-                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled 
+                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link
             FROM localhosts
         """
         
@@ -252,7 +252,7 @@ def insert_localhost_basic(ip_address, original_flow=None):
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
 
-def classify_localhost(ip_address, description, icon):
+def classify_localhost(ip_address, description, icon, management_link):
     """
     Classify a localhost by setting its description, icon, and acknowledging it.
     
@@ -278,9 +278,9 @@ def classify_localhost(ip_address, description, icon):
         # Update the localhost record with classification details
         cursor.execute("""
             UPDATE localhosts
-            SET local_description = ?, icon = ?, acknowledged = 1
+            SET local_description = ?, icon = ?, acknowledged = 1, management_link = ?
             WHERE ip_address = ?
-        """, (description, icon, ip_address))
+        """, (description, icon, management_link, ip_address,))
         
         # Check if a row was affected
         if cursor.rowcount > 0:

@@ -128,12 +128,12 @@ def get_flows_by_source_ip(src_ip):
         
         # Query all flows from the specified source IP
         cursor.execute("""
-            SELECT dst_ip, dst_port, protocol,
+         SELECT dst_ip, dst_port, protocol,
                    sum(times_seen) as flow_count,
                    SUM(packets) as total_packets,
                    SUM(bytes) as total_bytes,
                    MAX(last_seen) as last_flow,
-                   MIN(flow_start) as first_flow
+                   DATETIME(MIN(flow_start)) as first_flow
             FROM allflows 
             WHERE src_ip = ?
             GROUP BY dst_ip, dst_port, protocol

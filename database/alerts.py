@@ -817,27 +817,3 @@ def get_all_alerts_by_category(category):
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
 
-def get_localhost_by_ip(ip_address):
-    logger = logging.getLogger(__name__)
-    try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
-        if not conn:
-            log_error(logger, "[ERROR] Unable to connect to localhosts database")
-            return None
-            
-        cursor = conn.cursor()
-        
-        # Convert this query to use run_timed_query
-        rows, query_time = run_timed_query(
-            cursor,
-            "SELECT * FROM localhosts WHERE ip_address = ?", 
-            (ip_address,),
-            description=f"get_localhost_{ip_address}"
-        )
-        
-        if rows:
-            return rows[0]
-        return None
-    finally:
-        if 'conn' in locals() and conn:
-            disconnect_from_db(conn)

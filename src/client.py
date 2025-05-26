@@ -65,6 +65,7 @@ def export_client_definition(client_ip):
         ]
         
         flows_rows = get_flows_by_source_ip(client_ip)
+     
 
         client_data["flows"] = [
             {
@@ -74,8 +75,8 @@ def export_client_definition(client_ip):
                 "flow_count": row[3],
                 "total_packets": row[4],
                 "total_bytes": row[5],
-                "first_seen": row[6],
-                "last_seen": row[7]
+                "last_seen": row[6],
+                "first_seen": row[7]
             }
             for row in flows_rows
         ]
