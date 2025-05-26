@@ -22,6 +22,7 @@ RUN pip install --no-cache-dir schedule requests bottle dnspython python-nmap ps
 # Expose the required ports
 EXPOSE 2055
 EXPOSE 8044
+EXPOSE 53
 
 # Ensure Python output is not buffered
 ENV PYTHONUNBUFFERED=1
