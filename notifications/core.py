@@ -38,7 +38,7 @@ def handle_alert(config_dict, detection_key, telegram_message, local_ip, origina
         alerts_enabled = True  # Default to True if localhost not found
         
         if localhost_info:
-            alerts_enabled = bool(localhost_info.get('alerts_enabled', 1))
+            alerts_enabled = localhost_info[16]
             
         # Log the alert to the database regardless of alerts_enabled status
         insert_or_update = log_alert_to_db(local_ip, original_flow, alert_category, 
