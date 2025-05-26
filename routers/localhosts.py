@@ -90,11 +90,12 @@ def setup_localhosts_routes(app):
             data = request.json
             local_description = data.get('local_description')
             icon = data.get('icon')
-            acknowledged = data.get('acknowledged')
+            management_link = data.get('management_link')
+
 
             try:
                 # Update the localhost classification in the database
-                classify_localhost(ip_address, local_description, icon)
+                classify_localhost(ip_address, local_description, icon, management_link)
 
                 response.content_type = 'application/json'
                 log_info(logger, f"Updated local host: {ip_address}")
@@ -166,6 +167,7 @@ def setup_localhosts_routes(app):
                     "tags": host_record[14] if host_record[14] else [],
                     "threat_score": host_record[15],
                     "alerts_enabled": host_record[16],
+                    "management_link": host_record[17],
                     "original_flow": host_record[2],
                     "icon": host_record[13],
                     "local_description": host_record[12],
