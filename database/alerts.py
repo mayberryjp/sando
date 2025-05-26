@@ -52,9 +52,9 @@ def summarize_alerts_by_ip():
         
         # Query to fetch alerts within the last 12 hours
         alerts_query = """
-            SELECT ip_address, strftime('%Y-%m-%d %H:00:00', last_seen) as hour, COUNT(*)
+            SELECT ip_address, strftime('%Y-%m-%d %H:00:00', first_seen) as hour, COUNT(*)
             FROM alerts
-            WHERE last_seen >= ?
+            WHERE first_seen >= ?
             GROUP BY ip_address, hour
             ORDER BY ip_address, hour
         """
@@ -140,9 +140,9 @@ def get_hourly_alerts_summary(ip_address, start_time=None):
         
         # Get hourly summary of alerts using run_timed_query
         hourly_query = """
-            SELECT strftime('%Y-%m-%d %H:00:00', last_seen) as hour, COUNT(*)
+            SELECT strftime('%Y-%m-%d %H:00:00', first_seen) as hour, COUNT(*)
             FROM alerts
-            WHERE ip_address = ? AND last_seen >= ?
+            WHERE ip_address = ? AND first_seen >= ?
             GROUP BY hour
             ORDER BY hour
         """
