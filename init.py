@@ -94,7 +94,8 @@ from database.alerts import (
     get_alert_count_by_id,
     get_hourly_alerts_summary,
     summarize_alerts_by_ip,
-    get_all_alerts_by_ip
+    get_all_alerts_by_ip,
+    summarize_alerts_by_ip_last_seen
 )
 
 from database.ipasn import  (

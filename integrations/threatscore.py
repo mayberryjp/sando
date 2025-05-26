@@ -41,7 +41,7 @@ def calculate_update_threat_scores():
         return {}
     
     # Get alert summaries for each IP using existing summarize_alerts_by_ip function
-    alerts_summary = summarize_alerts_by_ip()
+    alerts_summary = summarize_alerts_by_ip_last_seen()
     
     # Process the alert summary to get total counts per IP
     alert_counts = {}
