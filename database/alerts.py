@@ -52,7 +52,7 @@ def summarize_alerts_by_ip_last_seen():
         
         # Query to fetch alerts within the last 12 hours
         alerts_query = """
-            SELECT ip_address, strftime('%Y-%m-%d %H:00:00', last_seen_seen) as hour, COUNT(*)
+            SELECT ip_address, strftime('%Y-%m-%d %H:00:00', last_seen) as hour, COUNT(*)
             FROM alerts
             WHERE last_seen >= ?
             GROUP BY ip_address, hour
