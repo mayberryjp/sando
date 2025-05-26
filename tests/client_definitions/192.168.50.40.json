@@ -1,15 +1,15 @@
 {
     "ip_address": "192.168.50.40",
-    "export_date": "2025-05-25T20:11:10.825291",
+    "export_date": "2025-05-26T12:46:33.697099",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.40",
         "mac_address": null,
         "mac_vendor": null,
         "dhcp_hostname": null,
-        "dns_hostname": null,
+        "dns_hostname": "plug1.832-5.com.",
         "os_fingerprint": null,
-        "lease_hostname": null,
+        "lease_hostname": "plug1",
         "icon": null,
         "local_description": null
     },
@@ -22,7 +22,7 @@
             "flow_count": 1,
             "total_packets": 69,
             "total_bytes": 14904,
-            "first_seen": "2025-05-25 19:58:59",
+            "first_seen": "2025-05-26 12:37:50",
             "last_seen": "2025-04-20T06:36:56.324000+00:00"
         },
         {
@@ -32,7 +32,7 @@
             "flow_count": 1,
             "total_packets": 14,
             "total_bytes": 4704,
-            "first_seen": "2025-05-25 19:59:00",
+            "first_seen": "2025-05-26 12:37:50",
             "last_seen": "2025-04-20T07:36:24.615000+00:00"
         }
     ],

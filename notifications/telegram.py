@@ -4,7 +4,6 @@ from database.configuration import get_config_settings
 import os
 import logging
 from src.locallogging import log_info, log_error, log_warn
-from database.alerts import log_alert_to_db
 
 if (IS_CONTAINER):
     SITE = os.getenv("SITE", CONST_SITE)

@@ -48,29 +48,24 @@ def detect_new_outbound_connections(rows, config_dict):
                 # Create a unique identifier for this connection
                 alert_id = f"{src_ip}_{dst_ip}_{protocol}_{dst_port}_NewOutboundDetection"
                 
-                count = get_alert_count_by_id(alert_id)
-
-                exists = count > 0
+                message = (f"New outbound connection detected:\n"
+                            f"Local client: {src_ip}\n"
+                            f"Remote server: {dst_ip}:{dst_port}\n"
+                            f"Protocol: {protocol}")
                 
-                if not exists:
-                    message = (f"New outbound connection detected:\n"
-                             f"Local client: {src_ip}\n"
-                             f"Remote server: {dst_ip}:{dst_port}\n"
-                             f"Protocol: {protocol}")
-                    
-                    log_info(logger, f"[INFO] New outbound connection detected: {src_ip} -> {dst_ip}:{dst_port}")
+                log_info(logger, f"[INFO] New outbound connection detected: {src_ip} -> {dst_ip}:{dst_port}")
 
-                    handle_alert(
-                        config_dict,
-                        "NewOutboundDetection",
-                        message,
-                        src_ip,
-                        row,
-                        "New outbound connection detected",
-                        dst_ip,
-                        dst_port,
-                        alert_id
-                    )    
+                handle_alert(
+                    config_dict,
+                    "NewOutboundDetection",
+                    message,
+                    src_ip,
+                    row,
+                    "New outbound connection detected",
+                    dst_ip,
+                    dst_port,
+                    alert_id
+                )    
 
     except Exception as e:
         log_error(logger, f"[ERROR] Error in detect_new_outbound_connections: {e}")
