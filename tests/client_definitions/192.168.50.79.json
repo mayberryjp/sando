@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.79",
-    "export_date": "2025-05-23T14:45:14.318294",
+    "export_date": "2025-05-25T20:08:42.067850",
     "instance_identifier": "9a72641185275de6aee6384294035d373d4c94dc73c430210b6c1a3770519bb7",
     "host_info": {
         "ip_address": "192.168.50.79",
@@ -16,8 +16,8 @@
     "dns_queries": [
         {
             "domain": "aiot-coap.aqara.cn",
-            "times_queried": 2,
-            "first_query": "2025-05-08 06:51:40",
+            "times_queried": 4,
+            "first_query": "2025-05-23 22:20:40",
             "last_query": "2025-05-08 06:51:40"
         }
     ],
@@ -71,6 +71,16 @@
             "total_bytes": 1860028,
             "first_seen": "2025-05-08 07:13:37",
             "last_seen": "32513036"
+        },
+        {
+            "destination": "101.43.186.217",
+            "port": 11111,
+            "protocol": 6,
+            "flow_count": 2,
+            "total_packets": 12079,
+            "total_bytes": 1829831,
+            "first_seen": "2025-05-23 21:07:36",
+            "last_seen": "203887686"
         },
         {
             "destination": "49.233.237.221",

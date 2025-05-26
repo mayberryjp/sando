@@ -1,4 +1,4 @@
-VERSION="v0.3.276"
+VERSION="v0.3.284"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -145,7 +145,7 @@ CONST_CREATE_IPASN_SQL="""
             isp_name TEXT
         );
         
-        CREATE INDEX idx_ipasn_ip_range ON ipasn (start_ip, end_ip);
+        CREATE INDEX IF NOT EXISTS idx_ipasn_ip_range ON ipasn (start_ip, end_ip);
     """
 
 CONST_CREATE_TRAFFICSTATS_SQL = """

@@ -160,6 +160,13 @@ def setup_localhosts_routes(app):
                     "dns_hostname": host_record[6],
                     "os_fingerprint": host_record[7],
                     "lease_hostname": host_record[8],
+                    "lease_hwaddr": host_record[9],
+                    "lease_clientid": host_record[10],
+                    "acknowledged": host_record[11],
+                    "tags": host_record[14] if host_record[14] else [],
+                    "threat_score": host_record[15],
+                    "alerts_enabled": host_record[16],
+                    "original_flow": host_record[2],
                     "icon": host_record[13],
                     "local_description": host_record[12],
                     "first_seen": host_record[1],
@@ -178,48 +185,48 @@ def setup_localhosts_routes(app):
             response.status = 500
             return {"error": str(e)}
         
-@app.route('/api/localhosts/<ip_address>/alerts-enabled', method=['PUT'])
-def toggle_localhost_alerts(ip_address):
-    """
-    API endpoint to toggle the alerts_enabled flag for a specific local host.
+    @app.route('/api/localhosts/<ip_address>/alerts-enabled', method=['PUT'])
+    def toggle_localhost_alerts(ip_address):
+        """
+        API endpoint to toggle the alerts_enabled flag for a specific local host.
 
-    Args:
-        ip_address: The IP address of the local host to update.
+        Args:
+            ip_address: The IP address of the local host to update.
 
-    Request body:
-        {
-            "alerts_enabled": true|false  (Boolean value to enable/disable alerts)
-        }
+        Request body:
+            {
+                "alerts_enabled": true|false  (Boolean value to enable/disable alerts)
+            }
 
-    Returns:
-        JSON object indicating success or failure.
-    """
-    logger = logging.getLogger(__name__)
-    
-    try:
-        # Parse request body
-        data = request.json
-        if not data or 'alerts_enabled' not in data:
-            response.status = 400
-            return {"success": False, "error": "Missing required field: alerts_enabled"}
+        Returns:
+            JSON object indicating success or failure.
+        """
+        logger = logging.getLogger(__name__)
         
-        # Get the alerts_enabled value
-        alerts_enabled = bool(data['alerts_enabled'])
-        
-        # Call the database function to update the alerts_enabled flag
-        from database.localhosts import update_localhost_alerts_enabled
-        success = update_localhost_alerts_enabled(ip_address, alerts_enabled)
-        
-        if success:
-            response.content_type = 'application/json'
-            log_info(logger, f"[INFO] Updated alerts_enabled to {alerts_enabled} for IP address: {ip_address}")
-            return {"success": True, "ip_address": ip_address, "alerts_enabled": alerts_enabled}
-        else:
-            log_warn(logger, f"[WARN] Failed to update alerts_enabled for IP address: {ip_address}")
-            response.status = 404
-            return {"success": False, "error": f"No local host found with IP address: {ip_address}"}
+        try:
+            # Parse request body
+            data = request.json
+            if not data or 'alerts_enabled' not in data:
+                response.status = 400
+                return {"success": False, "error": "Missing required field: alerts_enabled"}
             
-    except Exception as e:
-        log_error(logger, f"[ERROR] Failed to update alerts_enabled for IP address {ip_address}: {e}")
-        response.status = 500
-        return {"success": False, "error": str(e)}
+            # Get the alerts_enabled value
+            alerts_enabled = bool(data['alerts_enabled'])
+            
+            # Call the database function to update the alerts_enabled flag
+            from database.localhosts import update_localhost_alerts_enabled
+            success = update_localhost_alerts_enabled(ip_address, alerts_enabled)
+            
+            if success:
+                response.content_type = 'application/json'
+                log_info(logger, f"[INFO] Updated alerts_enabled to {alerts_enabled} for IP address: {ip_address}")
+                return {"success": True, "ip_address": ip_address, "alerts_enabled": alerts_enabled}
+            else:
+                log_warn(logger, f"[WARN] Failed to update alerts_enabled for IP address: {ip_address}")
+                response.status = 404
+                return {"success": False, "error": f"No local host found with IP address: {ip_address}"}
+                
+        except Exception as e:
+            log_error(logger, f"[ERROR] Failed to update alerts_enabled for IP address {ip_address}: {e}")
+            response.status = 500
+            return {"success": False, "error": str(e)}

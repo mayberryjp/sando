@@ -1,15 +1,15 @@
 {
     "ip_address": "192.168.50.54",
-    "export_date": "2025-05-25T19:53:13.673454",
+    "export_date": "2025-05-25T20:10:55.317225",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.54",
         "mac_address": null,
         "mac_vendor": null,
         "dhcp_hostname": null,
-        "dns_hostname": "rinnai.832-5.com.",
+        "dns_hostname": null,
         "os_fingerprint": null,
-        "lease_hostname": "rinnai",
+        "lease_hostname": null,
         "icon": null,
         "local_description": null
     },
@@ -22,7 +22,7 @@
             "flow_count": 1,
             "total_packets": 14034,
             "total_bytes": 1479752,
-            "first_seen": "2025-05-25 07:33:09",
+            "first_seen": "2025-05-25 19:59:00",
             "last_seen": "2025-04-19T17:12:38.949000+00:00"
         },
         {
@@ -32,7 +32,7 @@
             "flow_count": 1,
             "total_packets": 12271,
             "total_bytes": 1218786,
-            "first_seen": "2025-05-25 07:33:10",
+            "first_seen": "2025-05-25 19:59:02",
             "last_seen": "2025-04-20T17:12:39.568000+00:00"
         },
         {
@@ -42,7 +42,7 @@
             "flow_count": 532,
             "total_packets": 606,
             "total_bytes": 28088,
-            "first_seen": "2025-05-25 07:33:10",
+            "first_seen": "2025-05-25 19:59:03",
             "last_seen": "2025-04-20T06:12:24.385000+00:00"
         },
         {
@@ -52,7 +52,7 @@
             "flow_count": 1,
             "total_packets": 19,
             "total_bytes": 1908,
-            "first_seen": "2025-05-25 07:33:09",
+            "first_seen": "2025-05-25 19:59:00",
             "last_seen": "2025-04-20T17:15:39.467000+00:00"
         },
         {
@@ -62,7 +62,7 @@
             "flow_count": 1,
             "total_packets": 19,
             "total_bytes": 1908,
-            "first_seen": "2025-05-25 07:33:10",
+            "first_seen": "2025-05-25 19:59:02",
             "last_seen": "2025-04-21T17:15:38.823000+00:00"
         },
         {
@@ -72,7 +72,7 @@
             "flow_count": 1,
             "total_packets": 18,
             "total_bytes": 1546,
-            "first_seen": "2025-05-25 07:33:09",
+            "first_seen": "2025-05-25 19:59:00",
             "last_seen": "2025-04-20T17:12:12.382000+00:00"
         },
         {
@@ -82,7 +82,7 @@
             "flow_count": 1,
             "total_packets": 17,
             "total_bytes": 1500,
-            "first_seen": "2025-05-25 07:33:10",
+            "first_seen": "2025-05-25 19:59:02",
             "last_seen": "2025-04-21T17:12:12.578000+00:00"
         },
         {
@@ -92,7 +92,7 @@
             "flow_count": 1,
             "total_packets": 5,
             "total_bytes": 230,
-            "first_seen": "2025-05-25 07:33:09",
+            "first_seen": "2025-05-25 19:59:00",
             "last_seen": "2025-04-20T17:12:12.199000+00:00"
         },
         {
@@ -102,7 +102,7 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "first_seen": "2025-05-25 07:33:09",
+            "first_seen": "2025-05-25 19:59:00",
             "last_seen": "2025-04-20T17:12:30.688000+00:00"
         },
         {
@@ -112,7 +112,7 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "first_seen": "2025-05-25 07:33:10",
+            "first_seen": "2025-05-25 19:59:02",
             "last_seen": "2025-04-21T17:12:30.692000+00:00"
         }
     ],

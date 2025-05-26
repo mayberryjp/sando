@@ -1,15 +1,15 @@
 {
     "ip_address": "192.168.50.76",
-    "export_date": "2025-05-25T19:53:09.499757",
+    "export_date": "2025-05-25T20:11:12.513819",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.76",
         "mac_address": null,
         "mac_vendor": null,
         "dhcp_hostname": null,
-        "dns_hostname": "Presence-Sensor-FP2-45D3.832-5.com.",
+        "dns_hostname": null,
         "os_fingerprint": null,
-        "lease_hostname": "Presence-Sensor-FP2-45D3",
+        "lease_hostname": null,
         "icon": null,
         "local_description": null
     },
@@ -22,7 +22,7 @@
             "flow_count": 1,
             "total_packets": 32152,
             "total_bytes": 5459149,
-            "first_seen": "2025-05-25 07:33:10",
+            "first_seen": "2025-05-25 19:59:02",
             "last_seen": "2025-04-19T04:48:55.869000+00:00"
         }
     ],

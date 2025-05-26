@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.113",
-    "export_date": "2025-05-23T14:45:14.368272",
+    "export_date": "2025-05-25T20:08:42.100532",
     "instance_identifier": "9a72641185275de6aee6384294035d373d4c94dc73c430210b6c1a3770519bb7",
     "host_info": {
         "ip_address": "192.168.50.113",
@@ -16,12 +16,22 @@
     "dns_queries": [
         {
             "domain": "airjpf4l.coway.co.kr",
-            "times_queried": 8,
-            "first_query": "2025-05-21 10:15:35",
+            "times_queried": 28,
+            "first_query": "2025-05-23 22:20:40",
             "last_query": "2025-05-18 03:30:22"
         }
     ],
     "flows": [
+        {
+            "destination": "3.37.6.132",
+            "port": 9090,
+            "protocol": 6,
+            "flow_count": 6,
+            "total_packets": 7544,
+            "total_bytes": 844973,
+            "first_seen": "2025-05-23 21:04:28",
+            "last_seen": "12448"
+        },
         {
             "destination": "3.34.55.48",
             "port": 9090,
@@ -46,30 +56,20 @@
             "destination": "3.36.236.58",
             "port": 9090,
             "protocol": 6,
-            "flow_count": 5,
-            "total_packets": 235,
-            "total_bytes": 25749,
-            "first_seen": "2025-05-21 12:30:31",
+            "flow_count": 7,
+            "total_packets": 251,
+            "total_bytes": 27446,
+            "first_seen": "2025-05-24 00:50:35",
             "last_seen": "137588132"
-        },
-        {
-            "destination": "3.37.6.132",
-            "port": 9090,
-            "protocol": 6,
-            "flow_count": 5,
-            "total_packets": 84,
-            "total_bytes": 8481,
-            "first_seen": "2025-05-21 12:54:29",
-            "last_seen": "12448"
         },
         {
             "destination": "8.8.8.8",
             "port": 53,
             "protocol": 17,
-            "flow_count": 18,
-            "total_packets": 38,
-            "total_bytes": 2508,
-            "first_seen": "2025-05-21 12:01:46",
+            "flow_count": 21,
+            "total_packets": 44,
+            "total_bytes": 2904,
+            "first_seen": "2025-05-24 00:53:40",
             "last_seen": "11347"
         },
         {

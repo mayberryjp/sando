@@ -1,13 +1,13 @@
 {
     "ip_address": "192.168.51.255",
-    "export_date": "2025-05-25T19:53:23.872239",
+    "export_date": "2025-05-25T20:11:03.049308",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.51.255",
         "mac_address": null,
         "mac_vendor": null,
         "dhcp_hostname": null,
-        "dns_hostname": "NXDOMAIN",
+        "dns_hostname": null,
         "os_fingerprint": null,
         "lease_hostname": null,
         "icon": null,
