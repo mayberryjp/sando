@@ -251,11 +251,14 @@ def get_dnsqueries_without_responses():
 
         cursor = conn.cursor()
         
-        # Query for DNS queries with NULL or empty responses
+        # Query for DNS queries with NULL or empty responses, refresh every 90 days or TIMEDOUT
         cursor.execute("""
             SELECT id, domain, type
             FROM dnsqueries 
-            WHERE response IS NULL OR response = ''
+            WHERE response IS NULL 
+               OR response = ''
+               OR date(first_seen) <= date('now', '-90 days')
+               OR response = 'TIMEOUT'
             ORDER BY last_seen DESC
         """)
         
