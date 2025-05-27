@@ -37,8 +37,8 @@ def insert_dns_query(client_ip, domain, times_seen, datasource):
         
         # Insert or update the DNS query record
         cursor.execute("""
-            INSERT INTO dnsqueries (client_ip, domain, type, times_seen, first_seen, last_seen, datasource)
-            VALUES (?, ?, 'A', ?, datetime('now', 'localtime'), datetime('now', 'localtime'), ?)
+            INSERT INTO dnsqueries (client_ip, domain, type, times_seen, first_seen, last_seen, datasource, last_refresh)
+            VALUES (?, ?, 'A', ?, datetime('now', 'localtime'), datetime('now', 'localtime'), ?, datetime('now', 'localtime'))
             ON CONFLICT(client_ip, domain, type, datasource)
             DO UPDATE SET
                 last_seen = datetime('now', 'localtime'),
@@ -155,8 +155,8 @@ def insert_dns_queries_batch(queries, datasource):
             
         # Execute the batch insert with ON CONFLICT handling
         cursor.executemany("""
-            INSERT INTO dnsqueries (client_ip, domain, type, times_seen, first_seen, last_seen, datasource)
-            VALUES (?, ?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'), ?)
+            INSERT INTO dnsqueries (client_ip, domain, type, times_seen, first_seen, last_seen, datasource, last_refresh)
+            VALUES (?, ?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'), ?, datetime('now', 'localtime'))
             ON CONFLICT(client_ip, domain, type, datasource)
             DO UPDATE SET
                 last_seen = datetime('now', 'localtime'),
@@ -208,7 +208,7 @@ def update_dns_query_response(response, id):
         # Update the response field for the matching record
         cursor.execute("""
             UPDATE dnsqueries
-            SET response = ?
+            SET response = ?, last_refresh = datetime('now', 'localtime')
             WHERE id = ?
         """, (response, id))
                 
@@ -257,7 +257,7 @@ def get_dnsqueries_without_responses():
             FROM dnsqueries 
             WHERE response IS NULL 
                OR response = ''
-               OR date(first_seen) <= date('now', '-90 days')
+               OR date(last_refresh) <= date('now', '-90 days')
                OR response = 'TIMEOUT'
             ORDER BY last_seen DESC
         """)

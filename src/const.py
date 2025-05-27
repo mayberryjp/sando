@@ -1,4 +1,4 @@
-VERSION="v0.3.424"
+VERSION="v0.3.431"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -187,6 +187,7 @@ CREATE TABLE IF NOT EXISTS dnsqueries (
     domain TEXT NOT NULL,
     response TEXT,
     datasource TEXT NOT NULL,
+    last_refresh TEXT,
     PRIMARY KEY (client_ip, domain, type, datasource),
     UNIQUE (id)
 );
