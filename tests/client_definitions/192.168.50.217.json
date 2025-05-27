@@ -1,12 +1,12 @@
 {
     "ip_address": "192.168.50.217",
-    "export_date": "2025-05-26T16:11:12.137655",
+    "export_date": "2025-05-27T09:34:14.359058",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.217",
-        "mac_address": "fc:e8:c0:f8:78:a3",
-        "mac_vendor": "Espressif Inc.",
-        "dhcp_hostname": "slzb-06p7.local",
+        "mac_address": null,
+        "mac_vendor": null,
+        "dhcp_hostname": null,
         "dns_hostname": "slzb-06p7.local.",
         "os_fingerprint": null,
         "lease_hostname": "slzb-06p7",
@@ -16,9 +16,9 @@
     "dns_queries": [
         {
             "domain": "google.com",
-            "times_queried": 2,
-            "first_query": "2025-05-26 16:09:20",
-            "last_query": "2025-05-26 16:09:20"
+            "times_queried": 4,
+            "first_query": "2025-05-27 09:30:41",
+            "last_query": "2025-05-27 09:30:41"
         }
     ],
     "flows": [
@@ -29,8 +29,8 @@
             "flow_count": 1,
             "total_packets": 49,
             "total_bytes": 14755,
-            "first_seen": "2025-05-26 15:37:01",
-            "last_seen": "2025-04-20T07:06:30.756000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 07:06:30"
         },
         {
             "destination": "45.83.192.98",
@@ -39,8 +39,8 @@
             "flow_count": 2,
             "total_packets": 25,
             "total_bytes": 2402,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-20T08:29:18.989000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 08:29:18"
         },
         {
             "destination": "224.0.0.251",
@@ -49,8 +49,8 @@
             "flow_count": 1,
             "total_packets": 4,
             "total_bytes": 184,
-            "first_seen": "2025-05-26 15:37:01",
-            "last_seen": "2025-04-20T17:00:37.082000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 17:00:37"
         }
     ],
     "actions": []

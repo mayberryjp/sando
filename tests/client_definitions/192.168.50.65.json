@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.65",
-    "export_date": "2025-05-26T16:11:20.259521",
+    "export_date": "2025-05-27T09:34:00.528557",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.65",
@@ -22,8 +22,8 @@
             "flow_count": 2,
             "total_packets": 37,
             "total_bytes": 8292,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-20T23:13:01.241000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 23:13:01"
         },
         {
             "destination": "104.16.9.45",
@@ -32,8 +32,8 @@
             "flow_count": 4,
             "total_packets": 59,
             "total_bytes": 7936,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-20T23:13:05.950000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 23:13:05"
         },
         {
             "destination": "104.17.150.222",
@@ -42,8 +42,8 @@
             "flow_count": 5,
             "total_packets": 65,
             "total_bytes": 7525,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-20T23:13:08.003000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 23:13:08"
         },
         {
             "destination": "104.17.151.222",
@@ -52,8 +52,8 @@
             "flow_count": 1,
             "total_packets": 15,
             "total_bytes": 1899,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-21T12:45:30.739000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-21 12:45:30"
         },
         {
             "destination": "104.17.76.100",
@@ -62,8 +62,8 @@
             "flow_count": 4,
             "total_packets": 24,
             "total_bytes": 1874,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-20T23:12:59.720000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 23:12:59"
         },
         {
             "destination": "104.16.8.45",
@@ -72,8 +72,8 @@
             "flow_count": 1,
             "total_packets": 15,
             "total_bytes": 1361,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-21T12:45:27.954000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-21 12:45:27"
         },
         {
             "destination": "204.77.162.174",
@@ -82,8 +82,8 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-20T23:12:56.368000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 23:12:56"
         },
         {
             "destination": "204.77.162.174",
@@ -92,8 +92,8 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-20T23:12:57.862000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 23:12:57"
         },
         {
             "destination": "216.239.35.0",
@@ -102,8 +102,8 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-21T12:45:24.895000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-21 12:45:24"
         },
         {
             "destination": "216.239.35.12",
@@ -112,8 +112,8 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-20T23:12:54.416000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 23:12:54"
         }
     ],
     "actions": []

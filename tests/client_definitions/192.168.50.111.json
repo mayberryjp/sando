@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.111",
-    "export_date": "2025-05-26T16:10:57.518209",
+    "export_date": "2025-05-27T09:34:10.286584",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.111",
@@ -13,7 +13,14 @@
         "icon": null,
         "local_description": null
     },
-    "dns_queries": [],
+    "dns_queries": [
+        {
+            "domain": "ping.ui.com",
+            "times_queried": 2,
+            "first_query": "2025-05-27 09:30:41",
+            "last_query": "2025-05-27 09:30:41"
+        }
+    ],
     "flows": [
         {
             "destination": "239.254.127.63",
@@ -22,8 +29,8 @@
             "flow_count": 1,
             "total_packets": 227,
             "total_bytes": 25084,
-            "first_seen": "2025-05-26 15:37:01",
-            "last_seen": "2025-04-20T06:57:58.617000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 06:57:58"
         },
         {
             "destination": "192.68.49.60",
@@ -32,8 +39,8 @@
             "flow_count": 6,
             "total_packets": 12,
             "total_bytes": 684,
-            "first_seen": "2025-05-26 15:37:03",
-            "last_seen": "2025-04-20T11:57:28.139000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 11:57:28"
         },
         {
             "destination": "1.1.1.1",
@@ -42,8 +49,8 @@
             "flow_count": 1,
             "total_packets": 6,
             "total_bytes": 504,
-            "first_seen": "2025-05-26 15:37:01",
-            "last_seen": "2025-04-20T17:57:28.104000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 17:57:28"
         },
         {
             "destination": "8.8.8.8",
@@ -52,8 +59,8 @@
             "flow_count": 1,
             "total_packets": 6,
             "total_bytes": 504,
-            "first_seen": "2025-05-26 15:37:01",
-            "last_seen": "2025-04-20T11:57:28.141000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 11:57:28"
         }
     ],
     "actions": []

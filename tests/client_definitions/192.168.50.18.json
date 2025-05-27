@@ -1,26 +1,19 @@
 {
     "ip_address": "192.168.50.18",
-    "export_date": "2025-05-26T16:11:24.200376",
+    "export_date": "2025-05-27T09:34:16.222796",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.18",
-        "mac_address": "2c:9f:fb:b6:f8:08",
-        "mac_vendor": "Wistron Neweb Corporation",
-        "dhcp_hostname": "aircon-location2.832-5.com",
+        "mac_address": null,
+        "mac_vendor": null,
+        "dhcp_hostname": null,
         "dns_hostname": "aircon-location2.832-5.com.",
         "os_fingerprint": null,
         "lease_hostname": "aircon-location2",
         "icon": null,
         "local_description": null
     },
-    "dns_queries": [
-        {
-            "domain": "afus.apc.panasonic.com",
-            "times_queried": 1,
-            "first_query": "2025-05-26 16:09:20",
-            "last_query": "2025-05-26 16:09:20"
-        }
-    ],
+    "dns_queries": [],
     "flows": [
         {
             "destination": "224.0.23.0",
@@ -29,8 +22,8 @@
             "flow_count": 1,
             "total_packets": 2930,
             "total_bytes": 134780,
-            "first_seen": "2025-05-26 15:37:01",
-            "last_seen": "2025-04-20T06:08:15.607000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 06:08:15"
         },
         {
             "destination": "224.0.23.0",
@@ -39,8 +32,8 @@
             "flow_count": 788,
             "total_packets": 788,
             "total_bytes": 36248,
-            "first_seen": "2025-05-26 15:37:03",
-            "last_seen": "2025-04-20T06:13:56.361000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 06:13:56"
         },
         {
             "destination": "20.27.125.158",
@@ -49,8 +42,8 @@
             "flow_count": 1,
             "total_packets": 17,
             "total_bytes": 2650,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-21T05:03:47.849000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-21 05:03:47"
         }
     ],
     "actions": []

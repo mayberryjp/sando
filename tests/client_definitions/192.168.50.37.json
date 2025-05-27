@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.37",
-    "export_date": "2025-05-26T16:11:01.412809",
+    "export_date": "2025-05-27T09:33:47.379978",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.37",
@@ -16,15 +16,15 @@
     "dns_queries": [
         {
             "domain": "rtupdate.wunderground.com",
-            "times_queried": 77,
-            "first_query": "2025-05-26 16:09:19",
-            "last_query": "2025-05-26 16:09:19"
+            "times_queried": 108,
+            "first_query": "2025-05-27 09:30:41",
+            "last_query": "2025-05-27 09:30:41"
         },
         {
             "domain": "pool.ntp.org",
             "times_queried": 1,
-            "first_query": "2025-05-26 16:09:19",
-            "last_query": "2025-05-26 16:09:19"
+            "first_query": "2025-05-27 09:30:41",
+            "last_query": "2025-05-27 09:30:41"
         }
     ],
     "flows": [
@@ -35,8 +35,8 @@
             "flow_count": 1428,
             "total_packets": 7397,
             "total_bytes": 1221465,
-            "first_seen": "2025-05-26 15:37:03",
-            "last_seen": "2025-04-20T06:19:33.648000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 06:19:33"
         },
         {
             "destination": "104.26.7.76",
@@ -45,8 +45,8 @@
             "flow_count": 1225,
             "total_packets": 7378,
             "total_bytes": 1179334,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-20T14:09:18.968000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 14:09:18"
         },
         {
             "destination": "34.236.60.197",
@@ -55,8 +55,8 @@
             "flow_count": 1376,
             "total_packets": 7159,
             "total_bytes": 1178320,
-            "first_seen": "2025-05-26 15:37:03",
-            "last_seen": "2025-04-20T06:21:50.223000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 06:21:50"
         },
         {
             "destination": "34.197.171.123",
@@ -65,8 +65,8 @@
             "flow_count": 1358,
             "total_packets": 7047,
             "total_bytes": 1162261,
-            "first_seen": "2025-05-26 15:37:03",
-            "last_seen": "2025-04-20T06:13:54.113000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 06:13:54"
         },
         {
             "destination": "50.16.164.102",
@@ -75,8 +75,8 @@
             "flow_count": 1337,
             "total_packets": 6974,
             "total_bytes": 1146061,
-            "first_seen": "2025-05-26 15:37:03",
-            "last_seen": "2025-04-20T06:12:12.104000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 06:12:12"
         },
         {
             "destination": "172.67.73.24",
@@ -85,8 +85,8 @@
             "flow_count": 985,
             "total_packets": 5955,
             "total_bytes": 948942,
-            "first_seen": "2025-05-26 15:37:03",
-            "last_seen": "2025-04-20T06:12:51.104000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 06:12:51"
         },
         {
             "destination": "52.1.113.40",
@@ -95,8 +95,8 @@
             "flow_count": 1048,
             "total_packets": 5464,
             "total_bytes": 898758,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-20T06:13:20.102000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 06:13:20"
         },
         {
             "destination": "98.82.228.16",
@@ -105,8 +105,8 @@
             "flow_count": 780,
             "total_packets": 4056,
             "total_bytes": 668258,
-            "first_seen": "2025-05-26 15:37:03",
-            "last_seen": "2025-04-20T23:29:28.996000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-20 23:29:28"
         },
         {
             "destination": "54.236.209.130",
@@ -115,8 +115,8 @@
             "flow_count": 548,
             "total_packets": 2876,
             "total_bytes": 470900,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-20T06:12:46.109000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 06:12:46"
         },
         {
             "destination": "34.234.213.85",
@@ -125,8 +125,8 @@
             "flow_count": 442,
             "total_packets": 2309,
             "total_bytes": 378946,
-            "first_seen": "2025-05-26 15:37:03",
-            "last_seen": "2025-04-21T10:02:27.653000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-21 10:02:27"
         },
         {
             "destination": "162.159.200.1",
@@ -135,8 +135,8 @@
             "flow_count": 1,
             "total_packets": 15,
             "total_bytes": 1140,
-            "first_seen": "2025-05-26 15:37:01",
-            "last_seen": "2025-04-20T07:26:07.278000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 07:26:07"
         },
         {
             "destination": "162.159.200.123",
@@ -145,8 +145,8 @@
             "flow_count": 1,
             "total_packets": 9,
             "total_bytes": 684,
-            "first_seen": "2025-05-26 15:37:01",
-            "last_seen": "2025-04-20T16:27:31.584000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 16:27:31"
         },
         {
             "destination": "163.181.129.217",
@@ -155,8 +155,8 @@
             "flow_count": 1,
             "total_packets": 5,
             "total_bytes": 495,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-21T04:57:37.092000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-21 04:57:37"
         },
         {
             "destination": "129.250.35.250",
@@ -165,8 +165,8 @@
             "flow_count": 1,
             "total_packets": 6,
             "total_bytes": 456,
-            "first_seen": "2025-05-26 15:37:01",
-            "last_seen": "2025-04-20T06:26:06.111000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 06:26:06"
         },
         {
             "destination": "167.179.119.205",
@@ -175,8 +175,8 @@
             "flow_count": 1,
             "total_packets": 4,
             "total_bytes": 304,
-            "first_seen": "2025-05-26 15:37:01",
-            "last_seen": "2025-04-20T17:27:31.730000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 17:27:31"
         },
         {
             "destination": "129.250.35.251",
@@ -185,8 +185,8 @@
             "flow_count": 1,
             "total_packets": 2,
             "total_bytes": 152,
-            "first_seen": "2025-05-26 15:37:01",
-            "last_seen": "2025-04-20T11:26:11.051000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 11:26:11"
         },
         {
             "destination": "45.76.211.39",
@@ -195,8 +195,8 @@
             "flow_count": 1,
             "total_packets": 2,
             "total_bytes": 152,
-            "first_seen": "2025-05-26 15:37:03",
-            "last_seen": "2025-04-21T14:27:51.521000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-21 14:27:51"
         },
         {
             "destination": "50.7.159.155",
@@ -205,8 +205,8 @@
             "flow_count": 1,
             "total_packets": 2,
             "total_bytes": 152,
-            "first_seen": "2025-05-26 15:37:02",
-            "last_seen": "2025-04-20T21:27:36.064000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 21:27:36"
         },
         {
             "destination": "202.181.103.212",
@@ -215,8 +215,8 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "first_seen": "2025-05-26 15:37:03",
-            "last_seen": "2025-04-21T17:27:54.865000+00:00"
+            "last_seen": "2025-05-27 08:35:18",
+            "first_seen": "2025-04-21 17:27:54"
         },
         {
             "destination": "23.81.40.154",
@@ -225,8 +225,8 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "first_seen": "2025-05-26 15:37:01",
-            "last_seen": "2025-04-20T12:26:11.683000+00:00"
+            "last_seen": "2025-05-27 08:35:17",
+            "first_seen": "2025-04-20 12:26:11"
         }
     ],
     "actions": []
