@@ -249,7 +249,7 @@ def get_ignorelist_for_ip(local_ip):
         for entry in ignorelist_entries:
             ignorelist_id, src_ip, dst_ip, dst_port, protocol = entry
         
-            tag_stats = tag_stats_all[entry] if entry in tag_stats_all else {}
+            tag_stats = tag_stats_all[ignorelist_id] if ignorelist_id in tag_stats_all else {}
             
             # Create enhanced entry
             enhanced_entry = {
