@@ -469,7 +469,7 @@ def main():
     detection_durations['detect_many_destinations'] = int((datetime.now() - start).total_seconds())
 
     start = datetime.now()
-   # update_tor_nodes(config_dict)
+    update_tor_nodes(config_dict)
     detect_tor_traffic(filtered_rows, config_dict)
     detection_durations['detect_tor_traffic'] = int((datetime.now() - start).total_seconds())
 
@@ -485,7 +485,7 @@ def main():
     start = datetime.now()
     create_geolocation_db()
     geolocation_data = load_geolocation_data()
-    #detect_geolocation_flows(filtered_rows, config_dict, geolocation_data)
+    detect_geolocation_flows(filtered_rows, config_dict, geolocation_data)
     detection_durations['detect_geolocation_flows'] = int((datetime.now() - start).total_seconds())
 
     log_info(logger, "[INFO] Preparing to download pihole dns query logs...")

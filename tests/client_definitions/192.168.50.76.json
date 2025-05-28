@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.76",
-    "export_date": "2025-05-27T09:34:05.025951",
+    "export_date": "2025-05-28T13:28:20.406971",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.76",
@@ -22,7 +22,7 @@
             "flow_count": 1,
             "total_packets": 32152,
             "total_bytes": 5459149,
-            "last_seen": "2025-05-27 08:35:18",
+            "last_seen": "2025-05-28 12:36:48",
             "first_seen": "2025-04-19 04:48:55"
         }
     ],

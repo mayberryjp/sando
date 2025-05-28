@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.65",
-    "export_date": "2025-05-27T09:34:00.528557",
+    "export_date": "2025-05-28T13:28:23.344572",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.65",
@@ -22,7 +22,7 @@
             "flow_count": 2,
             "total_packets": 37,
             "total_bytes": 8292,
-            "last_seen": "2025-05-27 08:35:18",
+            "last_seen": "2025-05-28 12:36:48",
             "first_seen": "2025-04-20 23:13:01"
         },
         {
@@ -32,7 +32,7 @@
             "flow_count": 4,
             "total_packets": 59,
             "total_bytes": 7936,
-            "last_seen": "2025-05-27 08:35:18",
+            "last_seen": "2025-05-28 12:36:48",
             "first_seen": "2025-04-20 23:13:05"
         },
         {
@@ -42,7 +42,7 @@
             "flow_count": 5,
             "total_packets": 65,
             "total_bytes": 7525,
-            "last_seen": "2025-05-27 08:35:18",
+            "last_seen": "2025-05-28 12:36:48",
             "first_seen": "2025-04-20 23:13:08"
         },
         {
@@ -52,7 +52,7 @@
             "flow_count": 1,
             "total_packets": 15,
             "total_bytes": 1899,
-            "last_seen": "2025-05-27 08:35:18",
+            "last_seen": "2025-05-28 12:36:48",
             "first_seen": "2025-04-21 12:45:30"
         },
         {
@@ -62,7 +62,7 @@
             "flow_count": 4,
             "total_packets": 24,
             "total_bytes": 1874,
-            "last_seen": "2025-05-27 08:35:18",
+            "last_seen": "2025-05-28 12:36:48",
             "first_seen": "2025-04-20 23:12:59"
         },
         {
@@ -72,7 +72,7 @@
             "flow_count": 1,
             "total_packets": 15,
             "total_bytes": 1361,
-            "last_seen": "2025-05-27 08:35:18",
+            "last_seen": "2025-05-28 12:36:48",
             "first_seen": "2025-04-21 12:45:27"
         },
         {
@@ -82,7 +82,7 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "last_seen": "2025-05-27 08:35:17",
+            "last_seen": "2025-05-28 12:36:47",
             "first_seen": "2025-04-20 23:12:56"
         },
         {
@@ -92,7 +92,7 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "last_seen": "2025-05-27 08:35:17",
+            "last_seen": "2025-05-28 12:36:47",
             "first_seen": "2025-04-20 23:12:57"
         },
         {
@@ -102,7 +102,7 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "last_seen": "2025-05-27 08:35:18",
+            "last_seen": "2025-05-28 12:36:48",
             "first_seen": "2025-04-21 12:45:24"
         },
         {
@@ -112,7 +112,7 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "last_seen": "2025-05-27 08:35:17",
+            "last_seen": "2025-05-28 12:36:47",
             "first_seen": "2025-04-20 23:12:54"
         }
     ],

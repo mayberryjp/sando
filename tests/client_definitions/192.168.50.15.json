@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.15",
-    "export_date": "2025-05-27T09:34:25.226719",
+    "export_date": "2025-05-28T13:28:12.528391",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.15",
@@ -8,7 +8,7 @@
         "mac_vendor": null,
         "dhcp_hostname": null,
         "dns_hostname": "aircon-location1.832-5.com.",
-        "os_fingerprint": null,
+        "os_fingerprint": "lwIP_lwIP_1.4.X_89",
         "lease_hostname": "aircon-location1",
         "icon": null,
         "local_description": null
@@ -22,7 +22,7 @@
             "flow_count": 1,
             "total_packets": 2977,
             "total_bytes": 136942,
-            "last_seen": "2025-05-27 08:35:17",
+            "last_seen": "2025-05-28 12:36:47",
             "first_seen": "2025-04-20 06:15:30"
         },
         {
@@ -32,7 +32,7 @@
             "flow_count": 791,
             "total_packets": 791,
             "total_bytes": 36386,
-            "last_seen": "2025-05-27 08:35:18",
+            "last_seen": "2025-05-28 12:36:49",
             "first_seen": "2025-04-20 06:12:28"
         },
         {
@@ -42,7 +42,7 @@
             "flow_count": 2,
             "total_packets": 35,
             "total_bytes": 5346,
-            "last_seen": "2025-05-27 08:35:18",
+            "last_seen": "2025-05-28 12:36:48",
             "first_seen": "2025-04-20 20:39:22"
         }
     ],

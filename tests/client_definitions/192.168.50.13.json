@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.13",
-    "export_date": "2025-05-27T09:34:19.741504",
+    "export_date": "2025-05-28T13:28:23.014416",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.13",
@@ -13,7 +13,14 @@
         "icon": null,
         "local_description": null
     },
-    "dns_queries": [],
+    "dns_queries": [
+        {
+            "domain": "ntp.anshin-home.jp",
+            "times_queried": 1,
+            "first_query": "2025-05-28 13:25:17",
+            "last_query": "2025-05-28 13:25:17"
+        }
+    ],
     "flows": [
         {
             "destination": "239.255.255.250",
@@ -22,7 +29,7 @@
             "flow_count": 1,
             "total_packets": 672,
             "total_bytes": 229992,
-            "last_seen": "2025-05-27 08:35:17",
+            "last_seen": "2025-05-28 12:36:47",
             "first_seen": "2025-04-20 06:27:55"
         },
         {
@@ -32,7 +39,7 @@
             "flow_count": 3,
             "total_packets": 32,
             "total_bytes": 5078,
-            "last_seen": "2025-05-27 08:35:18",
+            "last_seen": "2025-05-28 12:36:48",
             "first_seen": "2025-04-20 17:56:03"
         },
         {
@@ -42,7 +49,7 @@
             "flow_count": 65,
             "total_packets": 65,
             "total_bytes": 4043,
-            "last_seen": "2025-05-27 08:35:18",
+            "last_seen": "2025-05-28 12:36:49",
             "first_seen": "2025-04-20 06:57:09"
         },
         {
@@ -52,7 +59,7 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "last_seen": "2025-05-27 08:35:17",
+            "last_seen": "2025-05-28 12:36:48",
             "first_seen": "2025-04-21 00:56:58"
         }
     ],

@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.110",
-    "export_date": "2025-05-27T09:34:22.077695",
+    "export_date": "2025-05-28T13:28:34.765072",
     "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
     "host_info": {
         "ip_address": "192.168.50.110",
@@ -13,14 +13,7 @@
         "icon": null,
         "local_description": null
     },
-    "dns_queries": [
-        {
-            "domain": "ping.ui.com",
-            "times_queried": 2,
-            "first_query": "2025-05-27 09:30:41",
-            "last_query": "2025-05-27 09:30:41"
-        }
-    ],
+    "dns_queries": [],
     "flows": [
         {
             "destination": "239.254.127.63",
@@ -29,7 +22,7 @@
             "flow_count": 1,
             "total_packets": 281,
             "total_bytes": 31348,
-            "last_seen": "2025-05-27 08:35:17",
+            "last_seen": "2025-05-28 12:36:47",
             "first_seen": "2025-04-20 06:57:54"
         },
         {
@@ -39,7 +32,7 @@
             "flow_count": 1,
             "total_packets": 6,
             "total_bytes": 504,
-            "last_seen": "2025-05-27 08:35:17",
+            "last_seen": "2025-05-28 12:36:47",
             "first_seen": "2025-04-20 17:57:25"
         },
         {
@@ -49,7 +42,7 @@
             "flow_count": 1,
             "total_packets": 6,
             "total_bytes": 504,
-            "last_seen": "2025-05-27 08:35:17",
+            "last_seen": "2025-05-28 12:36:47",
             "first_seen": "2025-04-20 11:57:25"
         }
     ],
