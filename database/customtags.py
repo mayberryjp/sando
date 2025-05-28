@@ -180,3 +180,4 @@ def import_custom_tags(config_dict):
         log_error(logger, f"[ERROR] Error importing custom tag entries: {e}")
     finally:
         disconnect_from_db(conn)
+

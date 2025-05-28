@@ -102,3 +102,47 @@ def setup_ignorelist_routes(app):
                 log_error(logger, f"Error deleting ignorelist entry: {e}")
                 response.status = 500
                 return {"error": str(e)}
+            
+
+    @app.route('/api/ignorelist/ip/<ip_address>', method=['GET'])
+    def get_ignorelist_by_ip(ip_address):
+        """
+        API endpoint to get all ignorelist entries for a specific IP address.
+        
+        Args:
+            ip_address (str): The IP address to filter ignorelist entries by
+            
+        Returns:
+            JSON array containing all ignorelist entries for the specified IP address
+        """
+        logger = logging.getLogger(__name__)
+        
+        try:
+            # Use the function to get ignorelist entries for the IP
+            ignorelist_entries = get_ignorelist_for_ip(ip_address)
+            
+            if ignorelist_entries is None:
+                log_error(logger, f"[ERROR] Failed to retrieve ignorelist entries for IP {ip_address}")
+                response.status = 500
+                return {"error": "Failed to retrieve ignorelist entries"}
+            
+            # Format the response to match the expected structure
+            formatted_entries = []
+            for entry in ignorelist_entries:
+                formatted_entry = {
+                    "ignorelist_id": entry[0],
+                    "src_ip": entry[1],
+                    "dst_ip": entry[2],
+                    "dst_port": entry[3],
+                    "protocol": entry[4]
+                }
+                formatted_entries.append(formatted_entry)
+            
+            response.content_type = 'application/json'
+            log_info(logger, f"[INFO] Fetched {len(formatted_entries)} ignorelist entries for IP {ip_address}")
+            return json.dumps(formatted_entries)
+            
+        except Exception as e:
+            log_error(logger, f"[ERROR] Failed to fetch ignorelist entries for IP {ip_address}: {e}")
+            response.status = 500
+            return {"error": str(e)}

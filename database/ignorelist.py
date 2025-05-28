@@ -205,3 +205,51 @@ def insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
     finally:
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
+
+
+def get_ignorelist_for_ip(local_ip):
+    """
+    Retrieve active ignorelist entries for a specific local IP address.
+    
+    Args:
+        local_ip (str): The local IP address to filter by.
+        
+    Returns:
+        list: List of tuples containing (ignorelist_id, src_ip, dst_ip, dst_port, protocol)
+              for the specified local IP address.
+              Returns an empty list if no entries are found or if there's an error.
+    """
+    logger = logging.getLogger(__name__)
+    result = []
+    
+    try:
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "ignorelist")
+        if not conn:
+            log_error(logger, f"[ERROR] Unable to connect to ignorelist database for IP {local_ip}")
+            return result
+
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT ignorelist_id, ignorelist_src_ip, ignorelist_dst_ip, ignorelist_dst_port, ignorelist_protocol
+            FROM ignorelist 
+            WHERE ignorelist_enabled = 1 AND (ignorelist_src_ip = ? or ignorelist_dst_ip = ?)
+        """, (local_ip,local_ip,))
+        
+        ignorelist_entries = cursor.fetchall()
+        
+        if ignorelist_entries:
+            log_info(logger, f"[INFO] Retrieved {len(ignorelist_entries)} ignorelist entries for IP {local_ip}")
+            return ignorelist_entries
+        else:
+            log_info(logger, f"[INFO] No ignorelist entries found for IP {local_ip}")
+            return result
+
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error retrieving ignorelist for IP {local_ip}: {e}")
+        return result
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error retrieving ignorelist for IP {local_ip}: {e}")
+        return result
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)

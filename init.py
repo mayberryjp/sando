@@ -153,7 +153,8 @@ from database.ignorelist import (
     get_ignorelist, 
     import_ignorelists,
     delete_ignorelist_entry,
-    insert_ignorelist_entry
+    insert_ignorelist_entry,
+    get_ignorelist_for_ip
 )
 
 from database.customtags import (
