@@ -113,7 +113,8 @@ from database.dnsqueries import (
     insert_dns_query,
     insert_dns_queries_batch,
     get_dnsqueries_without_responses,
-    update_dns_query_response
+    update_dns_query_response,
+    get_ip_to_domain_mapping
 )
 
 # Localhost functions
@@ -133,7 +134,8 @@ from database.allflows import (
     update_all_flows,
     update_tag_to_allflows,
     get_flows_by_source_ip,
-    get_dead_connections_from_database
+    get_dead_connections_from_database,
+    get_tag_statistics
 )
 
 # Flow functions

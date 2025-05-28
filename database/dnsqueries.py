@@ -277,3 +277,76 @@ def get_dnsqueries_without_responses():
     finally:
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
+
+
+
+def get_ip_to_domain_mapping():
+    """
+    Retrieve a mapping of IP addresses to their corresponding domain names
+    from the dnsqueries table, using a recursive query to split multi-IP responses.
+    
+    Returns:
+        dict: A dictionary with IP addresses as keys and domain names as values.
+              Returns an empty dictionary if no data is found or an error occurs.
+    """
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Connect to the database
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to database for IP-domain mapping.")
+            return {}
+            
+        conn.create_function("TRIM", 1, lambda x: x.strip() if x else "")
+        cursor = conn.cursor()
+        
+        # Recursive query to split comma-separated IP addresses
+        cursor.execute("""
+            WITH RECURSIVE split(id, domain, ip_address, rest) AS (
+              SELECT
+                id,
+                domain,
+                '',                     -- Initial IP (empty)
+                response || ','         -- Append comma to simplify parsing
+              FROM dnsqueries
+              WHERE response IS NOT NULL 
+                AND response != '' 
+                AND response != 'TIMEOUT'
+              
+              UNION ALL
+              
+              SELECT
+                id,
+                domain,
+                TRIM(substr(rest, 0, instr(rest, ','))),
+                substr(rest, instr(rest, ',') + 1)
+              FROM split
+              WHERE rest != ''
+            )
+            SELECT ip_address, domain
+            FROM split
+            WHERE ip_address != ''
+        """)
+        
+        rows = cursor.fetchall()
+        
+        # Create dictionary mapping IP address -> domain
+        ip_to_domain = {}
+        for ip, domain in rows:
+            # If IP is valid (check with simple validation)
+            if ip and '.' in ip and not (ip.startswith(';') or ip.startswith('#')):
+                ip_to_domain[ip.strip()] = domain
+        
+        log_info(logger, f"[INFO] Created IP-to-domain mapping with {len(ip_to_domain)} entries")
+        return ip_to_domain
+        
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while creating IP-to-domain mapping: {e}")
+        return {}
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while creating IP-to-domain mapping: {e}")
+        return {}
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)

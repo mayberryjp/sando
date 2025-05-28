@@ -278,3 +278,90 @@ def get_dead_connections_from_database():
     finally:
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
+
+
+def get_tag_statistics():
+    """
+    Retrieve statistics about tags used in the allflows table, using a recursive query
+    to split multi-tag entries into individual tags.
+    
+    Returns:
+        dict: A dictionary with tags as keys and statistics as values (count, first_seen, last_seen).
+              Returns an empty dictionary if no data is found or an error occurs.
+    """
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Connect to the database
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to database for tag statistics.")
+            return {}
+            
+        conn.create_function("TRIM", 1, lambda x: x.strip() if x else "")
+        cursor = conn.cursor()
+        
+        # Recursive query to split comma or space separated tags
+        cursor.execute("""
+            WITH RECURSIVE split_tags(id, src_ip, dst_ip, flow_start, last_seen, tag, rest) AS (
+              SELECT
+                id,
+                src_ip,
+                dst_ip,
+                flow_start,
+                last_seen,
+                '',                     -- Initial tag (empty)
+                tags || ';'             -- Append comma to simplify parsing
+              FROM allflows
+              WHERE tags IS NOT NULL 
+                AND tags != ''
+              
+              UNION ALL
+              
+              SELECT
+                id,
+                src_ip,
+                dst_ip,
+                flow_start,
+                last_seen,
+                TRIM(substr(rest, 0, instr(rest, ';'))),
+                substr(rest, instr(rest, ';') + 1)
+              FROM split_tags
+              WHERE rest != ''
+            )
+            SELECT 
+              tag,
+              COUNT(*) as occurrence_count,
+              MIN(flow_start) as first_seen,
+              MAX(last_seen) as last_seen
+            FROM split_tags
+            WHERE tag != ''
+            GROUP BY tag
+            ORDER BY occurrence_count DESC
+        """)
+        
+        rows = cursor.fetchall()
+        
+        # Create dictionary mapping tag -> statistics
+        tag_stats = {}
+        for tag, count, first_seen, last_seen in rows:
+            tag = tag.strip()
+            if tag:  # Skip empty tags
+                tag_stats[tag] = {
+                    'count': count,
+                    'first_seen': first_seen,
+                    'last_seen': last_seen
+                }
+        
+        log_info(logger, f"[INFO] Retrieved statistics for {len(tag_stats)} unique tags")
+        return tag_stats
+        
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while retrieving tag statistics: {e}")
+        return {}
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while retrieving tag statistics: {e}")
+        return {}
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)

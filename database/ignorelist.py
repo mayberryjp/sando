@@ -206,16 +206,16 @@ def insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
 
-
 def get_ignorelist_for_ip(local_ip):
     """
-    Retrieve active ignorelist entries for a specific local IP address.
+    Retrieve active ignorelist entries for a specific local IP address,
+    including statistics from the tag statistics.
     
     Args:
         local_ip (str): The local IP address to filter by.
         
     Returns:
-        list: List of tuples containing (ignorelist_id, src_ip, dst_ip, dst_port, protocol)
+        list: List of dictionaries containing ignorelist entries with flow statistics
               for the specified local IP address.
               Returns an empty list if no entries are found or if there's an error.
     """
@@ -223,6 +223,7 @@ def get_ignorelist_for_ip(local_ip):
     result = []
     
     try:
+        # Connect to the ignorelist database
         conn = connect_to_db(CONST_CONSOLIDATED_DB, "ignorelist")
         if not conn:
             log_error(logger, f"[ERROR] Unable to connect to ignorelist database for IP {local_ip}")
@@ -232,17 +233,40 @@ def get_ignorelist_for_ip(local_ip):
         cursor.execute("""
             SELECT ignorelist_id, ignorelist_src_ip, ignorelist_dst_ip, ignorelist_dst_port, ignorelist_protocol
             FROM ignorelist 
-            WHERE ignorelist_enabled = 1 AND (ignorelist_src_ip = ? or ignorelist_dst_ip = ?)
-        """, (local_ip,local_ip,))
+            WHERE ignorelist_enabled = 1 AND (ignorelist_src_ip = ? OR ignorelist_dst_ip = ?)
+        """, (local_ip, local_ip))
         
         ignorelist_entries = cursor.fetchall()
         
-        if ignorelist_entries:
-            log_info(logger, f"[INFO] Retrieved {len(ignorelist_entries)} ignorelist entries for IP {local_ip}")
-            return ignorelist_entries
-        else:
+        if not ignorelist_entries:
             log_info(logger, f"[INFO] No ignorelist entries found for IP {local_ip}")
             return result
+        
+        # Get all tag statistics once, instead of querying for each entry
+        tag_stats_all = get_tag_statistics()
+        
+        # Create enhanced entries with statistics
+        for entry in ignorelist_entries:
+            ignorelist_id, src_ip, dst_ip, dst_port, protocol = entry
+        
+            tag_stats = tag_stats_all[entry] if entry in tag_stats_all else {}
+            
+            # Create enhanced entry
+            enhanced_entry = {
+                'id': ignorelist_id,
+                'src_ip': src_ip,
+                'dst_ip': dst_ip,
+                'dst_port': dst_port,
+                'protocol': protocol,
+                'times_seen': tag_stats['count'] if tag_stats else 0,
+                'first_seen': tag_stats['first_seen'] if tag_stats else None,
+                'last_seen': tag_stats['last_seen'] if tag_stats else None
+            }
+            
+            result.append(enhanced_entry)
+        
+        log_info(logger, f"[INFO] Retrieved {len(result)} enhanced ignorelist entries for IP {local_ip}")
+        return result
 
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error retrieving ignorelist for IP {local_ip}: {e}")
