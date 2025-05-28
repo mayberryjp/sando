@@ -35,7 +35,7 @@ def pihole_logs_thread():
     config_dict = get_config_settings()
 
     # Hourly interval in seconds
-    pihole_fetch_interval = 10 #config_dict.get('PiholeFetchInterval', 3600)
+    pihole_fetch_interval = config_dict.get('PiholeFetchInterval', 3600)
     
     while True:
         try:

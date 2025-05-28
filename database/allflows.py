@@ -303,9 +303,8 @@ def get_tag_statistics():
         
         # Recursive query to split comma or space separated tags
         cursor.execute("""
-            WITH RECURSIVE split_tags(id, src_ip, dst_ip, flow_start, last_seen, tag, rest) AS (
+         WITH RECURSIVE split_tags(src_ip, dst_ip, flow_start, last_seen, tag, rest) AS (
               SELECT
-                id,
                 src_ip,
                 dst_ip,
                 flow_start,
@@ -319,7 +318,6 @@ def get_tag_statistics():
               UNION ALL
               
               SELECT
-                id,
                 src_ip,
                 dst_ip,
                 flow_start,

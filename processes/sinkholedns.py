@@ -259,7 +259,7 @@ class SinkholeResolver:
             if self.stats["total_queries"] % 100 == 0:
                 log_info(logger, f"[INFO] Processed {self.stats['total_queries']} queries (last: {client_ip}: {qname})")
             
-            log_info(logger,f"[INFO] DNS request processed from {client_ip} for domain {qname} of type {qtype}")
+            #log_info(logger,f"[INFO] DNS request processed from {client_ip} for domain {qname} of type {qtype}")
             # Create NXDOMAIN response
             response = DNSRecord(
                 DNSHeader(
