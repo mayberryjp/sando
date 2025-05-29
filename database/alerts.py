@@ -398,7 +398,7 @@ def get_recent_alerts_database():
                 alert_enrichment_1, alert_enrichment_2,
                 times_seen, first_seen, last_seen, acknowledged
             FROM alerts 
-            ORDER BY last_seen DESC 
+            ORDER BY first_seen DESC 
             LIMIT 100
         """
         
@@ -596,7 +596,7 @@ def get_recent_alerts_by_ip(ip_address):
                    times_seen, first_seen, last_seen, acknowledged
             FROM alerts 
             WHERE ip_address = ?
-            ORDER BY last_seen DESC 
+            ORDER BY first_seen DESC 
             LIMIT 100
         """
         

@@ -38,7 +38,8 @@ def setup_agent_routes(app):
             result = {
                 "ip_address": ip_address,
                 "dns": None,
-                "country": None
+                "country": None,
+                "isp": None
             }
             
             # Get configuration settings
@@ -62,6 +63,13 @@ def setup_agent_routes(app):
                     result["dns"] = dns_results[ip_address]
             else:
                 log_info(logger, "[INFO] DNS lookup skipped - no DNS servers configured or discovery disabled")
+
+            isp_result = get_asn_for_ip(ip_address)
+
+            if isp_result:
+                result["isp"] = isp_result["isp_name"]
+            else:
+                log_info(logger, f"[INFO] No ISP result found for IP: {ip_address}")
 
             # Perform geolocation lookup
             geo_result = lookup_ip_country(ip_address)

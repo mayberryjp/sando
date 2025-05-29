@@ -27,9 +27,25 @@ def parse_netflow_v5_header(data):
     return struct.unpack('!HHIIIIBBH', data[:24])
 
 
-def parse_netflow_v5_record(data, offset):
+def parse_netflow_v5_record(data, offset, unix_secs, uptime):
+    """
+    Parse a NetFlow v5 record and convert timestamps to Unix epoch format
+    
+    Args:
+        data: The binary data containing the record
+        offset: The offset where the record starts
+        unix_secs: The current Unix timestamp from the header
+        uptime: System uptime in milliseconds from the header
+    
+    Returns:
+        Dictionary containing the parsed NetFlow record with proper timestamps
+    """
     fields = struct.unpack('!IIIHHIIIIHHBBBBHHBBH', data[offset:offset+48])
-    length = len(fields)
+    
+    # Convert relative timestamps (milliseconds since boot) to Unix epoch timestamps
+    # Formula: unix_time - (uptime - flow_time)/1000
+    start_time_epoch = unix_secs - (uptime - fields[7])/1000
+    end_time_epoch = unix_secs - (uptime - fields[8])/1000
  
     return {
         'src_ip': socket.inet_ntoa(struct.pack('!I', fields[0])),
@@ -39,8 +55,8 @@ def parse_netflow_v5_record(data, offset):
         'output_iface': fields[4],
         'packets': fields[5],
         'bytes': fields[6],
-        'start_time': fields[7],
-        'end_time': fields[8],
+        'start_time': int(start_time_epoch),  # Store as integer epoch timestamp
+        'end_time': int(end_time_epoch),      # Store as integer epoch timestamp
         'src_port': fields[9],
         'dst_port': fields[10],
         'tcp_flags': fields[11],
@@ -51,7 +67,7 @@ def parse_netflow_v5_record(data, offset):
         'src_mask': fields[16],
         'dst_mask': fields[17],
         'tags': "",
-        'last_seen': datetime.now().isoformat(),
+        'last_seen': int(time.time()),  # Current time as epoch instead of ISO format
         'times_seen': 1
     }
 
@@ -119,12 +135,15 @@ def process_netflow_packets():
                     if version != 5:
                         continue
                         
+                    unix_secs = header_fields[1]
+                    uptime = header_fields[2]
+                    
                     offset = 24
                     for _ in range(count):
                         if offset + 48 > len(data):
                             break
                             
-                        record = parse_netflow_v5_record(data, offset)
+                        record = parse_netflow_v5_record(data, offset, unix_secs, uptime)
                         offset += 48
                         
                         # Apply tags and update flow database

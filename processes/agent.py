@@ -375,6 +375,7 @@ class NLPProcessor:
             ip = data.get("ip_address", "Unknown IP")
             dns = data.get("dns")
             country = data.get("country")
+            isp = data.get("isp")
             
             # Build summary
             summary += f"IP address {ip} "
@@ -388,6 +389,9 @@ class NLPProcessor:
                 summary += f"This IP is located in {country}. "
             else:
                 summary += "The country could not be determined. "
+
+            if isp:
+                summary += f"The IP is owned by {isp}. "
                 
             return {
                 "original_data": data,

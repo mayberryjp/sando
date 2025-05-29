@@ -45,6 +45,7 @@ def get_asn_for_ip(ip_address):
             SELECT asn, isp_name, network
             FROM ipasn 
             WHERE ? BETWEEN start_ip AND end_ip 
+            ORDER by netmask DESC
             LIMIT 1
         """, (ip_int,))
         

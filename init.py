@@ -99,7 +99,8 @@ from database.alerts import (
 )
 
 from database.ipasn import  (
-    insert_asn_records_batch
+    insert_asn_records_batch,
+    get_asn_for_ip
 )
 
 # Configuration functions

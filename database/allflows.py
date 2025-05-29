@@ -301,7 +301,7 @@ def get_tag_statistics():
         conn.create_function("TRIM", 1, lambda x: x.strip() if x else "")
         cursor = conn.cursor()
         
-        # Recursive query to split comma or space separated tags
+        # Recursive query to split tags with proper date formatting
         cursor.execute("""
          WITH RECURSIVE split_tags(src_ip, dst_ip, flow_start, last_seen, tag, rest) AS (
               SELECT
@@ -310,7 +310,7 @@ def get_tag_statistics():
                 flow_start,
                 last_seen,
                 '',                     -- Initial tag (empty)
-                tags || ';'             -- Append comma to simplify parsing
+                tags || ';'             -- Append semicolon to simplify parsing
               FROM allflows
               WHERE tags IS NOT NULL 
                 AND tags != ''
@@ -330,8 +330,8 @@ def get_tag_statistics():
             SELECT 
               tag,
               COUNT(*) as occurrence_count,
-              MIN(flow_start) as first_seen,
-              MAX(last_seen) as last_seen
+              datetime(MIN(flow_start)) as first_seen,
+              datetime(MAX(last_seen)) as last_seen
             FROM split_tags
             WHERE tag != ''
             GROUP BY tag
