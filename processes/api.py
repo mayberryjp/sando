@@ -38,6 +38,8 @@ setup_services_routes(app)
 setup_trafficstats_routes(app)
 setup_configurations_routes(app)
 setup_devices_routes(app)
+setup_customtags_routes(app)
+setup_threatscore_routes(app)
 
 
 # Define CORS headers
