@@ -22,6 +22,7 @@ from routers.services import *
 from routers.trafficstats import *
 from routers.integrations import *
 from routers.customtags import *
+from routers.threatscore import *
 from routers.devices import *
 
 # Initialize the Bottle app
@@ -38,7 +39,6 @@ setup_services_routes(app)
 setup_trafficstats_routes(app)
 setup_configurations_routes(app)
 setup_devices_routes(app)
-setup_customtags_routes(app)
 setup_threatscore_routes(app)
 
 

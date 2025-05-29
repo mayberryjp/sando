@@ -102,22 +102,4 @@ def setup_customtags_routes(app):
             response.status = 500
             return {"success": False, "error": f"Server error: {str(e)}"}
 
-    # You can add more routes for custom tags here:
-
-    @app.route('/api/customtags', method='GET')
-    def get_all_tags():
-        """Get all custom tags"""
-        # Implement this functionality
-        pass
-
-    @app.route('/api/customtags/<tag_id>', method='GET')
-    def get_tag(tag_id):
-        """Get a specific custom tag by ID"""
-        # Implement this functionality
-        pass
-
-    @app.route('/api/customtags/<tag_id>', method='DELETE')
-    def delete_tag(tag_id):
-        """Delete a custom tag by ID"""
-        # Implement this functionality
-        pass
+    
