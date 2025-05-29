@@ -169,7 +169,8 @@ from database.customtags import (
 from database.actions import (
     update_action_acknowledged, 
     insert_action, 
-    get_all_actions
+    get_all_actions,
+    update_action_acknowledged_all
 )
 
 # Service functions

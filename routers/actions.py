@@ -16,6 +16,30 @@ app = Bottle()
 
 def setup_actions_routes(app):
 
+    @app.route('/api/actions/all/acknowledge', method=['PUT'])
+    def update_action_acknowledged_api():
+        """
+        API endpoint to update the acknowledged field for a specific action.
+
+        Args:
+            action_id: The ID of the action to update.
+
+        Returns:
+            JSON object indicating success or failure.
+        """
+        logger = logging.getLogger(__name__)
+        try:
+            
+            if update_action_acknowledged_all():
+                return {"message": f"Action with ID all acknowledged successfully"}
+            else:
+                response.status = 500
+                return {"error": f"Failed to acknowledge actions"}
+        except Exception as e:
+            log_error(logger, f"[ERROR] Failed to acknowledge actions: {e}")
+            response.status = 500
+            return {"error": str(e)}
+
     @app.route('/api/actions/<action_id>/acknowledge', method=['PUT'])
     def update_action_acknowledged_api(action_id):
         """

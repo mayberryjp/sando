@@ -71,7 +71,7 @@ def get_all_actions():
         # Use run_timed_query for the select operation
         rows, query_time = run_timed_query(
             cursor,
-            "SELECT * FROM actions",
+            "SELECT * FROM actions where acknowledged = 0",
             description="get_all_actions"
         )
         
@@ -118,6 +118,46 @@ def update_action_acknowledged(action_id):
         
         conn.commit()
         log_info(logger, f"[INFO] Updated acknowledged field for action ID: {action_id} in {query_time:.2f} ms")
+        return rowcount > 0  # Return True if any rows were affected
+
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while updating action: {e}")
+        return False
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)
+
+
+def update_action_acknowledged_all():
+    """
+    Update the acknowledged field to 1 for a specific action based on the action_id.
+
+    Args:
+        action_id (str): The ID of the action to update.
+
+    Returns:
+        bool: True if the operation was successful, False otherwise.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "actions")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to actions database.")
+            return False
+
+        cursor = conn.cursor()
+        
+        # Use run_timed_query for the update operation
+        rowcount, query_time = run_timed_query(
+            cursor,
+            "UPDATE actions SET acknowledged = 1",
+            None,
+            "update_action_acknowledged",
+            fetch_all=False
+        )
+        
+        conn.commit()
+        log_info(logger, f"[INFO] Updated acknowledged field for all actions in {query_time:.2f} ms")
         return rowcount > 0  # Return True if any rows were affected
 
     except sqlite3.Error as e:

@@ -21,7 +21,7 @@ CONST_DEVICE_CATEGORIES = [
         {"category": "STREAMING_DEVICE", "ICON": "streaming_device_icon"},
         {"category": "SPEAKER", "ICON": "speaker_icon"},
         {"category": "SOUND_BAR", "ICON": "sound_bar_icon"},
-        {"category": "HOME_ASSISTANT", "ICON": "home_assistant_icon"},
+        {"category": "VOICE_ASSISTANT", "ICON": "home_assistant_icon"},
         {"category": "GAMING_CONSOLE", "ICON": "gaming_console_icon"},
         {"category": "VR_HEADSET", "ICON": "vr_headset_icon"},
         {"category": "ROBOT_VACUUM", "ICON": "robot_vacuum_icon"},
