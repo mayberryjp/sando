@@ -42,7 +42,7 @@ def parse_netflow_v5_record(data, offset, unix_secs, uptime):
     """
     fields = struct.unpack('!IIIHHIIIIHHBBBBHHBBH', data[offset:offset+48])
     
-    time = int(time.time())
+    current_time = int(time.time()) # Current time in seconds since epoch
  
     return {
         'src_ip': socket.inet_ntoa(struct.pack('!I', fields[0])),
@@ -52,8 +52,8 @@ def parse_netflow_v5_record(data, offset, unix_secs, uptime):
         'output_iface': fields[4],
         'packets': fields[5],
         'bytes': fields[6],
-        'start_time': time,  # Store as integer epoch timestamp
-        'end_time': time,    # Store as integer epoch timestamp
+        'start_time': current_time,  # Store as integer epoch timestamp
+        'end_time': current_time,    # Store as integer epoch timestamp
         'src_port': fields[9],
         'dst_port': fields[10],
         'tcp_flags': fields[11],
@@ -64,7 +64,7 @@ def parse_netflow_v5_record(data, offset, unix_secs, uptime):
         'src_mask': fields[16],
         'dst_mask': fields[17],
         'tags': "",
-        'last_seen': time,  # Current time as epoch instead of ISO format
+        'last_seen': current_time,  # Current time as epoch instead of ISO format
         'times_seen': 1
     }
 
