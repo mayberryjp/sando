@@ -330,8 +330,8 @@ def get_tag_statistics():
             SELECT 
               tag,
               COUNT(*) as occurrence_count,
-              datetime(MIN(flow_start)) as first_seen,
-              datetime(MAX(last_seen)) as last_seen
+              datetime(MIN(flow_start),'unixepoch') as first_seen,
+              datetime(MAX(last_seen),'unixepoch') as last_seen
             FROM split_tags
             WHERE tag != ''
             GROUP BY tag
@@ -339,7 +339,7 @@ def get_tag_statistics():
         """)
         
         rows = cursor.fetchall()
-        
+        log_info(logger,f"rows: {rows}")
         # Create dictionary mapping tag -> statistics
         tag_stats = {}
         for tag, count, first_seen, last_seen in rows:
