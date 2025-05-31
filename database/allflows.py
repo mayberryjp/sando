@@ -30,7 +30,7 @@ def update_all_flows(rows, config_dict):
                 allflows_cursor.execute("""
                     INSERT INTO allflows (
                         src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes, flow_start, flow_end, times_seen, last_seen, tags
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now', 'localtime'), ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'), 1, datetime('now', 'localtime'), ?)
                     ON CONFLICT(src_ip, dst_ip, src_port, dst_port, protocol)
                     DO UPDATE SET
                         packets = packets + excluded.packets,
@@ -39,7 +39,7 @@ def update_all_flows(rows, config_dict):
                         times_seen = times_seen + 1,
                         last_seen = datetime('now', 'localtime'),
                         tags = excluded.tags
-                """, (src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes_, flow_start, flow_end, tags))
+                """, (src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes_, tags))
             conn.commit()
             log_info(logger, f"[INFO] Updated {CONST_CONSOLIDATED_DB} with {len(rows)} rows.")
         except sqlite3.Error as e:
@@ -133,7 +133,7 @@ def get_flows_by_source_ip(src_ip):
                    SUM(packets) as total_packets,
                    SUM(bytes) as total_bytes,
                    MAX(last_seen) as last_flow,
-                   DATETIME(MIN(flow_start)) as first_flow
+                   MIN(flow_start) as first_flow
             FROM allflows 
             WHERE src_ip = ?
             GROUP BY dst_ip, dst_port, protocol
@@ -330,8 +330,8 @@ def get_tag_statistics():
             SELECT 
               tag,
               COUNT(*) as occurrence_count,
-              datetime(MIN(flow_start),'unixepoch') as first_seen,
-              datetime(MAX(last_seen),'unixepoch') as last_seen
+              MIN(flow_start) as first_seen,
+              MAX(last_seen) as last_seen
             FROM split_tags
             WHERE tag != ''
             GROUP BY tag

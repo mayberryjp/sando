@@ -61,7 +61,7 @@ def update_new_flow(record):
     c.execute('''
         INSERT INTO newflows (
             src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes, flow_start, flow_end, last_seen, times_seen, tags
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now', 'localtime'), 1,?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'), datetime('now', 'localtime'), 1,?)
         ON CONFLICT(src_ip, dst_ip, src_port, dst_port, protocol)
         DO UPDATE SET 
             packets = packets + excluded.packets,
@@ -69,7 +69,7 @@ def update_new_flow(record):
             flow_end = excluded.flow_end,
             last_seen = excluded.last_seen,
             times_seen = times_seen + 1
-    ''', (record['src_ip'], record['dst_ip'], record['src_port'], record['dst_port'],record['protocol'], record['packets'], record['bytes'], record['start_time'], record['end_time'],  record['tags']))
+    ''', (record['src_ip'], record['dst_ip'], record['src_port'], record['dst_port'],record['protocol'], record['packets'], record['bytes'],  record['tags']))
 
     conn.commit()
     disconnect_from_db(conn)
