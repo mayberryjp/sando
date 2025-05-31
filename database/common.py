@@ -11,6 +11,98 @@ sys.path.insert(0, "/database")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from init import *
 
+def check_update_database_schema(config_dict):
+    """
+    Check if the database schema version matches the current version.
+    If not, execute database schema updates and update the version.
+    
+    Args:
+        config_dict (dict): Configuration dictionary containing settings
+        
+    Returns:
+        bool: True if the operation was successful, False otherwise
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        # Get the current schema version from constants
+        from src.const import CONST_DATABASE_SCHEMA_VERSION
+        
+        # Check if DatabaseSchema exists and matches current version
+        current_schema = config_dict.get('DatabaseSchema', '0')
+        
+        if current_schema != str(CONST_DATABASE_SCHEMA_VERSION):
+            log_info(logger, f"[INFO] Database schema needs update: {current_schema} → {CONST_DATABASE_SCHEMA_VERSION}")
+            
+            # Execute schema update function
+            if update_database_schema(current_schema, CONST_DATABASE_SCHEMA_VERSION):
+                # Update the DatabaseSchema configuration
+                conn = connect_to_db(CONST_CONSOLIDATED_DB, "configuration")
+                if not conn:
+                    log_error(logger, "[ERROR] Unable to connect to configuration database")
+                    return False
+                    
+                cursor = conn.cursor()
+                
+                # Insert or update the DatabaseSchema in the configuration table
+                cursor.execute("""
+                    INSERT INTO configuration (key, value, last_changed)
+                    VALUES ('DatabaseSchema', ?, datetime('now', 'localtime'))
+                    ON CONFLICT(key)
+                    DO UPDATE SET value = excluded.value
+                """, (str(CONST_DATABASE_SCHEMA_VERSION),))
+                
+                conn.commit()
+                
+                log_info(logger, f"[INFO] Database schema version updated to {CONST_DATABASE_SCHEMA_VERSION}")
+                return True
+            else:
+                log_error(logger, "[ERROR] Failed to update database schema")
+                return False
+        else:
+            log_info(logger, f"[INFO] Database schema is up to date (version {CONST_DATABASE_SCHEMA_VERSION})")
+            return True
+            
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while checking/updating schema version: {e}")
+        return False
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while checking/updating schema version: {e}")
+        return False
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)
+
+
+def update_database_schema(current_version, target_version):
+    """
+    Update the database schema from current_version to target_version
+    by executing the necessary SQL commands.
+    
+    Args:
+        current_version (str): The current schema version
+        target_version (str): The target schema version to upgrade to
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # This function will be implemented later with actual schema updates
+        # For now, it's just a placeholder that returns success
+        log_info(logger, f"[INFO] Executing schema update from version {current_version} to {target_version}")
+        
+        if target_version < 7:
+            log_info(logger, "[INFO] Version is less than 7, deleting all flows")
+            delete_all_records(CONST_CONSOLIDATED_DB, "allflows")
+        
+        return True
+        
+    except Exception as e:
+        log_error(logger, f"[ERROR] Failed to update database schema: {e}")
+        return False
+
+
 def store_site_name(site_name):
     """
     Store the site name in the configuration database with the key 'SiteName'.

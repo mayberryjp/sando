@@ -40,7 +40,8 @@ from src.const import (
     IS_CONTAINER,
     VERSION,
     CONST_API_LISTEN_ADDRESS,
-    CONST_API_LISTEN_PORT
+    CONST_API_LISTEN_PORT,
+    CONST_DATABASE_SCHEMA_VERSION
 )
 
 from src.network import (
