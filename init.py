@@ -79,7 +79,9 @@ from database.common import (
     store_version, 
     store_site_name,
     store_machine_unique_identifier, 
-    get_machine_unique_identifier_from_db
+    get_machine_unique_identifier_from_db,
+    update_database_schema,
+    check_update_database_schema
 )
 
 # Alert functions

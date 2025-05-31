@@ -46,6 +46,7 @@ if __name__ == "__main__":
     store_machine_unique_identifier()
     store_version()
     store_site_name(SITE)
+    check_update_database_schema(config_dict)
 
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_SERVICES_SQL, "services")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
