@@ -327,7 +327,9 @@ def main():
     store_version()
     store_site_name(SITE)
     config_dict = get_config_settings()
+
     print(f"Configuration: {config_dict}")
+    check_update_database_schema(config_dict)
 
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_SERVICES_SQL, "services")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_CONFIG_SQL, "configuration")
