@@ -27,34 +27,35 @@ def check_update_database_schema(config_dict):
         # Get the current schema version from constants
         from src.const import CONST_DATABASE_SCHEMA_VERSION
         
-        # Check if DatabaseSchema exists and matches current version
-        current_schema = config_dict.get('DatabaseSchema', '0')
+        # Schema file path
+        schema_file_path = os.path.join(parent_dir, '/database', 'database.schema')
         
+        # Read current schema version from file if it exists
+        current_schema = '0'
+        if os.path.exists(schema_file_path):
+            try:
+                with open(schema_file_path, 'r') as f:
+                    current_schema = f.read().strip()
+            except Exception as e:
+                log_error(logger, f"[ERROR] Failed to read schema version file: {e}")
+        
+        # Check if the version matches the current version
         if current_schema != str(CONST_DATABASE_SCHEMA_VERSION):
             log_info(logger, f"[INFO] Database schema needs update: {current_schema} → {CONST_DATABASE_SCHEMA_VERSION}")
             
             # Execute schema update function
             if update_database_schema(current_schema, CONST_DATABASE_SCHEMA_VERSION):
-                # Update the DatabaseSchema configuration
-                conn = connect_to_db(CONST_CONSOLIDATED_DB, "configuration")
-                if not conn:
-                    log_error(logger, "[ERROR] Unable to connect to configuration database")
-                    return False
+                # Write the new schema version to file
+                try:
+                    os.makedirs(os.path.dirname(schema_file_path), exist_ok=True)
+                    with open(schema_file_path, 'w') as f:
+                        f.write(str(CONST_DATABASE_SCHEMA_VERSION))
                     
-                cursor = conn.cursor()
-                
-                # Insert or update the DatabaseSchema in the configuration table
-                cursor.execute("""
-                    INSERT INTO configuration (key, value, last_changed)
-                    VALUES ('DatabaseSchema', ?, datetime('now', 'localtime'))
-                    ON CONFLICT(key)
-                    DO UPDATE SET value = excluded.value
-                """, (str(CONST_DATABASE_SCHEMA_VERSION),))
-                
-                conn.commit()
-                
-                log_info(logger, f"[INFO] Database schema version updated to {CONST_DATABASE_SCHEMA_VERSION}")
-                return True
+                    log_info(logger, f"[INFO] Database schema version updated to {CONST_DATABASE_SCHEMA_VERSION}")
+                    return True
+                except Exception as e:
+                    log_error(logger, f"[ERROR] Failed to write schema version to file: {e}")
+                    return False
             else:
                 log_error(logger, "[ERROR] Failed to update database schema")
                 return False
@@ -62,9 +63,6 @@ def check_update_database_schema(config_dict):
             log_info(logger, f"[INFO] Database schema is up to date (version {CONST_DATABASE_SCHEMA_VERSION})")
             return True
             
-    except sqlite3.Error as e:
-        log_error(logger, f"[ERROR] Database error while checking/updating schema version: {e}")
-        return False
     except Exception as e:
         log_error(logger, f"[ERROR] Unexpected error while checking/updating schema version: {e}")
         return False
