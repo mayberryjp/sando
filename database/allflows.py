@@ -375,3 +375,92 @@ def get_tag_statistics(local_ip):
     finally:
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
+
+
+def apply_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
+    """
+    Apply an ignorelist entry by updating matching flows and removing matching alerts.
+    
+    Args:
+        ignorelist_id (str): The unique identifier for the ignorelist entry
+        src_ip (str): Source IP address
+        dst_ip (str): Destination IP address (supports * wildcard)
+        dst_port (str): Destination port (supports * wildcard)
+        protocol (str): Protocol (e.g., 'tcp', 'udp')
+        
+    Returns:
+        tuple: (flows_updated, alerts_deleted) - Count of affected flows and alerts
+    """
+    logger = logging.getLogger(__name__)
+    flows_updated = 0
+    
+    # Create the tag to add to flows
+    ignore_tag = f"IgnoreList_{ignorelist_id};"
+    
+    try:
+        # 1. Update matching flows in allflows table
+        conn_flows = connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
+        if not conn_flows:
+            log_error(logger, "[ERROR] Unable to connect to allflows database.")
+            return 0
+            
+        cursor_flows = conn_flows.cursor()
+        
+        # Prepare SQL conditions and parameters based on wildcards
+        flow_where_conditions = []
+        flow_params = []
+        
+        if src_ip != "*":
+            flow_where_conditions.append("src_ip = ?")
+            flow_params.append(src_ip)
+            
+        if dst_ip != "*":
+            flow_where_conditions.append("dst_ip = ?")
+            flow_params.append(dst_ip)
+            
+        if dst_port != "*":
+            flow_where_conditions.append("dst_port = ?")
+            flow_params.append(dst_port)
+            
+        if protocol != "*":
+            flow_where_conditions.append("protocol = ?")
+            flow_params.append(protocol)
+            
+        # Construct WHERE clause
+        flow_where_clause = " AND ".join(flow_where_conditions) if flow_where_conditions else "1=1"
+        
+        # Update query - handle tags field (could be NULL or empty)
+        update_query = f"""
+            UPDATE allflows
+            SET tags = CASE
+                WHEN tags IS NULL OR tags = '' THEN ?
+                WHEN tags LIKE ? THEN tags  -- Already has the tag
+                ELSE tags || ?  -- Append the tag
+            END
+            WHERE {flow_where_clause}
+        """
+        
+        # Add parameters for the SET clause
+        all_flow_params = [
+            ignore_tag,  # For NULL or empty tags
+            f"%{ignore_tag}%",  # For LIKE check
+            ignore_tag,  # For appending
+            *flow_params  # For WHERE conditions
+        ]
+        
+        cursor_flows.execute(update_query, all_flow_params)
+        flows_updated = cursor_flows.rowcount
+        conn_flows.commit()
+     
+        log_info(logger, f"[INFO] Applied ignorelist entry {ignorelist_id}: Updated {flows_updated} flows")
+        return (flows_updated)
+    
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while applying ignorelist entry {ignorelist_id}: {e}")
+        return 0
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while applying ignorelist entry {ignorelist_id}: {e}")
+        return 0
+    finally:
+        if 'conn_flows' in locals() and conn_flows:
+            disconnect_from_db(conn_flows)

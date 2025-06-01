@@ -24,9 +24,7 @@ def check_update_database_schema(config_dict):
     """
     logger = logging.getLogger(__name__)
     try:
-        # Get the current schema version from constants
-        from src.const import CONST_DATABASE_SCHEMA_VERSION
-        
+
         # Schema file path
         schema_file_path = os.path.join(parent_dir, '/database', 'database.schema')
         
@@ -66,9 +64,7 @@ def check_update_database_schema(config_dict):
     except Exception as e:
         log_error(logger, f"[ERROR] Unexpected error while checking/updating schema version: {e}")
         return False
-    finally:
-        if 'conn' in locals() and conn:
-            disconnect_from_db(conn)
+
 
 
 def update_database_schema(current_version, target_version):

@@ -98,7 +98,8 @@ from database.alerts import (
     get_hourly_alerts_summary,
     summarize_alerts_by_ip,
     get_all_alerts_by_ip,
-    summarize_alerts_by_ip_last_seen
+    summarize_alerts_by_ip_last_seen,
+    delete_ignorelisted_alerts
 )
 
 from database.ipasn import  (
@@ -139,7 +140,8 @@ from database.allflows import (
     update_tag_to_allflows,
     get_flows_by_source_ip,
     get_dead_connections_from_database,
-    get_tag_statistics
+    get_tag_statistics,
+    apply_ignorelist_entry
 )
 
 # Flow functions

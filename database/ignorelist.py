@@ -147,6 +147,8 @@ def delete_ignorelist_entry(ignorelist_id):
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
 
+
+
 def insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
     """
     Insert a new entry into the ignorelist database.
@@ -193,6 +195,22 @@ def insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
         """, (ignorelist_id, src_ip, dst_ip, dst_port, protocol))
         
         conn.commit()
+
+        try:
+            log_info(logger, f"[INFO] Applying ignorelist entry {ignorelist_id} to flow processing")
+            apply_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol)
+        except Exception as e:
+            log_error(logger, f"[ERROR] Failed to apply ignorelist entry {ignorelist_id}: {e}")
+            return False
+        
+        try: 
+            log_info(logger, f"[INFO] Deleting ignorelisted alerts for entry {ignorelist_id}")
+            # Delete any existing alerts that match the ignorelist entry
+            delete_ignorelisted_alerts(ignorelist_id, src_ip, dst_ip, dst_port, protocol)
+        except Exception as e:
+            log_error(logger, f"[ERROR] Failed to delete ignorelisted alerts for entry {ignorelist_id}: {e}")
+            return False
+
         log_info(logger, f"[INFO] Successfully inserted new ignorelist entry with ID: {ignorelist_id}")
         return True
         

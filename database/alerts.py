@@ -817,3 +817,80 @@ def get_all_alerts_by_category(category):
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
 
+def delete_ignorelisted_alerts(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
+    """
+    Delete alerts that match the ignorelist criteria from the database using direct JSON extraction.
+    Supports wildcards (*) for any of the filtering parameters.
+    
+    Args:
+        ignorelist_id (str): The ID of the ignorelist entry
+        src_ip (str): Source IP address to match, or "*" for any
+        dst_ip (str): Destination IP address to match, or "*" for any
+        dst_port (str): Destination port to match, or "*" for any
+        protocol (str): Protocol to match, or "*" for any
+        
+    Returns:
+        int: The number of deleted alerts
+    """
+    logger = logging.getLogger(__name__)
+    alerts_deleted = 0
+    try:
+        # Connect to alerts database
+        conn_alerts = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        if not conn_alerts:
+            log_error(logger, "[ERROR] Unable to connect to alerts database.")
+            return alerts_deleted
+            
+        cursor_alerts = conn_alerts.cursor()
+        
+        # Build the WHERE conditions dynamically, handling wildcards
+        where_conditions = ["1=1"]  # Always true condition to start with
+        params = []
+        
+        # Source IP condition
+        if src_ip != "*":
+            where_conditions.append("ip_address = ?")
+            params.append(src_ip)
+        
+        # Destination IP condition
+        if dst_ip != "*":
+            where_conditions.append("json_extract(flow, '$[1]') = ?")
+            params.append(dst_ip)
+        
+        # Destination port condition
+        if dst_port != "*":
+            where_conditions.append("CAST(json_extract(flow, '$[3]') AS TEXT) = ?")
+            params.append(str(dst_port))
+        
+        # Protocol condition
+        if protocol != "*":
+            where_conditions.append("CAST(json_extract(flow, '$[4]') AS TEXT) = ?")
+            params.append(protocol)
+        
+        # Create the DELETE query with direct JSON extraction
+        query = f"""
+            DELETE FROM alerts
+            WHERE {' AND '.join(where_conditions)}
+        """
+        
+        log_info(logger, f"[INFO] Executing alert deletion for ignorelist entry {query} and params {params}")
+        log_info(logger, f"[INFO] Filter criteria: src_ip={src_ip}, dst_ip={dst_ip}, dst_port={dst_port}, protocol={protocol}")
+        log_info(logger, f"[INFO] Query: {query}")
+        
+        # Execute the DELETE query with parameters
+        cursor_alerts.execute(query, params)
+        alerts_deleted = cursor_alerts.rowcount
+        conn_alerts.commit()
+        
+        log_info(logger, f"[INFO] Applied ignorelist entry {ignorelist_id}: Deleted {alerts_deleted} alerts")
+        return alerts_deleted
+        
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while applying ignorelist entry {ignorelist_id}: {e}")
+        return 0
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while applying ignorelist entry {ignorelist_id}: {e}")
+        return 0
+    finally:
+        if 'conn_alerts' in locals() and conn_alerts:
+            disconnect_from_db(conn_alerts)
