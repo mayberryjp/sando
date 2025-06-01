@@ -280,11 +280,14 @@ def get_dead_connections_from_database():
             disconnect_from_db(conn)
 
 
-def get_tag_statistics():
+def get_tag_statistics(local_ip):
     """
-    Retrieve statistics about tags used in the allflows table, using a recursive query
-    to split multi-tag entries into individual tags.
+    Retrieve statistics about tags used in the allflows table for a specific IP address,
+    using a recursive query to split multi-tag entries into individual tags.
     
+    Args:
+        local_ip (str): The IP address to filter results by (as source or destination)
+        
     Returns:
         dict: A dictionary with tags as keys and statistics as values (count, first_seen, last_seen).
               Returns an empty dictionary if no data is found or an error occurs.
@@ -301,8 +304,8 @@ def get_tag_statistics():
         conn.create_function("TRIM", 1, lambda x: x.strip() if x else "")
         cursor = conn.cursor()
         
-        # Recursive query to split tags with proper date formatting
-        cursor.execute("""
+        # Use run_timed_query for the recursive query
+        query = """
          WITH RECURSIVE split_tags(src_ip, dst_ip, flow_start, last_seen, tag, rest) AS (
               SELECT
                 src_ip,
@@ -314,6 +317,7 @@ def get_tag_statistics():
               FROM allflows
               WHERE tags IS NOT NULL 
                 AND tags != ''
+                AND (src_ip = ? OR dst_ip = ?)  -- Filter by local_ip
               
               UNION ALL
               
@@ -330,16 +334,24 @@ def get_tag_statistics():
             SELECT 
               tag,
               COUNT(*) as occurrence_count,
-              MIN(flow_start) as first_seen,
-              MAX(last_seen) as last_seen
+              datetime(MIN(flow_start), 'localtime') as first_seen,
+              datetime(MAX(last_seen), 'localtime') as last_seen
             FROM split_tags
             WHERE tag != ''
             GROUP BY tag
             ORDER BY occurrence_count DESC
-        """)
+        """
         
-        rows = cursor.fetchall()
-        log_info(logger,f"rows: {rows}")
+        # Execute the query and time it
+        from database.core import run_timed_query
+        rows, execution_time = run_timed_query(
+            cursor, 
+            query, 
+            params=(local_ip, local_ip),  # Pass local_ip twice for src_ip and dst_ip conditions
+            description=f"Tag Statistics for IP {local_ip}", 
+            fetch_all=True
+        )
+        
         # Create dictionary mapping tag -> statistics
         tag_stats = {}
         for tag, count, first_seen, last_seen in rows:
@@ -351,14 +363,14 @@ def get_tag_statistics():
                     'last_seen': last_seen
                 }
         
-        log_info(logger, f"[INFO] Retrieved statistics for {len(tag_stats)} unique tags")
+        log_info(logger, f"[INFO] Retrieved statistics for {len(tag_stats)} unique tags for IP {local_ip} in {execution_time:.2f} ms")
         return tag_stats
         
     except sqlite3.Error as e:
-        log_error(logger, f"[ERROR] Database error while retrieving tag statistics: {e}")
+        log_error(logger, f"[ERROR] Database error while retrieving tag statistics for IP {local_ip}: {e}")
         return {}
     except Exception as e:
-        log_error(logger, f"[ERROR] Unexpected error while retrieving tag statistics: {e}")
+        log_error(logger, f"[ERROR] Unexpected error while retrieving tag statistics for IP {local_ip}: {e}")
         return {}
     finally:
         if 'conn' in locals() and conn:

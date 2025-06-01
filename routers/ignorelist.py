@@ -125,21 +125,9 @@ def setup_ignorelist_routes(app):
                 log_error(logger, f"[ERROR] Failed to retrieve ignorelist entries for IP {ip_address}")
                 response.status = 500
                 return {"error": "Failed to retrieve ignorelist entries"}
-            
-            # Format the response to match the expected structure
-            # formatted_entries = []
-            # for entry in ignorelist_entries:
-            #     formatted_entry = {
-            #         "ignorelist_id": entry[0],
-            #         "src_ip": entry[1],
-            #         "dst_ip": entry[2],
-            #         "dst_port": entry[3],
-            #         "protocol": entry[4]
-            #     }
-            #     formatted_entries.append(formatted_entry)
-            
+                    
             response.content_type = 'application/json'
-          #  log_info(logger, f"[INFO] Fetched {len(formatted_entries)} ignorelist entries for IP {ip_address}")
+
             return json.dumps(ignorelist_entries)
             
         except Exception as e:

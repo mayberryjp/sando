@@ -49,6 +49,8 @@ def update_local_hosts(rows, config_dict):
                     existing_localhosts.add(ip_address)  # Add to in-memory set
                     log_info(logger, f"[INFO] Added new IP to localhosts.db: {ip_address}")
                     
+                    insert_action(f"New host detected: Assign a description and category for {ip_address}")
+
                     message = f"New Host Detected: {ip_address}"
 
                     handle_alert(

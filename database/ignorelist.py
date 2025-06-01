@@ -243,7 +243,7 @@ def get_ignorelist_for_ip(local_ip):
             return result
         
         # Get all tag statistics once, instead of querying for each entry
-        tag_stats_all = get_tag_statistics()
+        tag_stats_all = get_tag_statistics(local_ip)
 
         # Create enhanced entries with statistics
         for entry in ignorelist_entries:
