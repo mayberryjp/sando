@@ -154,3 +154,33 @@ def run_timed_query(cursor, query, params=None, description=None, fetch_all=True
         execution_time = (time.time() - start_time) * 1000
         log_info(logger, f"[PERFORMANCE] Query '{desc}' affected {rowcount} rows in {execution_time:.2f} ms")
         return rowcount, execution_time
+    
+def delete_table(db_name, table_name):
+    """
+    Delete (drop) a table from the specified SQLite database.
+
+    Args:
+        db_name (str): The database file path.
+        table_name (str): The name of the table to drop.
+
+    Returns:
+        bool: True if the table was deleted successfully, False otherwise.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        conn = connect_to_db(db_name, table_name)
+        if not conn:
+            log_error(logger, f"[ERROR] Unable to connect to database {db_name}")
+            return False
+
+        cursor = conn.cursor()
+        cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+        conn.commit()
+        log_info(logger, f"[INFO] Table '{table_name}' deleted from {db_name}")
+        return True
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Error deleting table {table_name} from {db_name}: {e}")
+        return False
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)

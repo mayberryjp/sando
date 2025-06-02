@@ -69,6 +69,7 @@ from database.core import (
 #     delete_database,
       delete_all_records, 
      get_row_count, 
+     delete_table,
      run_timed_query
 )
 
@@ -81,7 +82,7 @@ from database.common import (
     store_machine_unique_identifier, 
     get_machine_unique_identifier_from_db,
     update_database_schema,
-    check_update_database_schema
+    check_update_database_schema,
 )
 
 # Alert functions

@@ -10,6 +10,7 @@ if parent_dir not in sys.path:
 sys.path.insert(0, "/database")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from init import *
+from database.core import delete_table, create_table
 
 def check_update_database_schema(config_dict):
     """
@@ -100,6 +101,11 @@ def update_database_schema(current_version, target_version):
         if current_version_int < 9:
             log_info(logger, "[INFO] Version is less than 9, deleting all actions")
             delete_all_records(CONST_CONSOLIDATED_DB, "actions")
+
+        if current_version_int < 10:
+            log_info(logger, "[INFO] Version is less than 10, alerting actions table")
+            delete_table(CONST_CONSOLIDATED_DB, "actions")
+            create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
     
         return True
         
