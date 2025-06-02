@@ -383,13 +383,13 @@ def apply_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
     
     Args:
         ignorelist_id (str): The unique identifier for the ignorelist entry
-        src_ip (str): Source IP address
+        src_ip (str): Source IP address (supports * wildcard)
         dst_ip (str): Destination IP address (supports * wildcard)
-        dst_port (str): Destination port (supports * wildcard)
-        protocol (str): Protocol (e.g., 'tcp', 'udp')
+        dst_port (str): Port to match against either source or destination port (supports * wildcard)
+        protocol (str): Protocol (e.g., 'tcp', 'udp', supports * wildcard)
         
     Returns:
-        tuple: (flows_updated, alerts_deleted) - Count of affected flows and alerts
+        int: flows_updated - Count of affected flows
     """
     logger = logging.getLogger(__name__)
     flows_updated = 0
@@ -418,9 +418,10 @@ def apply_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
             flow_where_conditions.append("dst_ip = ?")
             flow_params.append(dst_ip)
             
+        # Match port against both src_port and dst_port
         if dst_port != "*":
-            flow_where_conditions.append("dst_port = ?")
-            flow_params.append(dst_port)
+            flow_where_conditions.append("(src_port = ? OR dst_port = ?)")
+            flow_params.extend([dst_port, dst_port])  # Add the port twice for both conditions
             
         if protocol != "*":
             flow_where_conditions.append("protocol = ?")
@@ -453,7 +454,7 @@ def apply_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
         conn_flows.commit()
      
         log_info(logger, f"[INFO] Applied ignorelist entry {ignorelist_id}: Updated {flows_updated} flows")
-        return (flows_updated)
+        return flows_updated
     
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while applying ignorelist entry {ignorelist_id}: {e}")

@@ -49,6 +49,7 @@ def check_update_database_schema(config_dict):
                     with open(schema_file_path, 'w') as f:
                         f.write(str(CONST_DATABASE_SCHEMA_VERSION))
                     
+                    update_config_setting("DatabaseSchemaVersion", str(CONST_DATABASE_SCHEMA_VERSION))
                     log_info(logger, f"[INFO] Database schema version updated to {CONST_DATABASE_SCHEMA_VERSION}")
                     return True
                 except Exception as e:
@@ -82,21 +83,25 @@ def update_database_schema(current_version, target_version):
     logger = logging.getLogger(__name__)
     
     try:
-        # This function will be implemented later with actual schema updates
-        # For now, it's just a placeholder that returns success
+        # Convert versions to integers for proper numerical comparison
+        current_version_int = int(current_version)
+        target_version_int = int(target_version)
+        
         log_info(logger, f"[INFO] Executing schema update from version {current_version} to {target_version}")
         
-        if target_version < 7:
+        if current_version_int < 7:
             log_info(logger, "[INFO] Version is less than 7, deleting all flows")
             delete_all_records(CONST_CONSOLIDATED_DB, "allflows")
-        
 
-   # add additional schema updates here as needed
-        if target_version < 8:
-            pass
+        if current_version_int < 8:
+            log_info(logger, "[INFO] Version is less than 8, deleting all flows")
+            delete_all_records(CONST_CONSOLIDATED_DB, "allflows")
         
         return True
         
+    except ValueError as e:
+        log_error(logger, f"[ERROR] Invalid version format, could not convert to integer: {e}")
+        return False
     except Exception as e:
         log_error(logger, f"[ERROR] Failed to update database schema: {e}")
         return False

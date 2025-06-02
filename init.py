@@ -162,7 +162,9 @@ from database.ignorelist import (
     import_ignorelists,
     delete_ignorelist_entry,
     insert_ignorelist_entry,
-    get_ignorelist_for_ip
+    get_ignorelist_for_ip,
+    whitelist_approved_ntp_servers,
+    whitelist_approved_dns_servers
 )
 
 from database.customtags import (

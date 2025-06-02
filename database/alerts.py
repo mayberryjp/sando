@@ -859,8 +859,8 @@ def delete_ignorelisted_alerts(ignorelist_id, src_ip, dst_ip, dst_port, protocol
         
         # Destination port condition
         if dst_port != "*":
-            where_conditions.append("CAST(json_extract(flow, '$[3]') AS TEXT) = ?")
-            params.append(str(dst_port))
+            where_conditions.append("(CAST(json_extract(flow, '$[3]') AS TEXT) = ? OR CAST(json_extract(flow, '$[4]') AS TEXT) = ?)")
+            params.extend([str(dst_port), str(dst_port)]) 
         
         # Protocol condition
         if protocol != "*":

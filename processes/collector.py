@@ -43,11 +43,6 @@ if __name__ == "__main__":
     else:
         log_info(logger, f"[INFO] No site-specific configuration found at {site_config_path}. This is OK. ")
 
-    store_machine_unique_identifier()
-    store_version()
-    store_site_name(SITE)
-    check_update_database_schema(config_dict)
-
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_SERVICES_SQL, "services")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_CONFIG_SQL, "configuration")
@@ -66,6 +61,31 @@ if __name__ == "__main__":
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_IPASN_SQL, "ipasn")
 
     config_dict = get_config_settings()
+
+    store_machine_unique_identifier()
+    store_version()
+    store_site_name(SITE)
+    check_update_database_schema(config_dict)
+    
+    log_info(logger,f"NTP config settings are : {config_dict.get('BypassLocalNtpDetection', '0')}, {config_dict.get('ApprovedLocalNtpServersList', '')}, {config_dict.get('ApprovedNtpStratumServersList', '')}")
+    # Add NTP whitelists if bypass detection is enabled and servers are configured
+    if config_dict.get('BypassLocalNtpDetection', 0) == 1 and config_dict.get('ApprovedLocalNtpServersList', '') and config_dict.get('ApprovedNtpStratumServersList', ''):
+
+        # Create NTP whitelists
+        if whitelist_approved_ntp_servers(config_dict):
+            log_info(logger, "[INFO] NTP whitelists successfully created.")
+        else:
+            log_warn(logger, "[WARN] Some NTP whitelists could not be created.")
+
+    log_info(logger,f"DNS config settings are : {config_dict.get('BypassLocalDnsDetection', '0')}, {config_dict.get('ApprovedLocalDnsServersList', '')}, {config_dict.get('ApprovedAuthoritativeDnsServersList', '')}")
+    # Add DNS whitelists if bypass detection is enabled and servers are configured
+    if config_dict.get('BypassLocalDnsDetection', 0) == 1 and config_dict.get('ApprovedLocalDnsServersList', '') and config_dict.get('ApprovedAuthoritativeDnsServersList', ''):
+
+        # Create DNS whitelists
+        if whitelist_approved_dns_servers(config_dict):
+            log_info(logger, "[INFO] DNS whitelists successfully created.")
+        else:
+            log_warn(logger, "[WARN] Some DNS whitelists could not be created.")
 
     if not config_dict:
         log_error(logger, "[ERROR] Failed to load configuration settings")

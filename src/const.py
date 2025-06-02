@@ -11,7 +11,7 @@ CONST_TEST_SOURCE_DB = ['/database/test_source_1.db']
 CONST_SITE= 'TESTPPE'
 CONST_LINK_LOCAL_RANGE = ["169.254.0.0/16"]
 CONST_REINITIALIZE_DB = 0
-CONST_DATABASE_SCHEMA_VERSION=7
+CONST_DATABASE_SCHEMA_VERSION=8
 CONST_CREATE_NEWFLOWS_SQL='''
     CREATE TABLE IF NOT EXISTS newflows (
         src_ip TEXT,
@@ -53,7 +53,14 @@ CONST_CREATE_ALLFLOWS_SQL='''
         last_seen TEXT,
         tags TEXT,
         PRIMARY KEY (src_ip, dst_ip, src_port, dst_port, protocol)
-    )'''
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_allflows_src_ip_tags ON allflows(src_ip);
+
+    CREATE INDEX IF NOT EXISTS idx_allflows_dst_ip_tags ON allflows(dst_ip);
+
+    CREATE INDEX IF NOT EXISTS idx_allflows_flow_dates ON allflows(flow_start, last_seen);   
+    '''
 
 CONST_CREATE_ALERTS_SQL='''
     CREATE TABLE IF NOT EXISTS alerts (
