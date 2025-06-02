@@ -67,7 +67,7 @@ def tag_broadcast(record, broadcast_addresses):
         log_warn(logger, "[WARN] No broadcast addresses found for LOCAL_NETWORKS")
         return None
 
-    if record["dst_ip"] not in broadcast_addresses:
+    if record["dst_ip"] or record["src_ip"] not in broadcast_addresses:
         return None
     else:
         return "Broadcast;"
