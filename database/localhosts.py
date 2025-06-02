@@ -303,7 +303,7 @@ def classify_localhost(ip_address, description, icon, management_link):
 
 def delete_localhost_database(ip_address):
     """
-    Delete a localhost record from the database.
+    Delete a localhost record from the database and remove all related alerts and flows.
     
     Args:
         ip_address (str): The IP address of the localhost to delete
@@ -324,15 +324,32 @@ def delete_localhost_database(ip_address):
         
         # Delete the localhost record
         cursor.execute("DELETE FROM localhosts WHERE ip_address = ?", (ip_address,))
-        
-        # Check if a row was affected
-        if cursor.rowcount > 0:
+        localhost_deleted = cursor.rowcount > 0
+        if localhost_deleted:
             conn.commit()
             log_info(logger, f"[INFO] Successfully deleted localhost with IP: {ip_address}")
-            return True
         else:
             log_warn(logger, f"[WARN] No localhost found with IP {ip_address} to delete")
-            return False
+        
+        # Delete related alerts
+        conn_alerts = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        if conn_alerts:
+            cursor_alerts = conn_alerts.cursor()
+            cursor_alerts.execute("DELETE FROM alerts WHERE ip_address = ?", (ip_address,))
+            conn_alerts.commit()
+            log_info(logger, f"[INFO] Deleted alerts for IP: {ip_address}")
+            disconnect_from_db(conn_alerts)
+        
+        # Delete related flows from allflows where src_ip or dst_ip matches
+        conn_flows = connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
+        if conn_flows:
+            cursor_flows = conn_flows.cursor()
+            cursor_flows.execute("DELETE FROM allflows WHERE src_ip = ? OR dst_ip = ?", (ip_address, ip_address))
+            conn_flows.commit()
+            log_info(logger, f"[INFO] Deleted flows from allflows for IP: {ip_address}")
+            disconnect_from_db(conn_flows)
+        
+        return localhost_deleted
         
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while deleting localhost {ip_address}: {e}")
