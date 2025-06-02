@@ -68,9 +68,9 @@ from database.core import (
 #     create_table, 
 #     delete_database,
       delete_all_records, 
-     get_row_count, 
-     delete_table,
-     run_timed_query
+    get_row_count, 
+    delete_table,
+    run_timed_query
 )
 
 from database.common import (

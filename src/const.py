@@ -11,7 +11,7 @@ CONST_TEST_SOURCE_DB = ['/database/test_source_1.db']
 CONST_SITE= 'TESTPPE'
 CONST_LINK_LOCAL_RANGE = ["169.254.0.0/16"]
 CONST_REINITIALIZE_DB = 0
-CONST_DATABASE_SCHEMA_VERSION=10
+CONST_DATABASE_SCHEMA_VERSION=11
 CONST_CREATE_NEWFLOWS_SQL='''
     CREATE TABLE IF NOT EXISTS newflows (
         src_ip TEXT,
@@ -214,7 +214,7 @@ CONST_CREATE_ACTIONS_SQL = '''
     action_id INTEGER PRIMARY KEY AUTOINCREMENT,
     action_text TEXT,
     acknowledged INTEGER DEFAULT 0,
-    insert_date TEXT DEFAULT (datetime('now', 'localtime')
+    insert_date TEXT DEFAULT (datetime('now', 'localtime'))
     )
 '''
 
