@@ -34,7 +34,7 @@ def insert_action(action_text):
         # Use run_timed_query for the insert operation
         _, query_time = run_timed_query(
             cursor,
-            "INSERT INTO actions (action_text, acknowledged) VALUES (?, 0)",
+            "INSERT INTO actions (action_text, acknowledged, insert_date) VALUES (?, 0, datetime('now'))",
             (action_text,),
             "insert_action",
             fetch_all=False

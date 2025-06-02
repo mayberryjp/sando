@@ -97,6 +97,10 @@ def update_database_schema(current_version, target_version):
             log_info(logger, "[INFO] Version is less than 8, deleting all flows")
             delete_all_records(CONST_CONSOLIDATED_DB, "allflows")
         
+        if current_version_int < 9:
+            log_info(logger, "[INFO] Version is less than 9, deleting all actions")
+            delete_all_records(CONST_CONSOLIDATED_DB, "actions")
+    
         return True
         
     except ValueError as e:
