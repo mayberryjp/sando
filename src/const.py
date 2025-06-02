@@ -6,6 +6,7 @@ CONST_API_LISTEN_PORT=8044
 CONST_API_LISTEN_ADDRESS="0.0.0.0"
 IS_CONTAINER=1
 CONST_CONSOLIDATED_DB = "/database/consolidated.db"
+CONST_EXPLORE_DB= "/database/exploreflow.db"
 #CONST_TEST_SOURCE_DB = ['/database/test_source_1.db','/database/test_source_2.db']
 CONST_TEST_SOURCE_DB = ['/database/test_source_1.db']
 CONST_SITE= 'TESTPPE'

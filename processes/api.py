@@ -24,6 +24,7 @@ from routers.integrations import *
 from routers.customtags import *
 from routers.threatscore import *
 from routers.devices import *
+from routers.explore import *
 
 # Initialize the Bottle app
 app = Bottle()
@@ -40,6 +41,7 @@ setup_trafficstats_routes(app)
 setup_configurations_routes(app)
 setup_devices_routes(app)
 setup_threatscore_routes(app)
+setup_explore_routes(app)
 
 
 # Define CORS headers
