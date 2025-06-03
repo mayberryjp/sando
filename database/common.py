@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from init import *
 from database.core import delete_table, create_table
 from database.configuration import update_config_setting
+from database.localhosts import get_average_threat_score
 
 def check_update_database_schema(config_dict):
     """
@@ -280,7 +281,7 @@ def collect_database_counts():
         "acknowledged_localhosts_count": 0,
         "total_localhosts_count": 0,
         "ignorelist_count": 0,
-
+        "average_threat_score": 0,
     }
 
     try:
@@ -322,17 +323,8 @@ def collect_database_counts():
         else:
             log_error(logger, "[ERROR] Unable to connect to localhosts database")
 
-        # Connect to the ignorelist database
-        conn_ignorelist = connect_to_db(CONST_CONSOLIDATED_DB, "ignorelist")
-        if conn_ignorelist:
-            cursor = conn_ignorelist.cursor()
-            # Count entries in ignorelist
-            cursor.execute("SELECT COUNT(*) FROM ignorelist")
-            counts["ignorelist_count"] = cursor.fetchone()[0]
-
-            conn_ignorelist.close()
-        else:
-            log_error(logger, "[ERROR] Unable to connect to ignorelist database")
+        counts["average_threat_score"] = get_average_threat_score()
+        counts["ignorelist_count"] = get_row_count(CONST_CONSOLIDATED_DB, "ignorelist")
 
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error: {e}")

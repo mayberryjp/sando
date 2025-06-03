@@ -14,3 +14,11 @@
             label: Localhosts Unacked
           - field: total_localhosts_count
             label: Localhosts Detected
+          - field: average_threat_score
+            label: Average Threat Score
+          - field: acknowledged_alerts
+            label: Alerts Acked
+          - field: ignorelist_count
+            label: Ignorelist Count
+          - field: acknowledged_localhosts_count
+            label: Localhosts Acked

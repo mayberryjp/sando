@@ -170,10 +170,24 @@ def create_geolocation_db():
                 continue
             local_networks_batch.append((network, start_ip, end_ip, netmask, SITE))
 
+        log_info(logger, f"[INFO] Adding Other Networks to geolocation database...")
+
+        # Handle OtherNetworks from config_dict (format: AZURE=192.168.60.0/24,FARM=192.168.230.0/24)
+        other_networks_str = config_dict.get("OtherNetworks", "")
+        if other_networks_str:
+            for pair in other_networks_str.split(","):
+                if "=" in pair:
+                    site_name, network = pair.split("=", 1)
+                    site_name = site_name.strip()
+                    network = network.strip()
+                    start_ip, end_ip, netmask = ip_network_to_range(network)
+                    if start_ip is not None:
+                        local_networks_batch.append((network, start_ip, end_ip, netmask, site_name))
+
         # Process the local networks batch
         if local_networks_batch:
             success_count, _ = insert_geolocation(local_networks_batch)
-            log_info(logger, f"[INFO] Added {success_count} local network records to geolocation database")
+            log_info(logger, f"[INFO] Added {success_count} local and other network records to geolocation database")
 
         log_info(logger, f"[INFO] Geolocation database {CONST_CONSOLIDATED_DB} created successfully.")
 

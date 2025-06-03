@@ -13,7 +13,8 @@ import sqlite3
 import logging
 from locallogging import log_info, log_error
 import bisect
-from database.core import connect_to_db, disconnect_from_db
+from database.core import connect_to_db, disconnect_from_db, delete_all_records
+from database.dnsqueries import get_ip_to_domain_mapping
 
 def bulk_populate_master_flow_view():
     """

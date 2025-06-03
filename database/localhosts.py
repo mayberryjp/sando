@@ -509,3 +509,29 @@ def delete_alerts_by_ip(ip_address):
     finally:
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
+
+def get_average_threat_score():
+    """
+    Calculate and return the average threat score from all localhosts.
+    
+    Returns:
+        float: The average threat score, or None if there are no records or an error occurs.
+    """
+    logger = logging.getLogger(__name__)
+    conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
+    if not conn:
+        log_error(logger, "[ERROR] Unable to connect to localhosts database")
+        return None
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT AVG(threat_score) FROM localhosts WHERE threat_score IS NOT NULL")
+        result = cursor.fetchone()
+        avg_score = result[0] if result else None
+        log_info(logger, f"[INFO] Average threat score for all localhosts: {avg_score}")
+        return avg_score
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Failed to calculate average threat score: {e}")
+        return None
+    finally:
+        disconnect_from_db(conn)

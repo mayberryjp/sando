@@ -24,3 +24,7 @@ rest:
       - name: HomelabIDS Unacknowledged Localhosts Count
         value_template: "{{ value_json.unacknowledged_localhosts_count }}"
         icon: mdi:shield-check-outline
+      - name: HomelabIDS Average Threat Score
+        value_template: "{{ value_json.average_threat_score }}"
+        icon: mdi:shield-star
+
