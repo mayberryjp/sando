@@ -512,10 +512,10 @@ def delete_alerts_by_ip(ip_address):
 
 def get_average_threat_score():
     """
-    Calculate and return the average threat score from all localhosts.
-    
+    Calculate and return the average threat score from all localhosts as a whole integer.
+
     Returns:
-        float: The average threat score, or None if there are no records or an error occurs.
+        int: The average threat score rounded to the nearest integer, or None if there are no records or an error occurs.
     """
     logger = logging.getLogger(__name__)
     conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
@@ -527,7 +527,7 @@ def get_average_threat_score():
         cursor = conn.cursor()
         cursor.execute("SELECT AVG(threat_score) FROM localhosts WHERE threat_score IS NOT NULL")
         result = cursor.fetchone()
-        avg_score = result[0] if result else None
+        avg_score = int(round(result[0])) if result and result[0] is not None else None
         log_info(logger, f"[INFO] Average threat score for all localhosts: {avg_score}")
         return avg_score
     except sqlite3.Error as e:
