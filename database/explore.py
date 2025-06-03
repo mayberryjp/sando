@@ -185,7 +185,7 @@ def get_latest_master_flows(limit=100, page=0):
     Returns a list of dictionaries (JSON serializable).
     """
     offset = page * limit
-    conn = connect_to_db(CONST_EXPLORE_DB)
+    conn = connect_to_db(CONST_EXPLORE_DB,"explore")
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute(
@@ -205,7 +205,7 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
     Returns a list of dictionaries.
     """
     offset = page * page_size
-    conn = connect_to_db(CONST_EXPLORE_DB)
+    conn = connect_to_db(CONST_EXPLORE_DB,"explore")
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     # Use LIKE for wildcard search, % for any substring match, and COLLATE NOCASE for case-insensitive
