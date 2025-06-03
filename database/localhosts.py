@@ -2,6 +2,7 @@ import os
 import sys
 from database.core import connect_to_db, disconnect_from_db
 from pathlib import Path
+import math
 # Set up path for imports
 current_dir = Path(__file__).resolve().parent
 parent_dir = str(current_dir.parent)
@@ -512,10 +513,10 @@ def delete_alerts_by_ip(ip_address):
 
 def get_average_threat_score():
     """
-    Calculate and return the average threat score from all localhosts as a whole integer.
+    Calculate and return the average threat score from all localhosts as a whole integer, rounded up.
 
     Returns:
-        int: The average threat score rounded to the nearest integer, or None if there are no records or an error occurs.
+        int: The average threat score rounded up to the nearest integer, or None if there are no records or an error occurs.
     """
     logger = logging.getLogger(__name__)
     conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
@@ -527,8 +528,8 @@ def get_average_threat_score():
         cursor = conn.cursor()
         cursor.execute("SELECT AVG(threat_score) FROM localhosts WHERE threat_score IS NOT NULL")
         result = cursor.fetchone()
-        avg_score = int(round(result[0])) if result and result[0] is not None else None
-        log_info(logger, f"[INFO] Average threat score for all localhosts: {avg_score}")
+        avg_score = math.ceil(result[0]) if result and result[0] is not None else None
+        log_info(logger, f"[INFO] Average threat score for all localhosts (rounded up): {avg_score}")
         return avg_score
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Failed to calculate average threat score: {e}")
