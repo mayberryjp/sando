@@ -267,7 +267,9 @@ def log_test_results(start_time, end_time, duration, total_rows, filtered_rows, 
                 "services": get_row_count(CONST_CONSOLIDATED_DB, "services"),
                 "tornodes": get_row_count(CONST_CONSOLIDATED_DB, "tornodes"),
                 "trafficstats": get_row_count(CONST_CONSOLIDATED_DB, "trafficstats"),
-                "ipasn": get_row_count(CONST_CONSOLIDATED_DB, "ipasn")
+                "ipasn": get_row_count(CONST_CONSOLIDATED_DB, "ipasn"),
+                "explore": get_row_count(CONST_EXPLORE_DB, "explore"),
+                "dnskeyvalue": get_row_count(CONST_EXPLORE_DB, "dnskeyvalue")
             },
             "tag_distribution": tag_distribution,
             "alert_categories": categories,
@@ -341,6 +343,9 @@ def main():
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_DNSQUERIES_SQL, "dnsqueries")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_IPASN_SQL, "ipasn")
+    create_table(CONST_EXPLORE_DB, CONST_CREATE_EXPLORE_SQL, "explore")
+    create_table(CONST_EXPLORE_DB, CONST_CREATE_DNSKEYVALUE_SQL,"dnskeyvalue")
+
 
     store_machine_unique_identifier()
     store_version()
@@ -494,7 +499,7 @@ def main():
     detection_durations['detect_many_destinations'] = int((datetime.now() - start).total_seconds())
 
     start = datetime.now()
-    update_tor_nodes(config_dict)
+    #update_tor_nodes(config_dict)
     detect_tor_traffic(filtered_rows, config_dict)
     detection_durations['detect_tor_traffic'] = int((datetime.now() - start).total_seconds())
 
@@ -508,7 +513,7 @@ def main():
 
     log_info(logger, "[INFO] Preparing to detect geolocation flows...")
     start = datetime.now()
-    create_geolocation_db()
+    #create_geolocation_db()
     geolocation_data = load_geolocation_data()
     detect_geolocation_flows(filtered_rows, config_dict, geolocation_data)
     detection_durations['detect_geolocation_flows'] = int((datetime.now() - start).total_seconds())
@@ -536,14 +541,23 @@ def main():
     services_data = get_all_services()
     detection_durations['fetch_services_flow'] = int((datetime.now() - start).total_seconds())
 
-
     start = datetime.now()
     log_info(logger,"[INFO] Retrieving IP2ASN Database..")
     create_asn_database()
     log_info(logger, "[INFO] IP2ASN update finished.")
     detection_durations['fetch_ip2asn'] = int((datetime.now() - start).total_seconds())
 
+    start = datetime.now()
+    log_info(logger,"[INFO] Creating DNS Key Value Pairs..")
+    create_dns_key_value()
+    log_info(logger, "[INFO] DNS Key Value Pairs creation finished.")
+    detection_durations['create_dns_keyvalue'] = int((datetime.now() - start).total_seconds())
 
+    start = datetime.now()
+    log_info(logger,"[INFO] Populating Explore Master Flow Table..")
+    bulk_populate_master_flow_view()
+    log_info(logger, "[INFO] Populating Explore Master Flow Table finished.")
+    detection_durations['populate_master_flow_view'] = int((datetime.now() - start).total_seconds())
 
     combined_results = {}
     localhosts = get_localhosts()

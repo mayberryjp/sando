@@ -6,13 +6,44 @@ CONST_API_LISTEN_PORT=8044
 CONST_API_LISTEN_ADDRESS="0.0.0.0"
 IS_CONTAINER=1
 CONST_CONSOLIDATED_DB = "/database/consolidated.db"
-CONST_EXPLORE_DB= "/database/exploreflow.db"
+CONST_EXPLORE_DB= "/database/explore.db"
 #CONST_TEST_SOURCE_DB = ['/database/test_source_1.db','/database/test_source_2.db']
 CONST_TEST_SOURCE_DB = ['/database/test_source_1.db']
 CONST_SITE= 'TESTPPE'
 CONST_LINK_LOCAL_RANGE = ["169.254.0.0/16"]
 CONST_REINITIALIZE_DB = 0
 CONST_DATABASE_SCHEMA_VERSION=11
+CONST_CREATE_DNSKEYVALUE_SQL='''
+            CREATE TABLE IF NOT EXISTS dnskeyvalue (
+                ip TEXT PRIMARY KEY,
+                domain TEXT
+            )'''
+CONST_CREATE_EXPLORE_SQL='''
+            CREATE TABLE IF NOT EXISTS explore (
+                flow_id INTEGER PRIMARY KEY,
+                src_ip TEXT,
+                dst_ip TEXT,
+                src_ip_int INTEGER,
+                dst_ip_int INTEGER,
+                src_port INTEGER,
+                dst_port INTEGER,
+                protocol TEXT,
+                tags TEXT,
+                flow_start TEXT,
+                last_seen TEXT,
+                packets INTEGER,
+                bytes INTEGER,
+                times_seen INTEGER,
+                dns_query TEXT,
+                dns_response TEXT,
+                src_country TEXT,
+                dst_country TEXT,
+                src_asn TEXT,
+                dst_asn TEXT,
+                src_isp TEXT,
+                dst_isp TEXT,
+                concat TEXT
+            )'''
 CONST_CREATE_NEWFLOWS_SQL='''
     CREATE TABLE IF NOT EXISTS newflows (
         src_ip TEXT,

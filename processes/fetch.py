@@ -152,6 +152,14 @@ def main():
         except Exception as e:
             log_error(logger, f"[ERROR] Error during data fetch: {e}")
 
+        log_info(logger,"[INFO] Creating DNS Key Value Pairs..")
+        create_dns_key_value()
+        log_info(logger, "[INFO] DNS Key Value Pairs creation finished.")
+
+        log_info(logger,"[INFO] Populating Explore Master Flow Table..")
+        bulk_populate_master_flow_view()
+        log_info(logger, "[INFO] Populating Explore Master Flow Table finished.")
+
 
         # Wait for the next interval
         log_info(logger, f"[INFO] Sleeping for {fetch_interval} seconds before the next fetch.")

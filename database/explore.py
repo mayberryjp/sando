@@ -9,107 +9,58 @@ if parent_dir not in sys.path:
 sys.path.insert(0, "/database")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from init import *
-import socket
-import struct
 import sqlite3
 import logging
 from locallogging import log_info, log_error
 import bisect
+from database.core import connect_to_db, disconnect_from_db
 
-def ip_to_int(ip):
-    """Convert dotted IP string to integer."""
-    try:
-        return struct.unpack("!I", socket.inet_aton(ip))[0]
-    except Exception:
-        return None
-
-def create_master_flow_view_table(db_path):
-    """
-    Create the master_flow_view table in the target database if it doesn't exist.
-    Adds a 'concat' column for concatenated values.
-    """
-    try:
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS master_flow_view (
-                flow_id INTEGER PRIMARY KEY,
-                src_ip TEXT,
-                dst_ip TEXT,
-                src_ip_int INTEGER,
-                dst_ip_int INTEGER,
-                src_port INTEGER,
-                dst_port INTEGER,
-                protocol TEXT,
-                tags TEXT,
-                flow_start TEXT,
-                last_seen TEXT,
-                packets INTEGER,
-                bytes INTEGER,
-                times_seen INTEGER,
-                dns_query TEXT,
-                dns_response TEXT,
-                src_country TEXT,
-                dst_country TEXT,
-                src_asn TEXT,
-                dst_asn TEXT,
-                src_isp TEXT,
-                dst_isp TEXT,
-                concat TEXT
-            )
-        """)
-        conn.commit()
-        conn.close()
-        log_info(logging.getLogger(__name__), f"[INFO] master_flow_view table ensured in {db_path}")
-    except Exception as e:
-        log_error(logging.getLogger(__name__), f"[ERROR] Failed to create master_flow_view table in {db_path}: {e}")
-
-def bulk_populate_master_flow_view(source_db_path, target_db_path):
+def bulk_populate_master_flow_view():
     """
     Extract all data from allflows, dnskeyvalue, geolocation, and ipasn,
-    join in Python memory, and bulk insert into master_flow_view in target_db_path.
+    join in Python memory, and bulk insert into master_flow_view in CONST_EXPLORE_DB.
     The 'concat' column is the '_' concatenation of all other columns for each row.
     """
     logger = logging.getLogger(__name__)
     try:
-        log_info(logger, f"[INFO] Loading allflows from {source_db_path}...")
-        src_conn = sqlite3.connect(source_db_path)
-        src_conn.create_function("ip_to_int", 1, ip_to_int)
+        log_info(logger, f"[INFO] Loading allflows from {CONST_CONSOLIDATED_DB}...")
+        src_conn= connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
         src_cursor = src_conn.cursor()
         src_cursor.execute("SELECT rowid, src_ip, dst_ip, src_port, dst_port, protocol, tags, flow_start, last_seen, packets, bytes, times_seen FROM allflows")
         allflows_rows = src_cursor.fetchall()
-        src_conn.close()
+        disconnect_from_db(src_conn)
         log_info(logger, f"[INFO] Loaded {len(allflows_rows)} flows.")
 
-        log_info(logger, f"[INFO] Loading dnskeyvalue from {target_db_path}...")
-        tgt_conn = sqlite3.connect(target_db_path)
+        log_info(logger, f"[INFO] Loading dnskeyvalue from {CONST_EXPLORE_DB}...")
+        tgt_conn = connect_to_db(CONST_EXPLORE_DB, "dnskeyvalue")
         tgt_cursor = tgt_conn.cursor()
         tgt_cursor.execute("SELECT ip, domain FROM dnskeyvalue")
         dnskeyvalue = dict(tgt_cursor.fetchall())
+        disconnect_from_db(tgt_conn)
 
-        log_info(logger, f"[INFO] Loading geolocation from {source_db_path}...")
-        src_conn = sqlite3.connect(source_db_path)
+        log_info(logger, f"[INFO] Loading geolocation from {CONST_CONSOLIDATED_DB}...")
+        src_conn = connect_to_db(CONST_CONSOLIDATED_DB, "geolocation")
         src_cursor = src_conn.cursor()
         src_cursor.execute("SELECT start_ip, end_ip, country_name FROM geolocation")
         geolocation_rows = src_cursor.fetchall()
         geolocations = []
         for start_ip, end_ip, country in geolocation_rows:
             geolocations.append((int(start_ip), int(end_ip), country))
-        src_conn.close()
+        disconnect_from_db(src_conn)
 
-        log_info(logger, f"[INFO] Loading ipasn from {source_db_path}...")
-        src_conn = sqlite3.connect(source_db_path)
+        # Prepare sorted lists for geolocation and ipasn
+        geolocations_sorted = sorted(geolocations, key=lambda x: x[0])
+        geo_starts = [start for start, end, country in geolocations_sorted]
+
+        log_info(logger, f"[INFO] Loading ipasn from {CONST_CONSOLIDATED_DB}...")
+        src_conn = connect_to_db(CONST_CONSOLIDATED_DB, "ipasn")
         src_cursor = src_conn.cursor()
         src_cursor.execute("SELECT start_ip, end_ip, asn, isp_name FROM ipasn")
         ipasn_rows = src_cursor.fetchall()
         ipasns = []
         for start_ip, end_ip, asn, isp in ipasn_rows:
             ipasns.append((int(start_ip), int(end_ip), asn, isp))
-        src_conn.close()
-
-        # Prepare sorted lists for geolocation and ipasn
-        geolocations_sorted = sorted(geolocations, key=lambda x: x[0])
-        geo_starts = [start for start, end, country in geolocations_sorted]
+        disconnect_from_db(src_conn)
 
         ipasns_sorted = sorted(ipasns, key=lambda x: x[0])
         ipasn_starts = [start for start, end, asn, isp in ipasns_sorted]
@@ -133,7 +84,7 @@ def bulk_populate_master_flow_view(source_db_path, target_db_path):
         log_info(logger, "[INFO] Joining data in memory and preparing for insert...")
         master_rows = []
         total_flows = len(allflows_rows)
-        progress_step = max(1, total_flows // 50)  # Log progress every 2%
+        progress_step = max(1, total_flows // 20)  # Log progress every 2%
         for idx, row in enumerate(allflows_rows, 1):
             (flow_id, src_ip, dst_ip, src_port, dst_port, protocol, tags, flow_start, last_seen, packets, bytes_, times_seen) = row
             src_ip_int = ip_to_int(src_ip)
@@ -157,48 +108,41 @@ def bulk_populate_master_flow_view(source_db_path, target_db_path):
                 packets, bytes_, times_seen,
                 dns_query, dns_response, src_country, dst_country, src_asn, dst_asn, src_isp, dst_isp, concat
             ))
-            if idx % progress_step == 0 or idx == total_flows:
-                log_info(logger, f"[PROGRESS] Joined {idx}/{total_flows} flows in memory...")
+           # if idx % progress_step == 0 or idx == total_flows:
+               # log_info(logger, f"[PROGRESS] Joined {idx}/{total_flows} flows in memory...")
 
-        log_info(logger, f"[INFO] Inserting {len(master_rows)} rows into master_flow_view in {target_db_path}...")
+        delete_all_records(CONST_EXPLORE_DB, "explore")
+        log_info(logger, f"[INFO] Inserting {len(master_rows)} rows into master_flow_view in {CONST_EXPLORE_DB}...")
 
         # Batch insert with progress counter
         batch_size = 1000
         total = len(master_rows)
+
+        tgt_conn = connect_to_db(CONST_EXPLORE_DB, "explore")
+        tgt_cursor= tgt_conn.cursor()
+
         for i in range(0, total, batch_size):
             batch = master_rows[i:i+batch_size]
             tgt_cursor.executemany("""
-                INSERT OR REPLACE INTO master_flow_view (
+                INSERT OR REPLACE INTO explore (
                     flow_id, src_ip, dst_ip, src_ip_int, dst_ip_int, src_port, dst_port, protocol, tags, flow_start, last_seen,
                     packets, bytes, times_seen,
                     dns_query, dns_response, src_country, dst_country, src_asn, dst_asn, src_isp, dst_isp, concat
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, batch)
             tgt_conn.commit()
-            log_info(logger, f"[PROGRESS] Inserted {min(i+batch_size, total)}/{total} rows into master_flow_view...")
+            #log_info(logger, f"[PROGRESS] Inserted {min(i+batch_size, total)}/{total} rows into master_flow_view...")
 
-        tgt_conn.close()
-        log_info(logger, f"[INFO] Inserted {total} records into master_flow_view in {target_db_path}.")
+        disconnect_from_db(tgt_conn)
+        log_info(logger, f"[INFO] Inserted {total} records into master_flow_view in {CONST_EXPLORE_DB}.")
     except Exception as e:
         log_error(logger, f"[ERROR] Failed to bulk populate master_flow_view: {e}")
 
-def refresh_master_flow_view(source_db_path, target_db_path):
-    """
-    Utility function to (re)create and populate the master_flow_view table in the target DB.
-    """
-    log_info(logging.getLogger(__name__), f"[INFO] Refreshing master_flow_view from {source_db_path} to {target_db_path}")
-    create_master_flow_view_table(target_db_path)
-    bulk_populate_master_flow_view(source_db_path, target_db_path)
 
-def create_dns_key_value(target_db_path):
+def create_dns_key_value():
     """
     Runs get_ip_to_domain_mapping from database.dnsqueries and writes the results to exploreflow.db as dnskeyvalue table.
     """
-    try:
-        from database.dnsqueries import get_ip_to_domain_mapping
-    except ImportError as e:
-        log_error(logging.getLogger(__name__), f"[ERROR] Could not import get_ip_to_domain_mapping: {e}")
-        return
 
     logger = logging.getLogger(__name__)
     try:
@@ -208,15 +152,10 @@ def create_dns_key_value(target_db_path):
             log_info(logger, "[INFO] No DNS key-value data to write.")
             return
 
-        log_info(logger, f"[INFO] Connecting to target database: {target_db_path}")
-        conn = sqlite3.connect(target_db_path)
+        log_info(logger, f"[INFO] Connecting to target database: {CONST_EXPLORE_DB}")
+        delete_all_records(CONST_EXPLORE_DB, "dnskeyvalue")
+        conn = connect_to_db(CONST_EXPLORE_DB, "dnskeyvalue")
         cursor = conn.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS dnskeyvalue (
-                ip TEXT PRIMARY KEY,
-                domain TEXT
-            )
-        """)
         # Prepare data for insertion
         rows = [(ip, domain) for ip, domain in mapping.items()]
         cursor.executemany(
@@ -224,38 +163,19 @@ def create_dns_key_value(target_db_path):
             rows
         )
         conn.commit()
-        conn.close()
-        log_info(logger, f"[INFO] Inserted {len(rows)} DNS key-value records into dnskeyvalue in {target_db_path}.")
+        disconnect_from_db(conn)
+        log_info(logger, f"[INFO] Inserted {len(rows)} DNS key-value records into dnskeyvalue in {CONST_EXPLORE_DB}.")
     except Exception as e:
         log_error(logger, f"[ERROR] Failed to create dnskeyvalue table: {e}")
 
 if __name__ == "__main__":
-    import argparse
 
-    parser = argparse.ArgumentParser(description="Refresh the master_flow_view table with joined flow data.")
-    parser.add_argument(
-        "--source", 
-        type=str, 
-        default="/database/consolidated.db", 
-        help="Path to the source consolidated database (default: /database/consolidated.db)"
-    )
-    parser.add_argument(
-        "--target", 
-        type=str, 
-        default="/database/exploreflow.db", 
-        help="Path to the target exploreflow database (default: /database/exploreflow.db)"
-    )
-    args = parser.parse_args()
+    from database.core import delete_table, create_table
+    create_table(CONST_EXPLORE_DB, CONST_CREATE_EXPLORE_SQL, "explore")
+    create_table(CONST_EXPLORE_DB, CONST_CREATE_DNSKEYVALUE_SQL,"dnskeyvalue")
+    create_dns_key_value()
+    bulk_populate_master_flow_view()
 
-    try:
-        create_dns_key_value(args.target)
-        print(f"dnskeyvalue table refreshed in {args.target}")
-        refresh_master_flow_view(args.source, args.target)
-        print(f"master_flow_view refreshed in {args.target}")
-
-    except Exception as e:
-        log_error(logging.getLogger(__name__), f"[ERROR] Exception in main: {e}")
-        print(f"Error: {e}")
 
 def get_latest_master_flows(limit=100, page=0):
     """
@@ -264,15 +184,15 @@ def get_latest_master_flows(limit=100, page=0):
     Returns a list of dictionaries (JSON serializable).
     """
     offset = page * limit
-    conn = sqlite3.connect(CONST_EXPLORE_DB)
+    conn = connect_to_db(CONST_EXPLORE_DB)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT * FROM master_flow_view ORDER BY packets DESC LIMIT ? OFFSET ?",
+        "SELECT * FROM explore ORDER BY packets DESC LIMIT ? OFFSET ?",
         (limit, offset)
     )
     rows = cursor.fetchall()
-    conn.close()
+    disconnect_from_db(conn)
     # Convert sqlite3.Row objects to dictionaries
     result = [dict(row) for row in rows]
     return result
@@ -284,12 +204,12 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
     Returns a list of dictionaries.
     """
     offset = page * page_size
-    conn = sqlite3.connect(CONST_EXPLORE_DB)
+    conn = connect_to_db(CONST_EXPLORE_DB)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     # Use LIKE for wildcard search, % for any substring match, and COLLATE NOCASE for case-insensitive
     query = """
-        SELECT * FROM master_flow_view
+        SELECT * FROM explore
         WHERE concat LIKE ? COLLATE NOCASE
         ORDER BY packets DESC
         LIMIT ? OFFSET ?
@@ -297,5 +217,5 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
     like_pattern = f"%{search_string}%"
     cursor.execute(query, (like_pattern, page_size, offset))
     rows = cursor.fetchall()
-    conn.close()
+    disconnect_from_db(conn)
     return [dict(row) for row in rows]

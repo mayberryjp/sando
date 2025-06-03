@@ -59,6 +59,8 @@ if __name__ == "__main__":
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_TORNODES_SQL, "tornodes")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_DNSQUERIES_SQL, "dnsqueries")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_IPASN_SQL, "ipasn")
+    create_table(CONST_EXPLORE_DB, CONST_CREATE_EXPLORE_SQL, "explore")
+    create_table(CONST_EXPLORE_DB, CONST_CREATE_DNSKEYVALUE_SQL, "dnskeyvalue")
 
     config_dict = get_config_settings()
 

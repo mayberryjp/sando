@@ -14,6 +14,8 @@ import importlib
 import requests
 import ipaddress
 
+
+
 # Local imports - Constants
 from src.const import (
     CONST_CREATE_IPASN_SQL,
@@ -25,10 +27,12 @@ from src.const import (
     CONST_EXPLORE_DB,
     CONST_CREATE_CONFIG_SQL,
     CONST_CREATE_NEWFLOWS_SQL,
+    CONST_CREATE_DNSKEYVALUE_SQL,
     CONST_CREATE_ACTIONS_SQL,
     CONST_CREATE_LOCALHOSTS_SQL,
     CONST_CREATE_GEOLOCATION_SQL,
     CONST_CREATE_REPUTATIONLIST_SQL,
+    CONST_CREATE_EXPLORE_SQL,
     CONST_CREATE_SERVICES_SQL,
     CONST_CREATE_CUSTOMTAGS_SQL,
     CONST_CREATE_SERVICES_SQL,
@@ -62,6 +66,10 @@ from src.locallogging import (
     dump_json
 )
 
+from database.explore import (
+    bulk_populate_master_flow_view,
+     create_dns_key_value
+)
 # Database core functions
 from database.core import (
 #     connect_to_db, 
@@ -145,11 +153,6 @@ from database.allflows import (
     get_tag_statistics,
     apply_ignorelist_entry
 )
-
-# Flow functions
-#from database.flows import (
- 
-#)
 
 # Traffic Stats functions
 from database.trafficstats import (
