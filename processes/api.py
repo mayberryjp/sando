@@ -51,6 +51,49 @@ CORS_HEADERS = {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization'
 }
 
+from database.common import test_database_online
+
+
+
+@app.get('/api/online/<db_name>')
+def api_online_db(db_name):
+    """
+    Health check endpoint to test if a specific database is online.
+    Returns JSON: {"online": true/false}
+    """
+    db_map = {
+        'consolidated': CONST_CONSOLIDATED_DB,
+        'explore': CONST_EXPLORE_DB
+    }
+    
+    db_path = db_map.get(db_name.lower())
+    
+    if not db_path:
+        response.status = 404
+        return {"online": False, "error": "Database not found"}
+    
+    try:
+        result = test_database_online(db_path)
+        response.content_type = 'application/json'
+        return {"online": bool(result)}
+    except Exception as e:
+        response.status = 500
+        return {"online": False, "error": str(e)}
+    
+
+def api_online():
+    """
+    Health check endpoint to test if the main database is online.
+    Returns JSON: {"online": true/false}
+    """
+    try:
+        result = test_database_online(CONST_CONSOLIDATED_DB)
+        response.content_type = 'application/json'
+        return {"online": bool(result)}
+    except Exception as e:
+        response.status = 500
+        return {"online": False, "error": str(e)}
+
 # Add CORS headers to all responses
 @app.hook('after_request')
 def enable_cors():

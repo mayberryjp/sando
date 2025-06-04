@@ -92,6 +92,7 @@ from database.common import (
     get_machine_unique_identifier_from_db,
     update_database_schema,
     check_update_database_schema,
+    test_database_online
 )
 
 # Alert functions

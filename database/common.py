@@ -467,3 +467,28 @@ def get_machine_unique_identifier_from_db():
     finally:
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
+
+def test_database_online(db_path):
+    """
+    Test if the SQLite database at db_path is online and accessible.
+
+    Args:
+        db_path (str): Path to the SQLite database file.
+
+    Returns:
+        bool: True if the database is online and a simple query succeeds, False otherwise.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        conn = sqlite3.connect(db_path, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        conn.close()
+        log_info(logger, f"[INFO] Successfully connected to database: {db_path}")
+        return True
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database connection failed: {e}")
+        return False
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error during database connection test: {e}")
+        return False
