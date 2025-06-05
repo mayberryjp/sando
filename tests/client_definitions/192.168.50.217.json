@@ -1,7 +1,7 @@
 {
     "ip_address": "192.168.50.217",
-    "export_date": "2025-05-28T13:28:16.546800",
-    "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
+    "export_date": "2025-06-05T16:13:11.891130",
+    "instance_identifier": "0bcf67f6adb6c72fd190f637b814dd6e7b600a7dfdbf6bd1177587183bef08cc",
     "host_info": {
         "ip_address": "192.168.50.217",
         "mac_address": "fc:e8:c0:f8:78:a3",
@@ -17,40 +17,30 @@
         {
             "domain": "google.com",
             "times_queried": 4,
-            "first_query": "2025-05-28 13:25:17",
-            "last_query": "2025-05-28 13:25:17"
+            "first_query": "2025-06-05 16:06:59",
+            "last_query": "2025-06-05 16:06:59"
         }
     ],
     "flows": [
+        {
+            "destination": "45.83.192.98",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 12,
+            "total_bytes": 1178,
+            "last_seen": "2025-06-05 16:01:59",
+            "first_seen": "2025-06-05 16:01:59"
+        },
         {
             "destination": "224.0.0.251",
             "port": 5353,
             "protocol": 17,
             "flow_count": 1,
-            "total_packets": 49,
-            "total_bytes": 14755,
-            "last_seen": "2025-05-28 12:36:47",
-            "first_seen": "2025-04-20 07:06:30"
-        },
-        {
-            "destination": "45.83.192.98",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 25,
-            "total_bytes": 2402,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-20 08:29:18"
-        },
-        {
-            "destination": "224.0.0.251",
-            "port": 0,
-            "protocol": 2,
-            "flow_count": 1,
-            "total_packets": 4,
-            "total_bytes": 184,
-            "last_seen": "2025-05-28 12:36:47",
-            "first_seen": "2025-04-20 17:00:37"
+            "total_packets": 3,
+            "total_bytes": 939,
+            "last_seen": "2025-06-05 16:01:59",
+            "first_seen": "2025-06-05 16:01:59"
         }
     ],
     "actions": []

@@ -45,7 +45,7 @@ def summarize_alerts_by_ip_last_seen():
         all_ips_rows, ip_query_time = run_timed_query(
             cursor, 
             ip_query,
-            description="get_distinct_ips_for_summary"
+            description="summarize_alerts_by_ip_last_seen"
         )
         
         all_ips = [row[0] for row in all_ips_rows]
@@ -142,7 +142,7 @@ def summarize_alerts_by_ip():
         all_ips_rows, ip_query_time = run_timed_query(
             cursor, 
             ip_query,
-            description="get_distinct_ips_for_summary"
+            description="summarize_alerts_by_ip"
         )
         
         all_ips = [row[0] for row in all_ips_rows]

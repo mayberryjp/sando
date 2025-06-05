@@ -1,6 +1,6 @@
 import os
 import sys
-from database.core import connect_to_db, disconnect_from_db
+from database.core import connect_to_db, disconnect_from_db, run_timed_query
 from pathlib import Path
 # Set up path for imports
 current_dir = Path(__file__).resolve().parent
@@ -40,29 +40,33 @@ def get_asn_for_ip(ip_address):
             
         cursor = conn.cursor()
         
-        # Query to find the matching ASN record
-        cursor.execute("""
+        # Query to find the matching ASN record using run_timed_query
+        query = """
             SELECT asn, isp_name, network
             FROM ipasn 
             WHERE ? BETWEEN start_ip AND end_ip 
             ORDER by netmask DESC
             LIMIT 1
-        """, (ip_int,))
-        
-        # Fetch the result
-        row = cursor.fetchone()
-        
-        if not row:
+        """
+        rows, _ = run_timed_query(
+            cursor,
+            query,
+            params=(ip_int,),
+            description=f"get_asn_for_ip for {ip_address}",
+            fetch_all=True
+        )
+
+        if not rows:
             log_info(logger, f"[INFO] No ASN information found for IP: {ip_address}")
             return None
-            
-        # Create a result dictionary
+
+        row = rows[0]
         result = {
             "asn": row[0],
             "isp_name": row[1],
             "network": row[2]
         }
-        
+
         log_info(logger, f"[INFO] Found ASN information for IP {ip_address}: ASN {result['asn']}, ISP: {result['isp_name']}")
         return result
         

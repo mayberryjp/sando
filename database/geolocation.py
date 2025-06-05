@@ -1,6 +1,6 @@
 import os
 import sys
-from database.core import connect_to_db, disconnect_from_db
+from database.core import connect_to_db, disconnect_from_db, run_timed_query
 from pathlib import Path
 # Set up path for imports
 current_dir = Path(__file__).resolve().parent
@@ -90,39 +90,43 @@ def get_all_geolocations():
 def get_country_by_ip_int(ip_int):
     """
     Look up the country for an IP address represented as an integer.
-    
+
     Args:
         ip_int (int): The IP address converted to an integer
-        
+
     Returns:
         str: Country name if found, None otherwise
     """
     logger = logging.getLogger(__name__)
     table_name = "geolocation"
-    
+
     # Connect to database
     conn = connect_to_db(CONST_CONSOLIDATED_DB, table_name)
     if not conn:
         logger.error(f"[ERROR] Failed to connect to the geolocation database")
         return None
-    
+
     try:
         cursor = conn.cursor()
-        # Find the range that contains this IP
-        cursor.execute("""
+        # Find the range that contains this IP using run_timed_query
+        query = """
             SELECT country_name 
             FROM geolocation 
             WHERE ? BETWEEN start_ip AND end_ip 
             LIMIT 1
-        """, (ip_int,))
-        
-        result = cursor.fetchone()
-        if result:
-            return result[0]
+        """
+        rows, _ = run_timed_query(
+            cursor,
+            query,
+            params=(ip_int,),
+            description=f"get_country_by_ip_int for {ip_int}",
+            fetch_all=True
+        )
+        if rows:
+            return rows[0][0]
         return None
     except sqlite3.Error as e:
         logger.error(f"[ERROR] Error looking up country for IP integer {ip_int}: {e}")
         return None
     finally:
-        # Properly disconnect from the database
         disconnect_from_db(conn)

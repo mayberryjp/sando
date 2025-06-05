@@ -76,6 +76,7 @@ def check_api_health_and_restart():
     if unhealthy:
         log_info(logger, "[INFO] Attempting to terminate api.py process due to failed health check...")
         try:
+            insert_action(f"Health check failed for API endpoints. There may be a problem with API health.")
             # Find and terminate the running api.py process
             for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
                 try:

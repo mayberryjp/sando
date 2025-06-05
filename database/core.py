@@ -14,6 +14,7 @@ sys.path.insert(0, "/database")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import logging
 from locallogging import log_info, log_error
+from const import CONST_PERFORMANCE_DB, CONST_CONSOLIDATED_DB
 
 def delete_database(db_path):
     """Deletes the specified SQLite database file if it exists."""
@@ -121,6 +122,39 @@ def get_row_count(db_name, table_name):
         if 'conn' in locals():
             disconnect_from_db(conn)
 
+def insert_dbperformance(db_name, query, description, execution_time, rows_returned):
+    """
+    Insert a performance record into the dbperformance table.
+
+    Args:
+        db_name (str): The database file path.
+        query (str): The SQL query string.
+        execution_time (float): Execution time in milliseconds.
+        rows_returned (int): Number of rows returned or affected.
+        run_timestamp (str, optional): Timestamp of the run. If None, uses current time.
+    """
+    logger = logging.getLogger(__name__)
+
+    try:
+        conn = connect_to_db(CONST_PERFORMANCE_DB, "dbperformance")
+        if not conn:
+            log_error(logger, f"[ERROR] Unable to connect to {CONST_PERFORMANCE_DB} for dbperformance insert.")
+            return False
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO dbperformance (db_name, query, function, execution_time, rows_returned, run_timestamp)
+            VALUES (?, ?, ?, ?, ?, datetime('now', 'localtime'))
+        """, (db_name, query, description, execution_time, rows_returned))
+        conn.commit()
+        log_info(logger, f"[INFO] Inserted dbperformance record for query: {query[:50]}...")
+        return True
+    except Exception as e:
+        log_error(logger, f"[ERROR] Failed to insert dbperformance record: {e}")
+        return False
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)
+
 def run_timed_query(cursor, query, params=None, description=None, fetch_all=True):
     """
     Execute a database query and time its execution.
@@ -146,13 +180,15 @@ def run_timed_query(cursor, query, params=None, description=None, fetch_all=True
     
     if fetch_all:
         results = cursor.fetchall()
-        execution_time = (time.time() - start_time) * 1000
+        execution_time = (time.time() - start_time)
         log_info(logger, f"[PERFORMANCE] Query '{desc}' returned {len(results)} rows in {execution_time:.2f} ms")
+        insert_dbperformance(CONST_CONSOLIDATED_DB, query, desc, execution_time, len(results))
         return results, execution_time
     else:
         rowcount = cursor.rowcount
-        execution_time = (time.time() - start_time) * 1000
+        execution_time = (time.time() - start_time)
         log_info(logger, f"[PERFORMANCE] Query '{desc}' affected {rowcount} rows in {execution_time:.2f} ms")
+        insert_dbperformance(CONST_CONSOLIDATED_DB, query, desc, execution_time, rowcount)
         return rowcount, execution_time
     
 def delete_table(db_name, table_name):

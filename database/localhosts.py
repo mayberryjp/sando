@@ -84,33 +84,27 @@ def get_localhosts_all():
 
     try:
         cursor = conn.cursor()
-        
-        # Use run_timed_query for the SELECT operation
         query = """
             SELECT ip_address, first_seen, original_flow, 
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
                    lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link
             FROM localhosts
         """
-        
-        rows, query_time = run_timed_query(
-            cursor,
-            query,
-            description="get_all_localhosts"
-        )
+        cursor.execute(query)
+        rows = cursor.fetchall()
 
         # Get column names from cursor description
         columns = [column[0] for column in cursor.description]
-        
+
         # Convert rows to list of dictionaries with column names as keys
         localhosts = []
         for row in rows:
             localhost_dict = dict(zip(columns, row))
             localhosts.append(localhost_dict)
-            
-        log_info(logger, f"[INFO] Retrieved {len(localhosts)} localhost records with full details in {query_time:.2f} ms")
+
+        log_info(logger, f"[INFO] Retrieved {len(localhosts)} localhost records with full details")
         return localhosts
-        
+
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Failed to retrieve localhost records: {e}")
         return []
@@ -133,21 +127,14 @@ def get_localhosts():
 
     try:
         cursor = conn.cursor()
-        
-        # Use run_timed_query to get IP addresses and track performance
         query = "SELECT ip_address FROM localhosts"
-        rows, query_time = run_timed_query(
-            cursor,
-            query,
-            description="get_localhost_ips"
-        )
-        
+        cursor.execute(query)
+        rows = cursor.fetchall()
         # Convert results to a set of IP addresses
         localhosts = set(row[0] for row in rows)
-        
-        log_info(logger, f"[INFO] Retrieved {len(localhosts)} local hosts from the database in {query_time:.2f} ms")
+        log_info(logger, f"[INFO] Retrieved {len(localhosts)} local hosts from the database")
         return localhosts
-        
+
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Failed to retrieve local hosts: {e}")
         return set()

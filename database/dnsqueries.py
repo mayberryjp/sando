@@ -1,6 +1,6 @@
 import os
 import sys
-from database.core import connect_to_db, disconnect_from_db
+from database.core import connect_to_db, disconnect_from_db, run_timed_query
 from pathlib import Path
 # Set up path for imports
 current_dir = Path(__file__).resolve().parent
@@ -64,19 +64,18 @@ def insert_dns_query(client_ip, domain, times_seen, datasource):
 def get_client_dns_queries(client_ip):
     """
     Retrieve all DNS queries made by a specific client IP address.
-    
+
     Args:
         client_ip (str): The IP address of the client
-        
+
     Returns:
         list: A list of dictionaries containing domain, query_count, last_query, and first_query
               for each domain queried by the client, ordered by query_count descending.
               Returns an empty list if no data is found or an error occurs.
     """
     logger = logging.getLogger(__name__)
-    
-    try:
 
+    try:
         # Connect to the dnsqueries database
         conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
         if not conn:
@@ -84,9 +83,9 @@ def get_client_dns_queries(client_ip):
             return []
 
         dns_cursor = conn.cursor()
-        
-        # Query for all domains queried by the client IP
-        dns_cursor.execute("""
+
+        # Query for all domains queried by the client IP using run_timed_query
+        query = """
             SELECT domain, sum(times_seen) as query_count, 
                    MAX(last_seen) as last_query,
                    MIN(first_seen) as first_query
@@ -94,13 +93,18 @@ def get_client_dns_queries(client_ip):
             WHERE client_ip = ?
             GROUP BY domain
             ORDER BY query_count DESC
-        """, (client_ip,))
-        
-        rows = dns_cursor.fetchall()
-        
+        """
+        rows, _ = run_timed_query(
+            dns_cursor,
+            query,
+            params=(client_ip,),
+            description=f"get_client_dns_queries for",
+            fetch_all=True
+        )
+
         #log_info(logger, f"[INFO] Retrieved {len(rows)} DNS query records for client IP {client_ip}.")
         return rows
-        
+
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while retrieving DNS queries for client IP {client_ip}: {e}")
         return []
@@ -230,18 +234,14 @@ def update_dns_query_response(response, id):
 def get_dnsqueries_without_responses():
     """
     Retrieve DNS queries where the response is NULL or empty.
-    
-    Args:
-        limit (int, optional): Maximum number of records to return. Default is 100.
-        offset (int, optional): Number of records to skip for pagination. Default is 0.
-        
+
     Returns:
-        list: A list of dictionaries containing DNS query records with empty responses,
+        list: A list of tuples containing DNS query records with empty responses,
               ordered by last_seen descending.
               Returns an empty list if no data is found or an error occurs.
     """
     logger = logging.getLogger(__name__)
-    
+
     try:
         # Connect to the dnsqueries database
         conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
@@ -250,9 +250,9 @@ def get_dnsqueries_without_responses():
             return []
 
         cursor = conn.cursor()
-        
+
         # Query for DNS queries with NULL or empty responses, refresh every 90 days or TIMEDOUT
-        cursor.execute("""
+        query = """
             SELECT id, domain, type
             FROM dnsqueries 
             WHERE response IS NULL 
@@ -260,14 +260,17 @@ def get_dnsqueries_without_responses():
                OR date(last_refresh) <= date('now', '-90 days')
                OR response = 'TIMEOUT'
             ORDER BY last_seen DESC
-        """)
-        
-        rows = cursor.fetchall()
-        # Fetch results and convert to list of dictionaries
+        """
+        rows, _ = run_timed_query(
+            cursor,
+            query,
+            description="get_dnsqueries_without_responses",
+            fetch_all=True
+        )
 
         log_info(logger, f"[INFO] Retrieved {len(rows)} DNS queries with empty responses")
         return rows
-        
+
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while retrieving DNS queries without responses: {e}")
         return []
@@ -284,25 +287,25 @@ def get_ip_to_domain_mapping():
     """
     Retrieve a mapping of IP addresses to their corresponding domain names
     from the dnsqueries table, using a recursive query to split multi-IP responses.
-    
+
     Returns:
         dict: A dictionary with IP addresses as keys and domain names as values.
               Returns an empty dictionary if no data is found or an error occurs.
     """
     logger = logging.getLogger(__name__)
-    
+
     try:
         # Connect to the database
         conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to database for IP-domain mapping.")
             return {}
-            
+
         conn.create_function("TRIM", 1, lambda x: x.strip() if x else "")
         cursor = conn.cursor()
-        
-        # Recursive query to split comma-separated IP addresses
-        cursor.execute("""
+
+        # Recursive query to split comma-separated IP addresses, wrapped in run_timed_query
+        query = """
             WITH RECURSIVE split(id, domain, ip_address, rest) AS (
               SELECT
                 id,
@@ -327,20 +330,24 @@ def get_ip_to_domain_mapping():
             SELECT ip_address, domain
             FROM split
             WHERE ip_address != ''
-        """)
-        
-        rows = cursor.fetchall()
-        
+        """
+        rows, _ = run_timed_query(
+            cursor,
+            query,
+            description="get_ip_to_domain_mapping",
+            fetch_all=True
+        )
+
         # Create dictionary mapping IP address -> domain
         ip_to_domain = {}
         for ip, domain in rows:
             # If IP is valid (check with simple validation)
             if ip and '.' in ip and not (ip.startswith(';') or ip.startswith('#')):
                 ip_to_domain[ip.strip()] = domain
-        
+
         log_info(logger, f"[INFO] Created IP-to-domain mapping with {len(ip_to_domain)} entries")
         return ip_to_domain
-        
+
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while creating IP-to-domain mapping: {e}")
         return {}

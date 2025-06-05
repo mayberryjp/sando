@@ -1,7 +1,7 @@
 {
     "ip_address": "192.168.50.13",
-    "export_date": "2025-05-28T13:28:23.014416",
-    "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
+    "export_date": "2025-06-05T16:13:11.739209",
+    "instance_identifier": "0bcf67f6adb6c72fd190f637b814dd6e7b600a7dfdbf6bd1177587183bef08cc",
     "host_info": {
         "ip_address": "192.168.50.13",
         "mac_address": null,
@@ -13,54 +13,27 @@
         "icon": null,
         "local_description": null
     },
-    "dns_queries": [
-        {
-            "domain": "ntp.anshin-home.jp",
-            "times_queried": 1,
-            "first_query": "2025-05-28 13:25:17",
-            "last_query": "2025-05-28 13:25:17"
-        }
-    ],
+    "dns_queries": [],
     "flows": [
         {
             "destination": "239.255.255.250",
             "port": 1900,
             "protocol": 17,
             "flow_count": 1,
-            "total_packets": 672,
-            "total_bytes": 229992,
-            "last_seen": "2025-05-28 12:36:47",
-            "first_seen": "2025-04-20 06:27:55"
-        },
-        {
-            "destination": "18.182.249.252",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 3,
-            "total_packets": 32,
-            "total_bytes": 5078,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-20 17:56:03"
+            "total_packets": 56,
+            "total_bytes": 19166,
+            "last_seen": "2025-06-05 16:01:59",
+            "first_seen": "2025-06-05 16:01:59"
         },
         {
             "destination": "224.0.23.0",
             "port": 3610,
             "protocol": 17,
-            "flow_count": 65,
-            "total_packets": 65,
-            "total_bytes": 4043,
-            "last_seen": "2025-05-28 12:36:49",
-            "first_seen": "2025-04-20 06:57:09"
-        },
-        {
-            "destination": "13.115.31.26",
-            "port": 123,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 1,
-            "total_bytes": 76,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-21 00:56:58"
+            "flow_count": 8,
+            "total_packets": 8,
+            "total_bytes": 449,
+            "last_seen": "2025-06-05 16:02:00",
+            "first_seen": "2025-06-05 16:01:59"
         }
     ],
     "actions": []

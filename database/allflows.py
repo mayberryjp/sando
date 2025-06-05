@@ -10,6 +10,7 @@ if parent_dir not in sys.path:
 sys.path.insert(0, "/database")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from init import *
+from database.core import run_timed_query
 
 def update_all_flows(rows, config_dict):
     """Update allflows.db with the rows from newflows.db."""
@@ -55,7 +56,6 @@ def update_tag_to_allflows(table_name, tag, src_ip, dst_ip, dst_port):
     Update the tag for a specific row in the database.
 
     Args:
-        db_name (str): The database name.
         table_name (str): The table name.
         tag (str): The tag to add.
         src_ip (str): The source IP address.
@@ -74,13 +74,20 @@ def update_tag_to_allflows(table_name, tag, src_ip, dst_ip, dst_port):
     try:
         cursor = conn.cursor()
 
-        # Retrieve the existing tag
-        cursor.execute(f"""
+        # Retrieve the existing tag using run_timed_query
+        select_query = f"""
             SELECT tags FROM {table_name}
             WHERE src_ip = ? AND dst_ip = ? AND dst_port = ?
             AND tags not like '%DeadConnectionDetection%'
-        """, (src_ip, dst_ip, dst_port))
-        result = cursor.fetchone()
+        """
+        result_rows, _ = run_timed_query(
+            cursor,
+            select_query,
+            params=(src_ip, dst_ip, dst_port),
+            description="select tags from update_tag_to_allflows",
+            fetch_all=True
+        )
+        result = result_rows[0] if result_rows else None
 
         existing_tag = result[0] if result and result[0] else ""  # Get the existing tag or default to an empty string
 
@@ -106,17 +113,17 @@ def update_tag_to_allflows(table_name, tag, src_ip, dst_ip, dst_port):
 def get_flows_by_source_ip(src_ip):
     """
     Retrieve all flows from a specific source IP address, grouped by destination.
-    
+
     Args:
         src_ip (str): The source IP address to search for
-        
+
     Returns:
         list: A list of dictionaries containing aggregated flow data for each destination,
               ordered by total_bytes in descending order.
               Returns an empty list if no data is found or an error occurs.
     """
     logger = logging.getLogger(__name__)
-    
+
     try:
         # Connect to the allflows database
         conn = connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
@@ -125,9 +132,9 @@ def get_flows_by_source_ip(src_ip):
             return []
 
         cursor = conn.cursor()
-        
-        # Query all flows from the specified source IP
-        cursor.execute("""
+
+        # Query all flows from the specified source IP using run_timed_query
+        query = """
          SELECT dst_ip, dst_port, protocol,
                    sum(times_seen) as flow_count,
                    SUM(packets) as total_packets,
@@ -138,13 +145,18 @@ def get_flows_by_source_ip(src_ip):
             WHERE src_ip = ?
             GROUP BY dst_ip, dst_port, protocol
             ORDER BY total_bytes DESC
-        """, (src_ip,))
-        
-        rows = cursor.fetchall()
-            
+        """
+        rows, _ = run_timed_query(
+            cursor,
+            "",
+            params=(src_ip,),
+            description=f"get_flows_by_source_ip",
+            fetch_all=True
+        )
+
         #log_info(logger, f"[INFO] Retrieved {len(rows)} flow records for source IP {src_ip}.")
         return rows
-        
+
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while retrieving flows for source IP {src_ip}: {e}")
         return []
@@ -159,15 +171,15 @@ def get_dead_connections_from_database():
     """
     Identify potential dead connections in the network by finding flows that have
     traffic in one direction but not in the reverse direction.
-    
+
     Returns:
-        list: A list of dictionaries containing information about potential dead connections.
-              Each dictionary includes initiator_ip, responder_ip, responder_port, 
+        list: A list of tuples containing information about potential dead connections.
+              Each tuple includes initiator_ip, responder_ip, responder_port, 
               protocol, tags, and packet counts.
               Returns an empty list if no data is found or an error occurs.
     """
     logger = logging.getLogger(__name__)
-    
+
     try:
         # Connect to the allflows database
         conn = connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
@@ -176,9 +188,9 @@ def get_dead_connections_from_database():
             return []
 
         cursor = conn.cursor()
-        
-        # Execute the complex query to identify potential dead connections
-        cursor.execute("""
+
+        # Use run_timed_query for the complex query to identify potential dead connections
+        query = """
                WITH ConnectionPairs AS (
                     SELECT 
                         a1.src_ip as initiator_ip,
@@ -204,15 +216,15 @@ def get_dead_connections_from_database():
                 SELECT 
                     initiator_ip,
                     responder_ip,
-					initiator_port,
+                    initiator_port,
                     responder_port,
                     connection_protocol,
                     row_tags,
                     COUNT(*) as connection_count,
                     sum(forward_packets) as f_packets,
                     sum(reverse_packets) as r_packets,
-					sum(forward_bytes) as f_bytes,
-					sum(reverse_bytes) as r_bytes
+                    sum(forward_bytes) as f_bytes,
+                    sum(reverse_bytes) as r_bytes
                 FROM ConnectionPairs
                 WHERE connection_protocol=6 -- Exclude ICMP and IGMP
                 AND row_tags not like '%DeadConnectionDetection%'
@@ -223,10 +235,14 @@ def get_dead_connections_from_database():
                 HAVING 
                     f_packets > 2
                     AND r_packets < 1
-        """)
-        
-        raw_rows = cursor.fetchall()
-        
+        """
+        raw_rows, _ = run_timed_query(
+            cursor,
+            "",
+            description="get_dead_connections_from_database",
+            fetch_all=True
+        )
+
         # Restructure rows to match required field order
         restructured_rows = []
         for row in raw_rows:
@@ -238,21 +254,21 @@ def get_dead_connections_from_database():
             tags = row[5]                # tags
             # connection_count = row[6]  # Not used in the restructured output
             packets = row[7]             # forward_packets
-            bytes_ = row[9]             # forward_bytes (f_bytes)
-            
+            bytes_ = row[9]              # forward_bytes (f_bytes)
+
             # Create default values for missing fields
             current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             flow_start = current_time    # Placeholder
             flow_end = current_time      # Placeholder
             last_seen = current_time     # Placeholder
-            times_seen = row[6]              # Default value
-            
+            times_seen = row[6]          # Default value
+
             # Create a restructured row with the requested field order
             restructured_row = (
                 initiator_ip,             # src_ip
                 responder_ip,             # dst_ip
                 initiator_port,    
-               responder_port,           # dst_port
+                responder_port,           # dst_port
                 protocol,                 # protocol
                 packets,                  # packets
                 bytes_,                   # bytes
@@ -263,12 +279,10 @@ def get_dead_connections_from_database():
                 tags                      # tags
             )
             restructured_rows.append(restructured_row)
-            
 
-            
         log_info(logger, f"[INFO] Identified {len(restructured_rows)} potential dead connections.")
         return restructured_rows
-        
+
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while querying dead connections: {e}")
         return []
@@ -343,7 +357,6 @@ def get_tag_statistics(local_ip):
         """
         
         # Execute the query and time it
-        from database.core import run_timed_query
         rows, execution_time = run_timed_query(
             cursor, 
             query, 

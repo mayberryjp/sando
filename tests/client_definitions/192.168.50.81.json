@@ -1,7 +1,7 @@
 {
     "ip_address": "192.168.50.81",
-    "export_date": "2025-05-28T13:28:23.654762",
-    "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
+    "export_date": "2025-06-05T16:13:12.091866",
+    "instance_identifier": "0bcf67f6adb6c72fd190f637b814dd6e7b600a7dfdbf6bd1177587183bef08cc",
     "host_info": {
         "ip_address": "192.168.50.81",
         "mac_address": null,
@@ -20,10 +20,10 @@
             "port": 5353,
             "protocol": 17,
             "flow_count": 1,
-            "total_packets": 81,
-            "total_bytes": 29079,
-            "last_seen": "2025-05-28 12:36:47",
-            "first_seen": "2025-04-20 06:51:55"
+            "total_packets": 6,
+            "total_bytes": 2154,
+            "last_seen": "2025-06-05 16:01:59",
+            "first_seen": "2025-06-05 16:01:59"
         }
     ],
     "actions": []

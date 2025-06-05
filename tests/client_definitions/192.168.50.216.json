@@ -1,15 +1,15 @@
 {
     "ip_address": "192.168.50.216",
-    "export_date": "2025-05-28T13:28:35.668042",
-    "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
+    "export_date": "2025-06-05T16:13:11.127137",
+    "instance_identifier": "0bcf67f6adb6c72fd190f637b814dd6e7b600a7dfdbf6bd1177587183bef08cc",
     "host_info": {
         "ip_address": "192.168.50.216",
         "mac_address": null,
         "mac_vendor": null,
         "dhcp_hostname": null,
-        "dns_hostname": "Outdoorlighting.832-5.com.",
+        "dns_hostname": "wlan0.832-5.com.",
         "os_fingerprint": null,
-        "lease_hostname": "Outdoorlighting",
+        "lease_hostname": "wlan0",
         "icon": null,
         "local_description": null
     },
@@ -19,11 +19,11 @@
             "destination": "54.187.112.38",
             "port": 443,
             "protocol": 6,
-            "flow_count": 108,
-            "total_packets": 1101,
-            "total_bytes": 135117,
-            "last_seen": "2025-05-28 12:36:49",
-            "first_seen": "2025-04-20 06:30:53"
+            "flow_count": 10,
+            "total_packets": 101,
+            "total_bytes": 12442,
+            "last_seen": "2025-06-05 16:02:00",
+            "first_seen": "2025-06-05 16:01:59"
         }
     ],
     "actions": []

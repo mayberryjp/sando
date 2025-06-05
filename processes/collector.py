@@ -61,6 +61,7 @@ if __name__ == "__main__":
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_IPASN_SQL, "ipasn")
     create_table(CONST_EXPLORE_DB, CONST_CREATE_EXPLORE_SQL, "explore")
     create_table(CONST_EXPLORE_DB, CONST_CREATE_DNSKEYVALUE_SQL, "dnskeyvalue")
+    create_table(CONST_PERFORMANCE_DB, CONST_CREATE_DBPERFORMANCE_SQL, "dbperformance")
 
     config_dict = get_config_settings()
 

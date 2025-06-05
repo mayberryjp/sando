@@ -1,7 +1,7 @@
 {
     "ip_address": "192.168.50.9",
-    "export_date": "2025-05-28T13:28:23.984767",
-    "instance_identifier": "cbdfd98b391f71eb732cd388a2537fd153ffa5069c98cd9af8a5a5c7c843144c",
+    "export_date": "2025-06-05T16:13:11.012515",
+    "instance_identifier": "0bcf67f6adb6c72fd190f637b814dd6e7b600a7dfdbf6bd1177587183bef08cc",
     "host_info": {
         "ip_address": "192.168.50.9",
         "mac_address": null,
@@ -16,171 +16,125 @@
     "dns_queries": [
         {
             "domain": "diag.meethue.com",
+            "times_queried": 2,
+            "first_query": "2025-06-05 16:06:59",
+            "last_query": "2025-06-05 16:06:59"
+        },
+        {
+            "domain": "data.meethue.com",
             "times_queried": 1,
-            "first_query": "2025-05-28 13:25:17",
-            "last_query": "2025-05-28 13:25:17"
+            "first_query": "2025-06-05 16:06:59",
+            "last_query": "2025-06-05 16:06:59"
+        },
+        {
+            "domain": "diagnostics.meethue.com",
+            "times_queried": 1,
+            "first_query": "2025-06-05 16:06:59",
+            "last_query": "2025-06-05 16:06:59"
+        },
+        {
+            "domain": "mqtt-eu-03.iot.meethue.com",
+            "times_queried": 1,
+            "first_query": "2025-06-05 16:06:59",
+            "last_query": "2025-06-05 16:06:59"
+        },
+        {
+            "domain": "ws.meethue.com",
+            "times_queried": 1,
+            "first_query": "2025-06-05 16:06:59",
+            "last_query": "2025-06-05 16:06:59"
         }
     ],
     "flows": [
         {
-            "destination": "34.117.13.189",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 3,
-            "total_packets": 6727,
-            "total_bytes": 985155,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-19 22:49:40"
-        },
-        {
-            "destination": "52.48.41.28",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 34,
-            "total_packets": 783,
-            "total_bytes": 147462,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-20 07:38:03"
-        },
-        {
             "destination": "46.51.188.91",
             "port": 443,
             "protocol": 6,
-            "flow_count": 19,
-            "total_packets": 458,
-            "total_bytes": 98508,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-20 06:38:03"
+            "flow_count": 4,
+            "total_packets": 90,
+            "total_bytes": 15747,
+            "last_seen": "2025-06-05 16:02:00",
+            "first_seen": "2025-06-05 16:01:59"
         },
         {
             "destination": "99.80.116.23",
             "port": 443,
             "protocol": 6,
-            "flow_count": 22,
-            "total_packets": 488,
-            "total_bytes": 84647,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-20 05:38:03"
+            "flow_count": 1,
+            "total_packets": 27,
+            "total_bytes": 6898,
+            "last_seen": "2025-06-05 16:01:59",
+            "first_seen": "2025-06-05 16:01:59"
         },
         {
-            "destination": "52.211.152.148",
+            "destination": "52.48.41.28",
             "port": 443,
             "protocol": 6,
             "flow_count": 1,
-            "total_packets": 54,
-            "total_bytes": 54648,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-21 04:32:29"
-        },
-        {
-            "destination": "54.216.117.174",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 63,
-            "total_bytes": 35051,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-20 20:38:30"
-        },
-        {
-            "destination": "34.117.13.189",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 6,
-            "total_packets": 48,
-            "total_bytes": 21854,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-20 10:34:44"
-        },
-        {
-            "destination": "169.254.131.39",
-            "port": 65176,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 12,
-            "total_bytes": 3876,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-21 08:40:11"
+            "total_packets": 23,
+            "total_bytes": 4703,
+            "last_seen": "2025-06-05 16:01:59",
+            "first_seen": "2025-06-05 16:01:59"
         },
         {
             "destination": "203.107.6.88",
             "port": 123,
             "protocol": 17,
-            "flow_count": 47,
-            "total_packets": 47,
-            "total_bytes": 3572,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-20 06:42:41"
-        },
-        {
-            "destination": "216.239.35.4",
-            "port": 123,
-            "protocol": 17,
-            "flow_count": 41,
-            "total_packets": 41,
-            "total_bytes": 3116,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-20 06:51:48"
+            "flow_count": 5,
+            "total_packets": 5,
+            "total_bytes": 380,
+            "last_seen": "2025-06-05 16:02:00",
+            "first_seen": "2025-06-05 16:01:59"
         },
         {
             "destination": "216.239.35.0",
             "port": 123,
             "protocol": 17,
-            "flow_count": 40,
-            "total_packets": 40,
-            "total_bytes": 3040,
-            "last_seen": "2025-05-28 12:36:49",
-            "first_seen": "2025-04-20 06:59:04"
+            "flow_count": 4,
+            "total_packets": 4,
+            "total_bytes": 304,
+            "last_seen": "2025-06-05 16:02:00",
+            "first_seen": "2025-06-05 16:01:59"
         },
         {
             "destination": "216.239.35.12",
             "port": 123,
             "protocol": 17,
-            "flow_count": 40,
-            "total_packets": 40,
-            "total_bytes": 3040,
-            "last_seen": "2025-05-28 12:36:49",
-            "first_seen": "2025-04-20 06:49:32"
+            "flow_count": 3,
+            "total_packets": 3,
+            "total_bytes": 228,
+            "last_seen": "2025-06-05 16:02:00",
+            "first_seen": "2025-06-05 16:01:59"
         },
         {
-            "destination": "8.149.241.96",
+            "destination": "216.239.35.4",
             "port": 123,
             "protocol": 17,
-            "flow_count": 40,
-            "total_packets": 40,
-            "total_bytes": 3040,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-20 07:05:37"
+            "flow_count": 3,
+            "total_packets": 3,
+            "total_bytes": 228,
+            "last_seen": "2025-06-05 16:02:00",
+            "first_seen": "2025-06-05 16:01:59"
         },
         {
             "destination": "216.239.35.8",
             "port": 123,
             "protocol": 17,
-            "flow_count": 39,
-            "total_packets": 39,
-            "total_bytes": 2964,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-20 06:54:55"
-        },
-        {
-            "destination": "203.107.6.88",
-            "port": 771,
-            "protocol": 1,
-            "flow_count": 1,
-            "total_packets": 1,
-            "total_bytes": 104,
-            "last_seen": "2025-05-28 12:36:47",
-            "first_seen": "2025-04-20 14:36:21"
+            "flow_count": 3,
+            "total_packets": 3,
+            "total_bytes": 228,
+            "last_seen": "2025-06-05 16:02:00",
+            "first_seen": "2025-06-05 16:01:59"
         },
         {
             "destination": "8.149.241.96",
-            "port": 771,
-            "protocol": 1,
-            "flow_count": 1,
-            "total_packets": 1,
-            "total_bytes": 104,
-            "last_seen": "2025-05-28 12:36:48",
-            "first_seen": "2025-04-21 05:32:03"
+            "port": 123,
+            "protocol": 17,
+            "flow_count": 3,
+            "total_packets": 3,
+            "total_bytes": 228,
+            "last_seen": "2025-06-05 16:02:00",
+            "first_seen": "2025-06-05 16:01:59"
         }
     ],
     "actions": []

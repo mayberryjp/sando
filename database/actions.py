@@ -30,18 +30,13 @@ def insert_action(action_text):
             return False
 
         cursor = conn.cursor()
-        
-        # Use run_timed_query for the insert operation
-        _, query_time = run_timed_query(
-            cursor,
+        start_time = time.time()
+        cursor.execute(
             "INSERT INTO actions (action_text, acknowledged, insert_date) VALUES (?, 0, datetime('now'))",
-            (action_text,),
-            "insert_action",
-            fetch_all=False
+            (action_text,)
         )
-        
         conn.commit()
-        log_info(logger, f"[INFO] Inserted new action with text: {action_text} in {query_time:.2f} ms")
+        log_info(logger, f"[INFO] Inserted new action with text: {action_text} ms")
         return True
 
     except sqlite3.Error as e:
