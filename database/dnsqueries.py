@@ -281,8 +281,6 @@ def get_dnsqueries_without_responses():
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
 
-
-
 def get_ip_to_domain_mapping():
     """
     Retrieve a mapping of IP addresses to their corresponding domain names

@@ -148,7 +148,7 @@ def get_flows_by_source_ip(src_ip):
         """
         rows, _ = run_timed_query(
             cursor,
-            "",
+            query,
             params=(src_ip,),
             description=f"get_flows_by_source_ip",
             fetch_all=True
@@ -238,7 +238,7 @@ def get_dead_connections_from_database():
         """
         raw_rows, _ = run_timed_query(
             cursor,
-            "",
+            query,
             description="get_dead_connections_from_database",
             fetch_all=True
         )
