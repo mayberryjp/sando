@@ -11,12 +11,12 @@ sys.path.insert(0, "/database")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from init import *
 
-def add_tag_to_localhost(ip_address, tag, db_path):
+def add_tag_to_localhost(ip_address, tag):
     """
     Add a tag to the 'tags' column of a localhost entry.
     If the tag already exists, do nothing.
     """
-    conn = connect_to_db(db_path, "localhosts")
+    conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT tags FROM localhosts WHERE ip_address = ?", (ip_address,))
@@ -35,11 +35,11 @@ def add_tag_to_localhost(ip_address, tag, db_path):
     finally:
         disconnect_from_db(conn)
 
-def delete_tag_from_localhost(ip_address, tag, db_path):
+def delete_tag_from_localhost(ip_address, tag):
     """
     Remove a tag from the 'tags' column of a localhost entry.
     """
-    conn = connect_to_db(db_path, "localhosts")
+    conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT tags FROM localhosts WHERE ip_address = ?", (ip_address,))

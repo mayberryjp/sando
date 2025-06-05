@@ -28,7 +28,7 @@ def setup_localhoststags_routes(app):
             if not tag:
                 response.status = 400
                 return {"success": False, "error": "Missing 'tag' in request body"}
-            add_tag_to_localhost(ip_address, tag, CONST_CONSOLIDATED_DB)
+            add_tag_to_localhost(ip_address, tag)
             return {"success": True, "message": f"Tag '{tag}' added to {ip_address}"}
         except Exception as e:
             response.status = 500
@@ -46,7 +46,7 @@ def setup_localhoststags_routes(app):
             if not tag:
                 response.status = 400
                 return {"success": False, "error": "Missing 'tag' in request body"}
-            delete_tag_from_localhost(ip_address, tag, CONST_CONSOLIDATED_DB)
+            delete_tag_from_localhost(ip_address, tag)
             return {"success": True, "message": f"Tag '{tag}' removed from {ip_address}"}
         except Exception as e:
             response.status = 500
