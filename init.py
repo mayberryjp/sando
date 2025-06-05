@@ -82,6 +82,11 @@ from database.core import (
     run_timed_query
 )
 
+from database.localhoststags import (
+    add_tag_to_localhost,
+    delete_tag_from_localhost
+)
+
 from database.common import (
     collect_database_counts,
     init_configurations_from_sitepy,

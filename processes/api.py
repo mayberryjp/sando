@@ -25,6 +25,7 @@ from routers.customtags import *
 from routers.threatscore import *
 from routers.devices import *
 from routers.explore import *
+from routers.localhoststags import *
 
 # Initialize the Bottle app
 app = Bottle()
