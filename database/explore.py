@@ -176,30 +176,42 @@ def get_latest_master_flows(limit=100, page=0):
     sorted by packets descending, with pagination support.
     Returns a dict with 'total', 'page', 'limit', and 'results'.
     """
-    offset = page * limit
-    conn = connect_to_db(CONST_EXPLORE_DB, "explore")
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    try:
+        offset = page * limit
+        conn = connect_to_db(CONST_EXPLORE_DB, "explore")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
 
-    # Get total count
-    cursor.execute("SELECT COUNT(*) FROM explore")
-    total = cursor.fetchone()[0]
+        # Get total count
+        cursor.execute("SELECT COUNT(*) FROM explore")
+        total = cursor.fetchone()[0]
 
-    # Get paginated results
-    cursor.execute(
-        "SELECT * FROM explore ORDER BY packets DESC LIMIT ? OFFSET ?",
-        (limit, offset)
-    )
-    rows = cursor.fetchall()
-    disconnect_from_db(conn)
-    results = [dict(row) for row in rows]
+        # Get paginated results
+        cursor.execute(
+            "SELECT * FROM explore ORDER BY packets DESC LIMIT ? OFFSET ?",
+            (limit, offset)
+        )
+        rows = cursor.fetchall()
+        disconnect_from_db(conn)
+        results = [dict(row) for row in rows]
 
-    return {
-        "total": total,
-        "page": page,
-        "limit": limit,
-        "results": results
-    }
+        return {
+            "total": total,
+            "page": page,
+            "limit": limit,
+            "results": results,
+            "success": True
+        }
+    except Exception as e:
+        log_error(logging.getLogger(__name__), f"[ERROR] Failed to get latest master flows: {e}")
+        return {
+            "total": 0,
+            "page": page,
+            "limit": limit,
+            "results": [],
+            "success": False,
+            "error": str(e)
+        }
 
 def search_master_flows_by_concat(search_string, page=0, page_size=100):
     """
@@ -207,35 +219,47 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
     Supports pagination via page and page_size.
     Returns a dict with 'total', 'page', 'page_size', and 'results'.
     """
-    offset = page * page_size
-    conn = connect_to_db(CONST_EXPLORE_DB, "explore")
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    try:
+        offset = page * page_size
+        conn = connect_to_db(CONST_EXPLORE_DB, "explore")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
 
-    # Get total count
-    count_query = """
-        SELECT COUNT(*) FROM explore
-        WHERE concat LIKE ? COLLATE NOCASE
-    """
-    like_pattern = f"%{search_string}%"
-    cursor.execute(count_query, (like_pattern,))
-    total = cursor.fetchone()[0]
+        # Get total count
+        count_query = """
+            SELECT COUNT(*) FROM explore
+            WHERE concat LIKE ? COLLATE NOCASE
+        """
+        like_pattern = f"%{search_string}%"
+        cursor.execute(count_query, (like_pattern,))
+        total = cursor.fetchone()[0]
 
-    # Get paginated results
-    query = """
-        SELECT * FROM explore
-        WHERE concat LIKE ? COLLATE NOCASE
-        ORDER BY packets DESC
-        LIMIT ? OFFSET ?
-    """
-    cursor.execute(query, (like_pattern, page_size, offset))
-    rows = cursor.fetchall()
-    disconnect_from_db(conn)
-    results = [dict(row) for row in rows]
+        # Get paginated results
+        query = """
+            SELECT * FROM explore
+            WHERE concat LIKE ? COLLATE NOCASE
+            ORDER BY packets DESC
+            LIMIT ? OFFSET ?
+        """
+        cursor.execute(query, (like_pattern, page_size, offset))
+        rows = cursor.fetchall()
+        disconnect_from_db(conn)
+        results = [dict(row) for row in rows]
 
-    return {
-        "total": total,
-        "page": page,
-        "page_size": page_size,
-        "results": results
-    }
+        return {
+            "total": total,
+            "page": page,
+            "page_size": page_size,
+            "results": results,
+            "success": True,
+        }
+    except Exception as e:
+        log_error(logging.getLogger(__name__), f"[ERROR] Failed to search master flows by concat: {e}")
+        return {
+            "total": 0,
+            "page": page,
+            "page_size": page_size,
+            "results": [],
+            "success": False,
+            "error": str(e)
+        }
