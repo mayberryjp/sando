@@ -169,54 +169,73 @@ def create_dns_key_value():
     except Exception as e:
         log_error(logger, f"[ERROR] Failed to create dnskeyvalue table: {e}")
 
-if __name__ == "__main__":
-
-    from database.core import delete_table, create_table
-    create_table(CONST_EXPLORE_DB, CONST_CREATE_EXPLORE_SQL, "explore")
-    create_table(CONST_EXPLORE_DB, CONST_CREATE_DNSKEYVALUE_SQL,"dnskeyvalue")
-    create_dns_key_value()
-    bulk_populate_master_flow_view()
-
 
 def get_latest_master_flows(limit=100, page=0):
     """
-    Get `limit` rows from master_flow_view in CONST_EXPLORE_DB,
-    sorted by last_seen descending, with pagination support.
-    Returns a list of dictionaries (JSON serializable).
+    Get `limit` rows from explore in CONST_EXPLORE_DB,
+    sorted by packets descending, with pagination support.
+    Returns a dict with 'total', 'page', 'limit', and 'results'.
     """
     offset = page * limit
-    conn = connect_to_db(CONST_EXPLORE_DB,"explore")
+    conn = connect_to_db(CONST_EXPLORE_DB, "explore")
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+
+    # Get total count
+    cursor.execute("SELECT COUNT(*) FROM explore")
+    total = cursor.fetchone()[0]
+
+    # Get paginated results
     cursor.execute(
         "SELECT * FROM explore ORDER BY packets DESC LIMIT ? OFFSET ?",
         (limit, offset)
     )
     rows = cursor.fetchall()
     disconnect_from_db(conn)
-    # Convert sqlite3.Row objects to dictionaries
-    result = [dict(row) for row in rows]
-    return result
+    results = [dict(row) for row in rows]
+
+    return {
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "results": results
+    }
 
 def search_master_flows_by_concat(search_string, page=0, page_size=100):
     """
-    Search the master_flow_view table for rows where the concat column matches the search_string (wildcard, case-insensitive).
+    Search the explore table for rows where the concat column matches the search_string (wildcard, case-insensitive).
     Supports pagination via page and page_size.
-    Returns a list of dictionaries.
+    Returns a dict with 'total', 'page', 'page_size', and 'results'.
     """
     offset = page * page_size
-    conn = connect_to_db(CONST_EXPLORE_DB,"explore")
+    conn = connect_to_db(CONST_EXPLORE_DB, "explore")
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    # Use LIKE for wildcard search, % for any substring match, and COLLATE NOCASE for case-insensitive
+
+    # Get total count
+    count_query = """
+        SELECT COUNT(*) FROM explore
+        WHERE concat LIKE ? COLLATE NOCASE
+    """
+    like_pattern = f"%{search_string}%"
+    cursor.execute(count_query, (like_pattern,))
+    total = cursor.fetchone()[0]
+
+    # Get paginated results
     query = """
         SELECT * FROM explore
         WHERE concat LIKE ? COLLATE NOCASE
         ORDER BY packets DESC
         LIMIT ? OFFSET ?
     """
-    like_pattern = f"%{search_string}%"
     cursor.execute(query, (like_pattern, page_size, offset))
     rows = cursor.fetchall()
     disconnect_from_db(conn)
-    return [dict(row) for row in rows]
+    results = [dict(row) for row in rows]
+
+    return {
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "results": results
+    }

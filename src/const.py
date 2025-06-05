@@ -324,5 +324,8 @@ CONST_INSTALL_CONFIGS = [
     ('TrafficStatsPurgeIntervalDays','31'),
     ('SinkHoleDns', '0'),
     ('DnsResponseLookupResolver',''),
-    ('PerformDnsResponseLookupsForInvestigations','0')
+    ('PerformDnsResponseLookupsForInvestigations','0'),
+    ('ProcessRunInterval','60'),
+    ('IntegrationFetchInterval','86400'),
+    
 ]
