@@ -114,6 +114,10 @@ def update_database_schema(current_version, target_version):
             delete_table(CONST_CONSOLIDATED_DB, "actions")
             create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
 
+        if current_version_int < 12:
+            log_info(logger, "[INFO] Version is less than 12, recreating explore view table")
+            delete_table(CONST_EXPLORE_DB, "explore")
+            
         return True
         
     except ValueError as e:

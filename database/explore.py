@@ -90,8 +90,8 @@ def bulk_populate_master_flow_view():
             (flow_id, src_ip, dst_ip, src_port, dst_port, protocol, tags, flow_start, last_seen, packets, bytes_, times_seen) = row
             src_ip_int = ip_to_int(src_ip)
             dst_ip_int = ip_to_int(dst_ip)
-            dns_query = dnskeyvalue.get(src_ip) or dnskeyvalue.get(dst_ip) or ''
-            dns_response = ''
+            src_dns = dnskeyvalue.get(src_ip) or ''
+            dst_dns = dnskeyvalue.get(dst_ip) or ''
             src_country = lookup_geo(src_ip_int) if src_ip_int is not None else None
             dst_country = lookup_geo(dst_ip_int) if dst_ip_int is not None else None
             src_asn, src_isp = lookup_ipasn(src_ip_int) if src_ip_int is not None else (None, None)
@@ -100,14 +100,14 @@ def bulk_populate_master_flow_view():
                 str(flow_id), str(src_ip), str(dst_ip), str(src_ip_int), str(dst_ip_int),
                 str(src_port), str(dst_port), str(protocol), str(tags), str(flow_start), str(last_seen),
                 str(packets), str(bytes_), str(times_seen),
-                str(dns_query), str(dns_response), str(src_country), str(dst_country),
+                str(src_dns), str(dst_dns), str(src_country), str(dst_country),
                 str(src_asn), str(dst_asn), str(src_isp), str(dst_isp)
             ]
             concat = "_".join(concat_values)
             master_rows.append((
                 flow_id, src_ip, dst_ip, src_ip_int, dst_ip_int, src_port, dst_port, protocol, tags, flow_start, last_seen,
                 packets, bytes_, times_seen,
-                dns_query, dns_response, src_country, dst_country, src_asn, dst_asn, src_isp, dst_isp, concat
+                src_dns, dst_dns, src_country, dst_country, src_asn, dst_asn, src_isp, dst_isp, concat
             ))
            # if idx % progress_step == 0 or idx == total_flows:
                # log_info(logger, f"[PROGRESS] Joined {idx}/{total_flows} flows in memory...")
@@ -128,7 +128,7 @@ def bulk_populate_master_flow_view():
                 INSERT OR REPLACE INTO explore (
                     flow_id, src_ip, dst_ip, src_ip_int, dst_ip_int, src_port, dst_port, protocol, tags, flow_start, last_seen,
                     packets, bytes, times_seen,
-                    dns_query, dns_response, src_country, dst_country, src_asn, dst_asn, src_isp, dst_isp, concat
+                    src_dns, dst_dns, src_country, dst_country, src_asn, dst_asn, src_isp, dst_isp, concat
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, batch)
             tgt_conn.commit()

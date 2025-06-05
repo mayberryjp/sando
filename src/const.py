@@ -12,7 +12,7 @@ CONST_TEST_SOURCE_DB = ['/database/test_source_1.db']
 CONST_SITE= 'TESTPPE'
 CONST_LINK_LOCAL_RANGE = ["169.254.0.0/16"]
 CONST_REINITIALIZE_DB = 0
-CONST_DATABASE_SCHEMA_VERSION=11
+CONST_DATABASE_SCHEMA_VERSION=12
 CONST_CREATE_DNSKEYVALUE_SQL='''
             CREATE TABLE IF NOT EXISTS dnskeyvalue (
                 ip TEXT PRIMARY KEY,
@@ -34,8 +34,8 @@ CONST_CREATE_EXPLORE_SQL='''
                 packets INTEGER,
                 bytes INTEGER,
                 times_seen INTEGER,
-                dns_query TEXT,
-                dns_response TEXT,
+                src_dns TEXT,
+                dst_dns TEXT,
                 src_country TEXT,
                 dst_country TEXT,
                 src_asn TEXT,
