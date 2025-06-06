@@ -1,6 +1,6 @@
 {
     "ip_address": "192.168.50.35",
-    "export_date": "2025-06-05T16:13:11.691222",
+    "export_date": "2025-06-05T20:23:55.486383",
     "instance_identifier": "0bcf67f6adb6c72fd190f637b814dd6e7b600a7dfdbf6bd1177587183bef08cc",
     "host_info": {
         "ip_address": "192.168.50.35",
@@ -13,7 +13,14 @@
         "icon": null,
         "local_description": null
     },
-    "dns_queries": [],
+    "dns_queries": [
+        {
+            "domain": "pool.ntp.org",
+            "times_queried": 1,
+            "first_query": "2025-06-05 17:00:09",
+            "last_query": "2025-06-05 17:00:09"
+        }
+    ],
     "flows": [
         {
             "destination": "129.250.35.250",
@@ -22,8 +29,8 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "last_seen": "2025-06-05 16:01:59",
-            "first_seen": "2025-06-05 16:01:59"
+            "last_seen": "2025-06-05 16:55:20",
+            "first_seen": "2025-06-05 16:55:20"
         }
     ],
     "actions": []

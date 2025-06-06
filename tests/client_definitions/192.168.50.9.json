@@ -1,12 +1,12 @@
 {
     "ip_address": "192.168.50.9",
-    "export_date": "2025-06-05T16:13:11.012515",
+    "export_date": "2025-06-05T20:23:58.488697",
     "instance_identifier": "0bcf67f6adb6c72fd190f637b814dd6e7b600a7dfdbf6bd1177587183bef08cc",
     "host_info": {
         "ip_address": "192.168.50.9",
-        "mac_address": null,
-        "mac_vendor": null,
-        "dhcp_hostname": null,
+        "mac_address": "ec:b5:fa:98:82:d8",
+        "mac_vendor": "Philips Lighting BV",
+        "dhcp_hostname": "hue-hub.832-5.com",
         "dns_hostname": "hue-hub.832-5.com.",
         "os_fingerprint": null,
         "lease_hostname": "hue-hub",
@@ -16,33 +16,15 @@
     "dns_queries": [
         {
             "domain": "diag.meethue.com",
-            "times_queried": 2,
-            "first_query": "2025-06-05 16:06:59",
-            "last_query": "2025-06-05 16:06:59"
-        },
-        {
-            "domain": "data.meethue.com",
             "times_queried": 1,
-            "first_query": "2025-06-05 16:06:59",
-            "last_query": "2025-06-05 16:06:59"
-        },
-        {
-            "domain": "diagnostics.meethue.com",
-            "times_queried": 1,
-            "first_query": "2025-06-05 16:06:59",
-            "last_query": "2025-06-05 16:06:59"
+            "first_query": "2025-06-05 17:00:09",
+            "last_query": "2025-06-05 17:00:09"
         },
         {
             "domain": "mqtt-eu-03.iot.meethue.com",
             "times_queried": 1,
-            "first_query": "2025-06-05 16:06:59",
-            "last_query": "2025-06-05 16:06:59"
-        },
-        {
-            "domain": "ws.meethue.com",
-            "times_queried": 1,
-            "first_query": "2025-06-05 16:06:59",
-            "last_query": "2025-06-05 16:06:59"
+            "first_query": "2025-06-05 17:00:09",
+            "last_query": "2025-06-05 17:00:09"
         }
     ],
     "flows": [
@@ -53,8 +35,8 @@
             "flow_count": 4,
             "total_packets": 90,
             "total_bytes": 15747,
-            "last_seen": "2025-06-05 16:02:00",
-            "first_seen": "2025-06-05 16:01:59"
+            "last_seen": "2025-06-05 16:55:21",
+            "first_seen": "2025-06-05 16:55:20"
         },
         {
             "destination": "99.80.116.23",
@@ -63,8 +45,8 @@
             "flow_count": 1,
             "total_packets": 27,
             "total_bytes": 6898,
-            "last_seen": "2025-06-05 16:01:59",
-            "first_seen": "2025-06-05 16:01:59"
+            "last_seen": "2025-06-05 16:55:20",
+            "first_seen": "2025-06-05 16:55:20"
         },
         {
             "destination": "52.48.41.28",
@@ -73,8 +55,8 @@
             "flow_count": 1,
             "total_packets": 23,
             "total_bytes": 4703,
-            "last_seen": "2025-06-05 16:01:59",
-            "first_seen": "2025-06-05 16:01:59"
+            "last_seen": "2025-06-05 16:55:21",
+            "first_seen": "2025-06-05 16:55:21"
         },
         {
             "destination": "203.107.6.88",
@@ -83,8 +65,8 @@
             "flow_count": 5,
             "total_packets": 5,
             "total_bytes": 380,
-            "last_seen": "2025-06-05 16:02:00",
-            "first_seen": "2025-06-05 16:01:59"
+            "last_seen": "2025-06-05 16:55:21",
+            "first_seen": "2025-06-05 16:55:20"
         },
         {
             "destination": "216.239.35.0",
@@ -93,8 +75,8 @@
             "flow_count": 4,
             "total_packets": 4,
             "total_bytes": 304,
-            "last_seen": "2025-06-05 16:02:00",
-            "first_seen": "2025-06-05 16:01:59"
+            "last_seen": "2025-06-05 16:55:21",
+            "first_seen": "2025-06-05 16:55:20"
         },
         {
             "destination": "216.239.35.12",
@@ -103,8 +85,8 @@
             "flow_count": 3,
             "total_packets": 3,
             "total_bytes": 228,
-            "last_seen": "2025-06-05 16:02:00",
-            "first_seen": "2025-06-05 16:01:59"
+            "last_seen": "2025-06-05 16:55:21",
+            "first_seen": "2025-06-05 16:55:20"
         },
         {
             "destination": "216.239.35.4",
@@ -113,8 +95,8 @@
             "flow_count": 3,
             "total_packets": 3,
             "total_bytes": 228,
-            "last_seen": "2025-06-05 16:02:00",
-            "first_seen": "2025-06-05 16:01:59"
+            "last_seen": "2025-06-05 16:55:21",
+            "first_seen": "2025-06-05 16:55:20"
         },
         {
             "destination": "216.239.35.8",
@@ -123,8 +105,8 @@
             "flow_count": 3,
             "total_packets": 3,
             "total_bytes": 228,
-            "last_seen": "2025-06-05 16:02:00",
-            "first_seen": "2025-06-05 16:01:59"
+            "last_seen": "2025-06-05 16:55:21",
+            "first_seen": "2025-06-05 16:55:20"
         },
         {
             "destination": "8.149.241.96",
@@ -133,8 +115,8 @@
             "flow_count": 3,
             "total_packets": 3,
             "total_bytes": 228,
-            "last_seen": "2025-06-05 16:02:00",
-            "first_seen": "2025-06-05 16:01:59"
+            "last_seen": "2025-06-05 16:55:21",
+            "first_seen": "2025-06-05 16:55:20"
         }
     ],
     "actions": []

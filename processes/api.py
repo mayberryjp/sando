@@ -122,4 +122,4 @@ if IS_CONTAINER:
 if __name__ == '__main__':
     logger = logging.getLogger(__name__) 
     log_info(logger, "Starting API server...")
-    app.run(host=API_LISTEN_ADDRESS, port=API_LISTEN_PORT, server='wsgiref', threaded=True, quiet=False)
+    app.run(host=API_LISTEN_ADDRESS, port=API_LISTEN_PORT, server='paste', quiet=False)
