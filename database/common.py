@@ -500,3 +500,91 @@ def test_database_online(db_path):
     except Exception as e:
         log_error(logger, f"[ERROR] Unexpected error during database connection test: {e}")
         return False
+
+
+def get_database_metrics():
+
+    # Get database file sizes
+    consolidated_db_size = os.path.getsize(CONST_CONSOLIDATED_DB) if os.path.exists(CONST_CONSOLIDATED_DB) else 0
+    explore_db_size = os.path.getsize(CONST_EXPLORE_DB) if os.path.exists(CONST_EXPLORE_DB) else 0
+    performance_db_size = os.path.getsize(CONST_PERFORMANCE_DB) if os.path.exists(CONST_PERFORMANCE_DB) else 0
+
+    test_result = {
+        "db_schema_version": CONST_DATABASE_SCHEMA_VERSION,
+        "machine_unique_identifier": get_machine_unique_identifier_from_db(),
+        "site_name": CONST_SITE,
+        "execution_date": datetime.now().strftime("%Y-%m-%d"),
+        "database sizes": {
+            "consolidated_db_size": consolidated_db_size,
+            "explore_db_size": explore_db_size,
+            "performance_db_size": performance_db_size
+        },
+        "database_counts": {
+            "actions": get_row_count(CONST_CONSOLIDATED_DB, "actions"),
+            "alerts": get_row_count(CONST_CONSOLIDATED_DB, 'alerts'),
+            "allflows": get_row_count(CONST_CONSOLIDATED_DB, 'allflows'),
+            "configuration": get_row_count(CONST_CONSOLIDATED_DB, 'configuration'),
+            "customtags": get_row_count(CONST_CONSOLIDATED_DB, "customtags"),           
+            "geolocation": get_row_count(CONST_CONSOLIDATED_DB, 'geolocation'),  
+            "ignorelist": get_row_count(CONST_CONSOLIDATED_DB, 'ignorelist'),                                             
+            "localhosts": get_row_count(CONST_CONSOLIDATED_DB, 'localhosts'),
+            "newflows": get_row_count(CONST_CONSOLIDATED_DB, 'newflows'),
+            "dnsqueries": get_row_count(CONST_CONSOLIDATED_DB, "dnsqueries"),  
+            "reputationlist": get_row_count(CONST_CONSOLIDATED_DB, "reputationlist"),
+            "services": get_row_count(CONST_CONSOLIDATED_DB, "services"),
+            "tornodes": get_row_count(CONST_CONSOLIDATED_DB, "tornodes"),
+            "trafficstats": get_row_count(CONST_CONSOLIDATED_DB, "trafficstats"),
+            "ipasn": get_row_count(CONST_CONSOLIDATED_DB, "ipasn"),
+            "explore": get_row_count(CONST_EXPLORE_DB, "explore"),
+            "dnskeyvalue": get_row_count(CONST_EXPLORE_DB, "dnskeyvalue"),
+            "dbperformance": get_row_count(CONST_PERFORMANCE_DB, "dbperformance")
+        },
+        "query_execution_times": get_p95_execution_times()
+    }
+
+    return test_result
+
+def get_p95_execution_times():
+    """
+    Retrieve the p95 execution time for each function from the dbperformance table.
+
+    Returns:
+        dict: A dictionary where keys are function names and values are their p95 execution times.
+    """
+    logger = logging.getLogger(__name__)
+    result = {}
+    try:
+        conn = connect_to_db(CONST_PERFORMANCE_DB, "dbperformance")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to performance database.")
+            return {}
+
+        cursor = conn.cursor()
+        query = """
+            SELECT function, MIN(execution_time) AS p95_execution_time
+            FROM (
+                SELECT function,
+                       execution_time,
+                       ROW_NUMBER() OVER (PARTITION BY function ORDER BY execution_time) AS rn,
+                       COUNT(*) OVER (PARTITION BY function) AS total
+                FROM dbperformance
+            )
+            WHERE rn >= CAST(total * 0.95 AS INTEGER)
+            GROUP BY function;
+        """
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        for function, p95_time in rows:
+            result[function] = p95_time
+
+        return result
+
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while retrieving p95 execution times: {e}")
+        return {}
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while retrieving p95 execution times: {e}")
+        return {}
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)

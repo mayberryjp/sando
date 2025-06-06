@@ -1,12 +1,12 @@
 {
     "ip_address": "192.168.50.49",
-    "export_date": "2025-06-05T20:23:58.352732",
+    "export_date": "2025-06-05T21:38:38.488338",
     "instance_identifier": "0bcf67f6adb6c72fd190f637b814dd6e7b600a7dfdbf6bd1177587183bef08cc",
     "host_info": {
         "ip_address": "192.168.50.49",
-        "mac_address": "94:e6:86:6b:fd:34",
-        "mac_vendor": "Espressif Inc.",
-        "dhcp_hostname": "emporiavue.832-5.com",
+        "mac_address": null,
+        "mac_vendor": null,
+        "dhcp_hostname": null,
         "dns_hostname": "emporiavue.832-5.com.",
         "os_fingerprint": null,
         "lease_hostname": "emporiavue",
@@ -15,10 +15,16 @@
     },
     "dns_queries": [
         {
+            "domain": "pool.ntp.org",
+            "times_queried": 3,
+            "first_query": "2025-06-05 21:36:02",
+            "last_query": "2025-06-05 21:36:02"
+        },
+        {
             "domain": "time.google.com",
             "times_queried": 2,
-            "first_query": "2025-06-05 17:00:09",
-            "last_query": "2025-06-05 17:00:09"
+            "first_query": "2025-06-05 21:36:02",
+            "last_query": "2025-06-05 21:36:02"
         }
     ],
     "flows": [
@@ -29,8 +35,8 @@
             "flow_count": 1,
             "total_packets": 6,
             "total_bytes": 456,
-            "last_seen": "2025-06-05 16:55:20",
-            "first_seen": "2025-06-05 16:55:20"
+            "last_seen": "2025-06-05 21:31:30",
+            "first_seen": "2025-06-05 21:31:30"
         },
         {
             "destination": "216.239.35.8",
@@ -39,8 +45,8 @@
             "flow_count": 1,
             "total_packets": 4,
             "total_bytes": 304,
-            "last_seen": "2025-06-05 16:55:20",
-            "first_seen": "2025-06-05 16:55:20"
+            "last_seen": "2025-06-05 21:31:30",
+            "first_seen": "2025-06-05 21:31:30"
         },
         {
             "destination": "162.159.200.123",
@@ -49,8 +55,8 @@
             "flow_count": 1,
             "total_packets": 2,
             "total_bytes": 152,
-            "last_seen": "2025-06-05 16:55:20",
-            "first_seen": "2025-06-05 16:55:20"
+            "last_seen": "2025-06-05 21:31:30",
+            "first_seen": "2025-06-05 21:31:30"
         },
         {
             "destination": "216.239.35.12",
@@ -59,8 +65,8 @@
             "flow_count": 1,
             "total_packets": 2,
             "total_bytes": 152,
-            "last_seen": "2025-06-05 16:55:20",
-            "first_seen": "2025-06-05 16:55:20"
+            "last_seen": "2025-06-05 21:31:30",
+            "first_seen": "2025-06-05 21:31:30"
         },
         {
             "destination": "162.159.200.1",
@@ -69,8 +75,8 @@
             "flow_count": 1,
             "total_packets": 1,
             "total_bytes": 76,
-            "last_seen": "2025-06-05 16:55:21",
-            "first_seen": "2025-06-05 16:55:21"
+            "last_seen": "2025-06-05 21:31:30",
+            "first_seen": "2025-06-05 21:31:30"
         }
     ],
     "actions": []
