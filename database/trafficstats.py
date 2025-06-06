@@ -139,7 +139,7 @@ def get_traffic_stats_for_ip(ip_address):
             cursor,
             traffic_query,
             (ip_address,),
-            description=f"get_traffic_stats_for_{ip_address}"
+            description=f"get_traffic_stats_for_ip_get_traffic_stats"
         )
         
         # Query to retrieve alert counts for the same IP address
@@ -162,7 +162,7 @@ def get_traffic_stats_for_ip(ip_address):
             cursor,
             alerts_query,
             (ip_address,),
-            description=f"get_alert_counts_for_{ip_address}"
+            description=f"get_traffic_stats_for_ip_get_alert_counts"
         )
         
         disconnect_from_db(conn)

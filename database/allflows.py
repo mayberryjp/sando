@@ -84,7 +84,7 @@ def update_tag_to_allflows(table_name, tag, src_ip, dst_ip, dst_port):
             cursor,
             select_query,
             params=(src_ip, dst_ip, dst_port),
-            description="select tags from update_tag_to_allflows",
+            description="update_tag_to_allflows_select_tags",
             fetch_all=True
         )
         result = result_rows[0] if result_rows else None
@@ -361,7 +361,7 @@ def get_tag_statistics(local_ip):
             cursor, 
             query, 
             params=(local_ip, local_ip),  # Pass local_ip twice for src_ip and dst_ip conditions
-            description=f"Tag Statistics for IP {local_ip}", 
+            description="get_tag_statistics", 
             fetch_all=True
         )
         

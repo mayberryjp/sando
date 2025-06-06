@@ -119,7 +119,7 @@ def get_country_by_ip_int(ip_int):
             cursor,
             query,
             params=(ip_int,),
-            description=f"get_country_by_ip_int for {ip_int}",
+            description=f"get_country_by_ip_int",
             fetch_all=True
         )
         if rows:

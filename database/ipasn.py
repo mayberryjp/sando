@@ -52,7 +52,7 @@ def get_asn_for_ip(ip_address):
             cursor,
             query,
             params=(ip_int,),
-            description=f"get_asn_for_ip for {ip_address}",
+            description=f"get_asn_for_ip",
             fetch_all=True
         )
 

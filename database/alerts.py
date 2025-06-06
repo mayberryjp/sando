@@ -41,7 +41,7 @@ def summarize_alerts_by_ip_last_seen():
             SELECT DISTINCT ip_address 
             FROM localhosts
         """
-        
+
         cursor.execute(ip_query)
         all_ips_rows = cursor.fetchall()
 
@@ -60,7 +60,7 @@ def summarize_alerts_by_ip_last_seen():
             cursor, 
             alerts_query,
             (start_time.strftime('%Y-%m-%d %H:%M:%S'),),
-            description="get_alerts_by_hour"
+            description="summarize_alerts_by_ip_last_seen"
         )
         
         disconnect_from_db(conn)
@@ -92,9 +92,7 @@ def summarize_alerts_by_ip_last_seen():
                     # This shouldn't happen if our hour generation is correct
                     log_warn(logger, f"Hour {hour} not found in generated intervals")
 
-        total_time = ip_query_time + alerts_query_time
-        log_info(logger, f"[INFO] Generated alert summary for {len(all_ips)} IPs in {total_time:.2f} ms " +
-                         f"(IP query: {ip_query_time:.2f} ms, Alerts query: {alerts_query_time:.2f} ms)")
+        log_info(logger, f"[INFO] Generated alert summary for {len(all_ips)} IPs")
         return result
 
     except sqlite3.Error as e:
@@ -139,7 +137,7 @@ def summarize_alerts_by_ip():
         all_ips_rows, ip_query_time = run_timed_query(
             cursor, 
             ip_query,
-            description="summarize_alerts_by_ip"
+            description="summarize_alerts_by_ip_select_distinct_ips"
         )
         
         all_ips = [row[0] for row in all_ips_rows]
@@ -157,7 +155,7 @@ def summarize_alerts_by_ip():
             cursor, 
             alerts_query,
             (start_time.strftime('%Y-%m-%d %H:%M:%S'),),
-            description="get_alerts_by_hour"
+            description="summarize_alerts_by_ip"
         )
         
         disconnect_from_db(conn)
@@ -245,7 +243,7 @@ def get_hourly_alerts_summary(ip_address, start_time=None):
             cursor, 
             hourly_query, 
             (ip_address, start_time),
-            description=f"get_hourly_alerts_for_{ip_address}"
+            description=f"get_hourly_alerts_summary"
         )
         
         log_info(logger, f"[INFO] Retrieved {len(hourly_summary)} hourly alert entries for IP {ip_address} in {query_time:.2f} ms")
@@ -298,7 +296,7 @@ def get_all_alerts_by_ip(ip_address):
             cursor, 
             alerts_query, 
             (ip_address,),
-            description=f"get_all_alerts_for_{ip_address}"
+            description=f"get_all_alerts_for_ip"
         )
         
         # Get column names from cursor description
@@ -402,7 +400,7 @@ def get_recent_alerts_database():
         rows, query_time = run_timed_query(
             cursor, 
             recent_alerts_query,
-            description="get_recent_alerts"
+            description="get_recent_alerts_database"
         )
         
         log_info(logger, f"[INFO] Retrieved {len(rows)} recent alerts in {query_time:.2f} ms")
@@ -533,7 +531,7 @@ def get_alerts_summary():
         total_count_result, count_query_time = run_timed_query(
             cursor, 
             total_count_query,
-            description="count_alerts"
+            description="get_alerts_summary_count"
         )
         total_count = total_count_result[0][0]
         
@@ -548,7 +546,7 @@ def get_alerts_summary():
         categories, category_query_time = run_timed_query(
             cursor, 
             category_count_query,
-            description="alerts_by_category"
+            description="get_alerts_summary_alerts_by_category"
         )
         
         # Log the summary with performance metrics
@@ -601,7 +599,7 @@ def get_recent_alerts_by_ip(ip_address):
             cursor, 
             alerts_query, 
             (ip_address,),
-            description=f"get_recent_alerts_for_{ip_address}"
+            description=f"get_recent_alerts_by_ip"
         )
         
         # Get column names from cursor description
@@ -719,7 +717,7 @@ def get_alerts_by_category(category_name):
             cursor, 
             category_query, 
             (category_name,),
-            description=f"get_alerts_for_category_{category_name}"
+            description=f"get_alerts_by_category"
         )
         
         log_info(logger, f"[INFO] Retrieved {len(rows)} alerts for category '{category_name}' in {query_time:.2f} ms")
@@ -801,7 +799,7 @@ def get_all_alerts_by_category(category):
             ORDER BY last_seen DESC
             """,
             (category,),
-            description=f"get_alerts_for_{category}"
+            description=f"get_all_alerts_by_category"
         )
         
         # Process the results as before

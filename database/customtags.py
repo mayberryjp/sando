@@ -46,15 +46,8 @@ def insert_custom_tag(tag_id, src_ip, dst_ip, dst_port, protocol, tag_name="", e
             SELECT COUNT(*) FROM customtags
             WHERE tag_id = ? AND src_ip = ? AND dst_ip = ? AND dst_port = ? AND protocol = ?
         """
-        
-        results, check_time = run_timed_query(
-            cursor,
-            check_query,
-            (tag_id, src_ip, dst_ip, dst_port, protocol),
-            description=f"check_tag_exists_{tag_id}"
-        )
-        
-        exists = results[0][0]
+        cursor.execute(check_query, (tag_id, src_ip, dst_ip, dst_port, protocol))
+        exists = cursor.fetchone()[0]
         if exists:
             log_info(logger, f"[INFO] Custom tag entry already exists with ID {tag_id}")
             return True, tag_id
@@ -69,16 +62,10 @@ def insert_custom_tag(tag_id, src_ip, dst_ip, dst_port, protocol, tag_name="", e
                 ?, datetime('now', 'localtime'), datetime('now', 'localtime')
             )
         """
-        
-        _, insert_time = run_timed_query(
-            cursor,
-            insert_query,
-            (tag_id, src_ip, dst_ip, dst_port, protocol, tag_name, enabled),
-            description=f"insert_tag_{tag_id}",
-            fetch_all=False
-        )
-        
+        start_time = time.time()
+        cursor.execute(insert_query, (tag_id, src_ip, dst_ip, dst_port, protocol, tag_name, enabled))
         conn.commit()
+        insert_time = (time.time() - start_time) * 1000
         log_info(logger, f"[INFO] Successfully inserted new custom tag with ID {tag_id} in {insert_time:.2f} ms")
         return True, tag_id
         
