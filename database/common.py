@@ -502,7 +502,6 @@ def test_database_online(db_path):
         return False
 
 
-
 def get_p95_execution_times():
     """
     Retrieve the p95 execution time for each function from the dbperformance table.

@@ -115,8 +115,6 @@ def main():
         except Exception as e:
             log_error(logger, f"[ERROR] Error during data fetch: {e}")
 
-        exit(0)
-
         try:
             if config_dict.get("ImportAsnDatabase",0) > 0:
                 log_info(logger,"[INFO] Retrieving IP2ASN Database...")
