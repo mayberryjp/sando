@@ -119,6 +119,9 @@ def update_database_schema(current_version, target_version):
             delete_table(CONST_EXPLORE_DB, "explore")
             create_table(CONST_EXPLORE_DB, CONST_CREATE_EXPLORE_SQL, "explore")
             
+        if current_version_int < 13:
+            log_info(logger, "[INFO] Version is less than 13, recreating explore view table")
+            delete_all_records(CONST_PERFORMANCE_DB, "dbperformance")
         return True
         
     except ValueError as e:
