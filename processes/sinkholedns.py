@@ -311,9 +311,10 @@ if __name__ == "__main__":
     if not config_dict.get('SinkHoleDns', 0):
         log_info(logging, "[INFO] Sinkhole DNS is disabled in configuration. Exiting.")
     else:
-        resolver = SinkholeResolver(listen_ip="0.0.0.0", port=53)
+        # Read listen_ip from environment variable or default to "0.0.0.0"
+        listen_ip = os.environ.get("SINKHOLE_LISTEN_IP", "0.0.0.0")
+        resolver = SinkholeResolver(listen_ip=listen_ip, port=53)
 
-        
         # Set up signal handlers
         signal.signal(signal.SIGINT, handle_signal)
         signal.signal(signal.SIGTERM, handle_signal)
@@ -322,7 +323,7 @@ if __name__ == "__main__":
         udp_thread, tcp_thread = resolver.start()
         
         log_info(logger, "[INFO] DNS Sinkhole server running. Press Ctrl+C to stop.")
-    
-    # Keep the main thread alive with a cross-platform solution
-    while True:
-        time.sleep(1)  # Sleep for 1 second
+
+# Keep the main thread alive with a cross-platform solution
+while True:
+    time.sleep(1)  # Sleep for 1 second
