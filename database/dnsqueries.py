@@ -98,7 +98,7 @@ def get_client_dns_queries(client_ip):
             dns_cursor,
             query,
             params=(client_ip,),
-            description=f"get_client_dns_queries for",
+            description="get_client_dns_queries",
             fetch_all=True
         )
 

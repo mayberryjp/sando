@@ -42,12 +42,9 @@ def summarize_alerts_by_ip_last_seen():
             FROM localhosts
         """
         
-        all_ips_rows, ip_query_time = run_timed_query(
-            cursor, 
-            ip_query,
-            description="summarize_alerts_by_ip_last_seen"
-        )
-        
+        cursor.execute(ip_query)
+        all_ips_rows = cursor.fetchall()
+
         all_ips = [row[0] for row in all_ips_rows]
         
         # Query to fetch alerts within the last 12 hours
