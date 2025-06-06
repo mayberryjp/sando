@@ -100,7 +100,7 @@ from database.common import (
     update_database_schema,
     check_update_database_schema,
     test_database_online,
-    get_database_metrics
+    get_p95_execution_times
 )
 
 # Alert functions

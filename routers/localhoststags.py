@@ -16,7 +16,7 @@ app = Bottle()
 
 def setup_localhoststags_routes(app):
 
-    @app.put('/api/localhosts/tag/<ip_address>')
+    @app.put('/api/localhosttags/<ip_address>')
     def api_add_tag(ip_address):
         """
         Add a tag to the specified localhost.
@@ -34,7 +34,7 @@ def setup_localhoststags_routes(app):
             response.status = 500
             return {"success": False, "error": str(e)}
 
-    @app.delete('/api/localhosts/tag/<ip_address>')
+    @app.delete('/api/localhosttags/<ip_address>')
     def api_delete_tag(ip_address):
         """
         Remove a tag from the specified localhost.

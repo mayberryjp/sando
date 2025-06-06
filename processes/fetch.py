@@ -14,7 +14,7 @@ import time
 import logging
 from integrations.tor import update_tor_nodes
 from integrations.geolocation import create_geolocation_db
-from src.client import upload_all_client_definitions, upload_configuration
+from src.client import upload_all_client_definitions, upload_configuration, upload_database_metrics
 from integrations.reputation import import_reputation_list
 from integrations.piholedns import get_pihole_ftl_logs
 from integrations.services import create_services_db
@@ -96,6 +96,27 @@ def main():
             exit(1)
         # Call the update_tor_nodes function
 
+        try: 
+            if config_dict.get('SendDeviceClassificationsToHomelabApi', 0) > 0:
+                log_info(logger, "[INFO] Sending device classifications to Homelab API...")
+                upload_all_client_definitions()
+                log_info(logger, "[INFO] Device classification upload finished.")
+        except Exception as e:
+            log_error(logger, f"[ERROR] Error during data fetch: {e}")
+
+        try: 
+            if config_dict.get('SendConfigurationToCloudApi', 0) > 0:
+                log_info(logger, "[INFO] Sending instance configuration to Homelab API...")
+                upload_configuration()
+                log_info(logger, "[INFO] Instance configuration upload finished.")
+                log_info(logger, "[INFO] Sending database metrics to Homelab API...")
+                upload_database_metrics()
+                log_info(logger, "[INFO] Database metrics upload finished.")
+        except Exception as e:
+            log_error(logger, f"[ERROR] Error during data fetch: {e}")
+
+        exit(0)
+
         try:
             if config_dict.get("ImportAsnDatabase",0) > 0:
                 log_info(logger,"[INFO] Retrieving IP2ASN Database...")
@@ -125,22 +146,6 @@ def main():
                 log_info(logger, "[INFO] Fetching and updating reputation list...")
                 import_reputation_list(config_dict)
                 log_info(logger, "[INFO] Reputation list update finished.")
-        except Exception as e:
-            log_error(logger, f"[ERROR] Error during data fetch: {e}")
-
-        try: 
-            if config_dict.get('SendDeviceClassificationsToHomelabApi', 0) > 0:
-                log_info(logger, "[INFO] Sending device classifications to Homelab API...")
-                upload_all_client_definitions()
-                log_info(logger, "[INFO] Device classification upload finished.")
-        except Exception as e:
-            log_error(logger, f"[ERROR] Error during data fetch: {e}")
-
-        try: 
-            if config_dict.get('SendConfigurationToCloudApi', 0) > 0:
-                log_info(logger, "[INFO] Sending instance configuration to Homelab API...")
-                upload_configuration()
-                log_info(logger, "[INFO] Instance configuration upload finished.")
         except Exception as e:
             log_error(logger, f"[ERROR] Error during data fetch: {e}")
 

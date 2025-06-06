@@ -146,7 +146,7 @@ def insert_dbperformance(db_name, query, description, execution_time, rows_retur
             VALUES (?, ?, ?, ?, ?, datetime('now', 'localtime'))
         """, (db_name, query, description, execution_time, rows_returned))
         conn.commit()
-        log_info(logger, f"[INFO] Inserted dbperformance record for query: {query[:50]}...")
+       # log_info(logger, f"[INFO] Inserted dbperformance record for query: {query[:50]}...")
         return True
     except Exception as e:
         log_error(logger, f"[ERROR] Failed to insert dbperformance record: {e}")

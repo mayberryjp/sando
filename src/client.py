@@ -284,3 +284,78 @@ def classify_client(machine_identifier, client_data):
     
     return None
 
+def upload_database_metrics():
+    """
+    Gather database metrics and upload them to the metrics API endpoint.
+    Uses the same request sending, logging, and error catching patterns as upload_configuration.
+    """
+    logger = logging.getLogger(__name__)
+
+    try:
+        # Get database file sizes
+        consolidated_db_size = os.path.getsize(CONST_CONSOLIDATED_DB) if os.path.exists(CONST_CONSOLIDATED_DB) else 0
+        explore_db_size = os.path.getsize(CONST_EXPLORE_DB) if os.path.exists(CONST_EXPLORE_DB) else 0
+        performance_db_size = os.path.getsize(CONST_PERFORMANCE_DB) if os.path.exists(CONST_PERFORMANCE_DB) else 0
+
+        test_result = {
+            "db_schema_version": CONST_DATABASE_SCHEMA_VERSION,
+            "machine_unique_identifier": get_machine_unique_identifier_from_db(),
+            "site_name": CONST_SITE,
+            "execution_date": datetime.now().strftime("%Y-%m-%d"),
+            "database_sizes": {
+                "consolidated_db_size": consolidated_db_size,
+                "explore_db_size": explore_db_size,
+                "performance_db_size": performance_db_size
+            },
+            "database_counts": {
+                "actions": get_row_count(CONST_CONSOLIDATED_DB, "actions"),
+                "alerts": get_row_count(CONST_CONSOLIDATED_DB, 'alerts'),
+                "allflows": get_row_count(CONST_CONSOLIDATED_DB, 'allflows'),
+                "configuration": get_row_count(CONST_CONSOLIDATED_DB, 'configuration'),
+                "customtags": get_row_count(CONST_CONSOLIDATED_DB, "customtags"),
+                "geolocation": get_row_count(CONST_CONSOLIDATED_DB, 'geolocation'),
+                "ignorelist": get_row_count(CONST_CONSOLIDATED_DB, 'ignorelist'),
+                "localhosts": get_row_count(CONST_CONSOLIDATED_DB, 'localhosts'),
+                "newflows": get_row_count(CONST_CONSOLIDATED_DB, 'newflows'),
+                "dnsqueries": get_row_count(CONST_CONSOLIDATED_DB, "dnsqueries"),
+                "reputationlist": get_row_count(CONST_CONSOLIDATED_DB, "reputationlist"),
+                "services": get_row_count(CONST_CONSOLIDATED_DB, "services"),
+                "tornodes": get_row_count(CONST_CONSOLIDATED_DB, "tornodes"),
+                "trafficstats": get_row_count(CONST_CONSOLIDATED_DB, "trafficstats"),
+                "ipasn": get_row_count(CONST_CONSOLIDATED_DB, "ipasn"),
+                "explore": get_row_count(CONST_EXPLORE_DB, "explore"),
+                "dnskeyvalue": get_row_count(CONST_EXPLORE_DB, "dnskeyvalue"),
+                "dbperformance": get_row_count(CONST_PERFORMANCE_DB, "dbperformance")
+            },
+            "query_execution_times": get_p95_execution_times()
+        }
+
+        # Construct the API endpoint URL
+        instance_identifier = test_result["machine_unique_identifier"]
+        api_url = f"http://api.homelabids.com:8045/api/database/{instance_identifier}"
+
+        # Post the metrics as JSON
+        response = requests.post(
+            api_url,
+            json=test_result,
+            headers={
+                'Content-Type': 'application/json',
+                'User-Agent': 'NetFlowIPS-Client/1.0'
+            },
+            timeout=30
+        )
+
+        # Check the response status
+        if response.status_code in (200, 201, 204):
+            log_info(logger, f"[INFO] Successfully uploaded database metrics for instance {instance_identifier}.")
+            return True
+        else:
+            log_error(logger, f"[ERROR] Failed to upload database metrics: HTTP {response.status_code}")
+            return False
+
+    except requests.RequestException as e:
+        log_error(logger, f"[ERROR] Request failed while uploading database metrics: {str(e)}")
+        return False
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while uploading database metrics: {str(e)}")
+        return False
