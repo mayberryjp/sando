@@ -300,7 +300,7 @@ def upload_database_metrics():
         test_result = {
             "db_schema_version": CONST_DATABASE_SCHEMA_VERSION,
             "machine_unique_identifier": get_machine_unique_identifier_from_db(),
-            "site_name": CONST_SITE,
+            "site_name": os.getenv("SITE", CONST_SITE),
             "execution_date": datetime.now().strftime("%Y-%m-%d"),
             "database_sizes": {
                 "consolidated_db_size": consolidated_db_size,
