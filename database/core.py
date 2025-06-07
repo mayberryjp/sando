@@ -28,6 +28,7 @@ def delete_database(db_path):
     except Exception as e:
         log_error(logger,f"[ERROR] Error deleting {db_path}: {e}")
 
+
 def connect_to_db(DB_NAME,table):
     """Establish a connection to the specified database."""
     logger = logging.getLogger(__name__)
@@ -70,6 +71,7 @@ def create_table(db_name, create_table_sql, table):
         cursor = conn.cursor()
         cursor.executescript(create_table_sql)
         conn.commit()
+        cursor.execute("PRAGMA journal_mode=WAL;")
         log_info(logger, f"[INFO] {db_name} table {table} initialized successfully.")
         disconnect_from_db(conn)
     except sqlite3.Error as e:

@@ -123,4 +123,4 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__) 
     log_info(logger, "Starting API server...")
     from waitress import serve
-    serve(app, host=API_LISTEN_ADDRESS, port=int(API_LISTEN_PORT))
+    serve(app, host=API_LISTEN_ADDRESS, port=int(API_LISTEN_PORT), threads=20)
