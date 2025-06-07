@@ -55,6 +55,8 @@ def setup_explore_routes(app):
         """
         try:
             search_string = request.query.get('q', '')
+            if "_" in search_string:
+                search_string = search_string.replace("_", r"\_")
             if not search_string:
                 response.status = 400
                 return json.dumps({"success": False, "error": "Missing required parameter: q"})
