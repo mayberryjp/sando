@@ -176,8 +176,11 @@ def insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol, s
 
         log_info(logger,f"[DEBUG] {src_port}")
 
-        # Check if 'LocalServerExposed' is in the ignorelist_id
-        if "LocalServerExposed" in ignorelist_id:
+        if "NewOutboundDetection_Port" in ignorelist_id:
+            ignorelist_id = f"AllowSourceOutbound_Destination:*_Port:{dst_port}_Protocol:{protocol}"
+        elif "NewOutboundDetection_Destination" in ignorelist_id:
+            ignorelist_id = f"AllowSourceOutbound_Destination:{dst_ip}_Port:*_Protocol:{protocol}"
+        elif "LocalServerExposed" in ignorelist_id:
             log_info(logger, f"[INFO] Special handling: 'LocalServerExposed' found in ignorelist_id: {ignorelist_id}")
             # You can add any special logic here if needed
             from database.configuration import get_config_settings
@@ -189,7 +192,8 @@ def insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol, s
                 src_ip = "*"
                 dst_port = src_port
             ignorelist_id = f"LocalServerExposed_Source:*_DestIp:{dst_ip}_DstPort:{dst_port}_Protocol:{protocol}"
-
+        else:
+            ignorelist_id = f"AllowExactFlow_Source:{src_ip}_DestIp:{dst_ip}_DstPort:{dst_port}_Protocol:{protocol}"
         
         # Check if the entry already exists
         cursor.execute("""
