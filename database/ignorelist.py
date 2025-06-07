@@ -149,7 +149,7 @@ def delete_ignorelist_entry(ignorelist_id):
 
 
 
-def insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
+def insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol, src_port=None):
     """
     Insert a new entry into the ignorelist database.
     
@@ -173,6 +173,23 @@ def insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
             return False
 
         cursor = conn.cursor()
+
+        log_info(logger,f"[DEBUG] {src_port}")
+
+        # Check if 'LocalServerExposed' is in the ignorelist_id
+        if "LocalServerExposed" in ignorelist_id:
+            log_info(logger, f"[INFO] Special handling: 'LocalServerExposed' found in ignorelist_id: {ignorelist_id}")
+            # You can add any special logic here if needed
+            from database.configuration import get_config_settings
+            from src.network import is_ip_in_range
+            config_dict = get_config_settings()
+            LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+            if is_ip_in_range(src_ip, LOCAL_NETWORKS):
+                dst_ip = src_ip
+                src_ip = "*"
+                dst_port = src_port
+            ignorelist_id = f"LocalServerExposed_Source:*_DestIp:{dst_ip}_DstPort:{dst_port}_Protocol:{protocol}"
+
         
         # Check if the entry already exists
         cursor.execute("""

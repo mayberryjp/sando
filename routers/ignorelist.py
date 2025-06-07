@@ -67,8 +67,11 @@ def setup_ignorelist_routes(app):
             ignorelist_id = data.get("ignorelist_id")
             src_ip = data.get('src_ip')
             dst_ip = data.get('dst_ip')
+            src_port = data.get('src_port') 
             dst_port = data.get('dst_port')
             protocol = data.get('protocol')
+
+            log_info(logger,f"[DEBUG] {src_port}")
             
             if not ignorelist_id or not src_ip or not dst_ip or not dst_port or not protocol:
                 response.status = 400
@@ -76,7 +79,7 @@ def setup_ignorelist_routes(app):
             
             try:
 
-                insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol)
+                insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol, src_port=src_port)
                 
                 response.content_type = 'application/json'
                 log_info(logger, f"[INFO] Added new ignorelist entry: {ignorelist_id} {src_ip} -> {dst_ip}:{dst_port}/{protocol}")

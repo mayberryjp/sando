@@ -424,13 +424,13 @@ def apply_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
         flow_params = []
         
         if src_ip != "*":
-            flow_where_conditions.append("src_ip = ?")
-            flow_params.append(src_ip)
-            
+            flow_where_conditions.append("(src_ip = ? OR dst_ip = ?)")
+            flow_params.extend([src_ip, src_ip])
+
         if dst_ip != "*":
-            flow_where_conditions.append("dst_ip = ?")
-            flow_params.append(dst_ip)
-            
+            flow_where_conditions.append("(dst_ip = ? OR src_ip = ?)")
+            flow_params.extend([dst_ip, dst_ip])
+
         # Match port against both src_port and dst_port
         if dst_port != "*":
             flow_where_conditions.append("(src_port = ? OR dst_port = ?)")

@@ -18,8 +18,8 @@ def run_and_dump_database_metrics():
     Executes get_database_metrics and prints the output as formatted JSON.
     """
     logging.basicConfig(level=logging.INFO)
-    metrics = get_database_metrics()
-    print(json.dumps(metrics, indent=2, sort_keys=True))
+    #metrics = get_database_metrics()
+  #  print(json.dumps(metrics, indent=2, sort_keys=True))
 
 if __name__ == "__main__":
     run_and_dump_database_metrics()
