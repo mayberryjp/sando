@@ -16,6 +16,7 @@ import logging
 from locallogging import log_info, log_error, log_warn
 from notifications.core import handle_alert
 from init import *
+from database.ignorelist import get_ignorelist
 
 def detect_dead_connections(config_dict):
     """
@@ -34,13 +35,15 @@ def detect_dead_connections(config_dict):
     # Get local networks from the configuration
     LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
     dead_connections = get_dead_connections_from_database()
-
+    ignorelist_entries = get_ignorelist()
     log_info(logger, f"[INFO] Found {len(dead_connections)} potential dead connections")
 
     for row in dead_connections:
+        
         src_ip = row[0]
         dst_ip = row[1]
         dst_port = row[2]
+        src_port = row[3]
         protocol = row[5]
         row_tags = row[6]  # Existing tags for the flow
 

@@ -228,9 +228,10 @@ def get_dead_connections_from_database():
                 FROM ConnectionPairs
                 WHERE connection_protocol=6 -- Exclude ICMP and IGMP
                 AND row_tags not like '%DeadConnectionDetection%'
-                AND responder_ip NOT LIKE '224%'  -- Exclude multicast
-                AND responder_ip NOT LIKE '239%'  -- Exclude multicast
-                AND responder_ip NOT LIKE '255%'  -- Exclude broadcast
+                AND row_tags not like '%IgnoreList;%'
+                AND responder_ip NOT LIKE '224.%'  -- Exclude multicast
+                AND responder_ip NOT LIKE '239.%'  -- Exclude multicast
+                AND responder_ip NOT LIKE '255.%'  -- Exclude broadcast
                 GROUP BY initiator_ip, responder_ip, responder_port, connection_protocol
                 HAVING 
                     f_packets > 2
