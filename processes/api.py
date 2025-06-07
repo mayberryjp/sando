@@ -54,8 +54,6 @@ CORS_HEADERS = {
 
 from database.common import test_database_online
 
-
-
 @app.get('/api/online/<db_name>')
 def api_online_db(db_name):
     """

@@ -4,13 +4,13 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 API_ENDPOINTS = [
-    "http://localhost:8044/api/online/explore",
+  #  "http://localhost:8044/api/online/explore",
     "http://localhost:8044/api/online/consolidated",
-    "http://localhost:8044/api/client/192.168.49.80",
+ #   "http://localhost:8044/api/client/192.168.49.80",
     "http://localhost:8044/api/localhosts"
 ]
-NUM_REQUESTS_PER_ENDPOINT = 40
-MAX_WORKERS = 20
+NUM_REQUESTS_PER_ENDPOINT = 200
+MAX_WORKERS = 50
 
 def send_request(url):
     try:
