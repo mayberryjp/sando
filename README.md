@@ -102,7 +102,7 @@ services:
 
 ```
 
-After installation navigate get to http://<your dashboard ip>:3030 .
+After installation navigate get to http://YOUR_IP_REPLACE:3030 .
 
 ---
 
@@ -173,7 +173,7 @@ HomelabIDS is licensed under the MIT License. Feel free to use, modify, and dist
 
 ## 💬 **Join the Community**
 
-- **Reddit**: r/homelabids on Reddit
+- **Reddit**: [https://www.reddit.com/r/homelabids/](r/homelabids on Reddit)
 
 ---
 
