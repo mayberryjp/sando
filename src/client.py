@@ -145,6 +145,7 @@ def upload_all_client_definitions():
         log_info(logger, f"[DEBUG] Number of IP addresses to process: {len(ip_addresses)}")
         
         for ip_address in ip_addresses:
+            time.sleep(3) 
             try:
                 client_data = export_client_definition(ip_address)
                 
