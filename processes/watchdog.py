@@ -60,7 +60,7 @@ def check_api_health_and_restart():
 
     for url in endpoints:
         try:
-            resp = requests.get(url, timeout=5)
+            resp = requests.get(url, timeout=30)
             if resp.status_code != 200:
                 log_error(logger, f"[ERROR] Health check failed for {url}: HTTP {resp.status_code}")
                 unhealthy = True
