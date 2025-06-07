@@ -21,7 +21,7 @@
 - Identify **new outbound connections** and **high-bandwidth flows**.
 
 ### 🌍 **Geolocation and Reputation**
-- Block traffic from **banned countries**.
+- Detect traffic to **banned countries**.
 - Integrate with **reputation lists** to detect malicious IPs.
 - Detect traffic bypassing **local DNS** or **NTP servers**.
 
@@ -34,8 +34,10 @@
 - Enable or disable specific detection mechanisms.
 - Integrate with **Pi-hole** for DNS query monitoring.
 
-### 🕵️ **Tor Node Detection**
-- Detect and block traffic to or from **Tor nodes**.
+### 📊 **Integrations**
+- Works with Home Assistant and Homepage.dev dashboard and potentially more
+- Works with Pihole and PfSense
+- Works with various reputation and geolist providers like MaxMind, IPASN, Tor list, etc
 
 ### ⚡ **Lightweight and Efficient**
 - Designed to run on minimal hardware.
@@ -52,44 +54,114 @@
 
 ---
 
+## 🚀 **Get Started Today!**
+
+Take control of your home network with **HomelabIDS**. Start monitoring, detecting, and protecting your network today!
+
+
 ## 📦 **Installation**
 
-
-Please see docker compose example files in the docker_config_examples folder. Below if you prefer docker run. 
+Please see docker compose example files in the docker_config_examples folder. Below is a docker compose file for the collector.
 
 ```
 
-docker run -d \
-  --name homelabids \
-  --network host \
-  --restart unless-stopped \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /docker/homelabids:/database \
-  -e SITE=MYSITE \
-  homelabids:latest
+version: "3"
+services:
+  homelabids:
+    network_mode: host
+    container_name: homelabids
+    restart: "unless-stopped"
+    image: mayberry4477/homelabids:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /docker/homelabids:/database
+    environment: 
+      - SITE=FARM  <-- your site name
+      - TZ=Asia/Tokyo <-- your time zone
+
+  
   ```
 
+Below is a docker compose file for the dashboard. Both containers need to be installed. 
+
+```
+
+version: "3"
+services:
+  homelabids-website:
+    network_mode: host
+    container_name: homelabids-website
+    restart: "unless-stopped"
+    image: mayberry4477/homelabids-website:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /docker/homelabids-website:/database
+    environment: 
+      - TZ=Asia/Tokyo  <-- your time zone
+      - HOMELABIDS_API_BASE_URL=http://192.168.230.236:8044  <-- location where you installed the collector. 8044 is default port. Change the IP address. 
+
+```
+
+After installation navigate get to http://<your dashboard ip>:3030 .
+
 ---
 
-## 🛠️ **Configuration**
+## 🛠️ **Initial Configuration**
+
+After initial installation, only the collector is running. First, you'll want to configure Netflowv5 on your PfSense Firewall (or another platform where Netflowv5 is supported). Then you'll want to go to HomelabIDS Settings and turn on the detection engine and turn on specific detections. We suggest turning on the New Host Detection to start with to start building some awareness of your local topology. 
+
+---
+
+## 🛠️ **Configure Netflowv5 On Your PfSense Firewall**
+
+Configuring Netflow on PfSense is a simple two step process.
+
+First, install the softflowd package on PfSense by going to System -> Package Manager -> Available Packages and searching for "softflowd" and installing it. 
+
+Second, after softflowd installation go to Services -> softflowd and configure softflowd. We recommend these configuration settings:
+
+* Enable softflowd: Enabled
+* Interface: LAN
+* Host: <IP address of your collector container named homelabids>
+* Port: 2055 (the default collector listen port)
+* Sample: 0 (setting this above 0 is only necessary for high volume sites. This will configure the firewall to only look at some packets)
+* Max Flow: 8192
+* Hop Limit: Unset
+* Netflow nersion: 5
+* Bidirectional Flow: Unchecked
+* Flow Tracking Level: Full
+* Flow Timestamp Precision: Seconds
+* Timeout General: 60 (or the speed at which you want in detection latency. Change this only if you know what you're doing)
+* Timeout other settings: Keep defaults
+
+After this, save your settings. 
+
+## 🛠️ **Configuration Settings**
 
 HomelabIDS is highly configurable! Check out the Configuration Documentation for a detailed guide on how to customize the system to your needs.
-
----
 
 ## 📸 **Screenshots**
 
 ### **Dashboard**
-![Dashboard Screenshot](https://via.placeholder.com/800x400.png?text=Dashboard+Screenshot)
+![Landing page]({BCC535B4-5F5E-4023-B5D7-CE7DE7AEE540}.png)
+
+### **Host View**
+![Host View]({C547E506-22B3-4DB3-87A6-C175C23C660F}.png)
 
 ### **Alerts**
-![Alerts Screenshot](https://via.placeholder.com/800x400.png?text=Alerts+Screenshot)
+![Alert Listing]({821572B7-8FAC-4FC2-945C-3818026092DE}.png)
+
+### **Flow Explorer**
+![Flow Explorer]({E80E5B2B-336D-4098-9203-3E89D35667BB}.png)
+
+### **Settings Page**
+![Settings]({77E0E130-E8A7-4BEF-A63A-B711C69BA261}.png)
 
 ---
 
 ## 🤝 **Contributing**
 
-We welcome contributions from the community! Whether it's fixing bugs, adding new features, or improving documentation, your help is appreciated. Check out our Contributing Guide to get started.
+We welcome contributions from the community! Whether it's fixing bugs, adding new features, or improving documentation, your help is appreciated. 
 
 ---
 
@@ -101,9 +173,7 @@ HomelabIDS is licensed under the MIT License. Feel free to use, modify, and dist
 
 ## 💬 **Join the Community**
 
-- **Discord**: Join our Discord server
-- **GitHub Discussions**: Start a discussion
-- **Twitter**: Follow us on Twitter
+- **Reddit**: r/homelabids on Reddit
 
 ---
 
@@ -113,9 +183,6 @@ If you find HomelabIDS useful, please consider giving us a ⭐ on GitHub! It hel
 
 ---
 
-## 🚀 **Get Started Today!**
-
-Take control of your home network with **HomelabIDS**. Start monitoring, detecting, and protecting your network today!
 
 
 # **HomelabIDS Configuration Documentation**
