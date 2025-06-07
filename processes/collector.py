@@ -29,8 +29,10 @@ if __name__ == "__main__":
     if not os.path.exists(CONST_CONSOLIDATED_DB):
         log_info(logger, f"[INFO] Consolidated database not found, creating at {CONST_CONSOLIDATED_DB}. We assume this is a first time install. ")
         create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_CONFIG_SQL, "configuration")
+        create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
         log_info(logger, f"[INFO] No site-specific configuration found at {site_config_path}. This is OK. ")    
         config_dict = init_configurations_from_variable()
+        insert_action("If you just performed initial installation then detections are not enabled by default. Please navigate to Settings -> Processes and turn on Detection Processing and to Settings -> Detections to turn on New Host Detections. You can then customize the system further.")
 
     if os.path.exists(site_config_path):
         log_info(logger, f"[INFO] Loading site-specific configuration from {site_config_path}. Leaving this file will overwrite the config database every time, so be careful. It's usually only meant for a one time bootstrapping of a new site with a full config.")
