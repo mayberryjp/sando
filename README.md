@@ -173,7 +173,7 @@ HomelabIDS is licensed under the MIT License. Feel free to use, modify, and dist
 
 ## 💬 **Join the Community**
 
-- **Reddit**: [https://www.reddit.com/r/homelabids/](r/homelabids on Reddit)
+- **Reddit**: (https://www.reddit.com/r/homelabids/([r/homelabids]
 
 ---
 
