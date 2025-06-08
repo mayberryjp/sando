@@ -94,6 +94,7 @@ def check_api_health_and_restart():
 
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
+    time.sleep(60)
     log_info(logger,"[INFO] Starting health monitor... (checks every 60 seconds)")
     while True:
         check_scripts()
