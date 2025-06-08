@@ -108,7 +108,7 @@ After installation navigate get to http://YOUR_IP_REPLACE:3030 .
 
 ## 🛠️ **Initial Configuration**
 
-After initial installation, only the collector is running. First, you'll want to configure Netflowv5 on your PfSense Firewall (or another platform where Netflowv5 is supported). Then you'll want to go to HomelabIDS Settings and turn on the detection engine and turn on specific detections. We suggest turning on the New Host Detection to start with to start building some awareness of your local topology. 
+After initial installation, only the collector is running. First, you'll want to configure Netflowv5 on your PfSense Firewall (or another platform where Netflowv5 is supported). Then you'll want to go to HomelabIDS Settings and turn on the detection engine, complete your local network information and turn on specific detections. We suggest turning on the New Host Detection to start with to start building some awareness of your local topology. 
 
 ---
 
@@ -136,9 +136,7 @@ Second, after softflowd installation go to Services -> softflowd and configure s
 
 After this, save your settings. 
 
-## 🛠️ **Configuration Settings**
-
-HomelabIDS is highly configurable! Check out the Configuration Documentation for a detailed guide on how to customize the system to your needs.
+## **Getting Help And Troubleshooting**
 
 ## 📸 **Screenshots**
 
@@ -183,9 +181,11 @@ If you find HomelabIDS useful, please consider giving us a ⭐ on GitHub! It hel
 
 ---
 
-
-
 # **HomelabIDS Configuration Documentation**
+
+## 🛠️ **Configuration Settings**
+
+HomelabIDS is highly configurable! Check out the Configuration Documentation for a detailed guide on how to customize the system to your needs.
 
 ## **Overview**
 This document provides an overview of the configuration settings used in HomelabIDS. These settings control various detection mechanisms, integrations, and system processes. The configurations are stored in the `configuration` table of the database and can be modified to customize the behavior of the system.
