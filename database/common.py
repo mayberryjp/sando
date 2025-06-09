@@ -275,10 +275,10 @@ def init_configurations_from_variable():
 def collect_database_counts():
     """
     Collects counts from the alerts, localhosts, and ignorelist tables.
+    Also retrieves flow statistics from configuration.
 
     Returns:
-        dict: A dictionary containing the counts for acknowledged alerts, unacknowledged alerts,
-              total alerts, localhosts entries, and ignorelist entries.
+        dict: A dictionary containing database counts and flow statistics
     """
     logger = logging.getLogger(__name__)
     counts = {
@@ -290,6 +290,14 @@ def collect_database_counts():
         "total_localhosts_count": 0,
         "ignorelist_count": 0,
         "average_threat_score": 0,
+        "total_packets": 0,
+        "total_flows": 0,
+        "total_bytes": 0,
+        "last_packets": 0,
+        "last_flows": 0,
+        "last_bytes": 0,
+        "last_flow_seen": None,
+        "is_healthy": False
     }
 
     try:
@@ -333,9 +341,55 @@ def collect_database_counts():
 
         counts["average_threat_score"] = get_average_threat_score()
         counts["ignorelist_count"] = get_row_count(CONST_CONSOLIDATED_DB, "ignorelist")
-
+        
+        # Get flow statistics from configuration
+        from database.configuration import get_config_settings
+        config_dict = get_config_settings()
+        
+        if config_dict:
+            # Get total statistics
+            counts["total_packets"] = int(config_dict.get("TotalPackets", "0"))
+            counts["total_flows"] = int(config_dict.get("TotalFlows", "0")) 
+            counts["total_bytes"] = int(config_dict.get("TotalBytes", "0"))
+            
+            # Get last batch statistics
+            counts["last_packets"] = int(config_dict.get("LastPackets", "0"))
+            counts["last_flows"] = int(config_dict.get("LastFlows", "0"))
+            counts["last_bytes"] = int(config_dict.get("LastBytes", "0"))
+            
+            # Get last flow timestamp
+            counts["last_flow_seen"] = config_dict.get("LastFlowSeen", None)
+            
+            # Check system health based on flow data
+            try:
+                if counts["last_flow_seen"]:
+                    last_flow_time = datetime.datetime.strptime(counts["last_flow_seen"], '%Y-%m-%d %H:%M:%S')
+                    current_time = datetime.datetime.now()
+                    time_difference = (current_time - last_flow_time).total_seconds()
+                    
+                    # System is healthy if:
+                    # 1. Last flow was seen within the last 10 minutes (600 seconds)
+                    # 2. We have non-zero flows and packets in the last batch
+                    if (time_difference <= 600 and 
+                        counts["last_flows"] > 0 and 
+                        counts["last_packets"] > 0):
+                        counts["is_healthy"] = True
+                        log_info(logger, f"[INFO] System is healthy: Last flow seen {time_difference:.0f} seconds ago")
+                    else:
+                        log_warn(logger, f"[WARN] System health check failed: Last flow {time_difference:.0f} seconds ago, "
+                                f"Flows: {counts['last_flows']}, Packets: {counts['last_packets']}")
+            except Exception as e:
+                log_error(logger, f"[ERROR] Error checking system health: {e}")
+            
+            log_info(logger, f"[INFO] Retrieved flow statistics from configuration: "
+                     f"Packets: {counts['total_packets']}, Flows: {counts['total_flows']}, "
+                     f"Bytes: {counts['total_bytes']}, Last seen: {counts['last_flow_seen']}")
+        else:
+            log_warn(logger, "[WARN] Could not retrieve configuration for flow statistics")
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error: {e}")
+    except ValueError as e:
+        log_error(logger, f"[ERROR] Value conversion error for statistics: {e}")
     except Exception as e:
         log_error(logger, f"[ERROR] Unexpected error: {e}")
 
