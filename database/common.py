@@ -363,8 +363,8 @@ def collect_database_counts():
             # Check system health based on flow data
             try:
                 if counts["last_flow_seen"]:
-                    last_flow_time = datetime.datetime.strptime(counts["last_flow_seen"], '%Y-%m-%d %H:%M:%S')
-                    current_time = datetime.datetime.now()
+                    last_flow_time = datetime.strptime(counts["last_flow_seen"], '%Y-%m-%d %H:%M:%S')
+                    current_time = datetime.now()
                     time_difference = (current_time - last_flow_time).total_seconds()
                     
                     # System is healthy if:
