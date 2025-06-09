@@ -129,7 +129,8 @@ from database.ipasn import  (
 # Configuration functions
 from database.configuration import (
     get_config_settings, 
-    update_config_setting
+    update_config_setting,
+    update_flow_metrics
 )
 
 from database.dnsqueries import (

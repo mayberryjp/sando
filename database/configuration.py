@@ -11,6 +11,9 @@ sys.path.insert(0, "/database")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from init import *
 
+
+
+
 def get_config_settings():
     """Read configuration settings from the configuration database into a dictionary."""
     logger = logging.getLogger(__name__)
@@ -77,4 +80,51 @@ def update_config_setting(key, value):
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
 
+def update_flow_metrics(last_packets, last_flows, last_bytes):
+    """
+    Update flow metrics in the configuration database.
+    Stores/updates: Total Packets, Total Flows, Total Bytes, Last Packets, Last Flows, Last Bytes, Last Flow Seen.
 
+    Args:
+        last_packets (int): Number of packets in the last interval
+        last_flows (int): Number of flows in the last interval
+        last_bytes (int): Number of bytes in the last interval
+
+    Returns:
+        bool: True if all updates were successful, False otherwise
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        # Get current totals from config
+        config = get_config_settings()
+        total_packets = int(config.get("TotalPackets", 0))
+        total_flows = int(config.get("TotalFlows", 0))
+        total_bytes = int(config.get("TotalBytes", 0))
+
+        # Update totals
+        new_total_packets = total_packets + last_packets
+        new_total_flows = total_flows + last_flows
+        new_total_bytes = total_bytes + last_bytes
+
+        # Update each value in the config database
+        success = True
+        success &= update_config_setting("TotalPackets", str(new_total_packets))
+        success &= update_config_setting("TotalFlows", str(new_total_flows))
+        success &= update_config_setting("TotalBytes", str(new_total_bytes))
+        success &= update_config_setting("LastPackets", str(last_packets))
+        success &= update_config_setting("LastFlows", str(last_flows))
+        success &= update_config_setting("LastBytes", str(last_bytes))
+        # Set Last Flow Seen to current timestamp
+        from datetime import datetime
+        last_flow_seen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        success &= update_config_setting("LastFlowSeen", last_flow_seen)
+
+        if success:
+            log_info(logger, f"[INFO] Successfully updated flow metrics in configuration database. Packets: {last_packets}, Flows: {last_flows}, Bytes: {last_bytes}")
+        else:
+            log_error(logger, "[ERROR] Failed to update one or more flow metrics in configuration database.")
+        return success
+
+    except Exception as e:
+        log_error(logger, f"[ERROR] Exception in update_flow_metrics: {e}")
+        return False

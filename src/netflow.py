@@ -10,6 +10,7 @@ from init import *
 import threading
 import time
 import json
+from database.configuration import update_flow_metrics
 
 
 if (IS_CONTAINER):
@@ -87,7 +88,7 @@ def collect_netflow_packets(listen_address, listen_port):
 def process_netflow_packets():
     """Process queued packets at fixed interval"""
     logger = logging.getLogger(__name__)
-    
+
     while True:
         try:
             ignorelist = get_ignorelist()
@@ -102,58 +103,70 @@ def process_netflow_packets():
             tag_entries = json.loads(tag_entries_json)
 
             LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
-            
+
             # Calculate broadcast addresses for all local networks
             broadcast_addresses = set()
             for network in LOCAL_NETWORKS:
                 broadcast_ip = calculate_broadcast(network)
                 if broadcast_ip:
                     broadcast_addresses.add(broadcast_ip)
-                    #log_info(logger, f"[INFO] Found broadcast address {broadcast_ip} for network {network}")
-            
-            # Add global broadcast address
             broadcast_addresses.add('255.255.255.255')
             broadcast_addresses.add('0.0.0.0')
-            
+
             packets = []
             # Collect all available packets
             while not netflow_queue.empty():
                 packets.append(netflow_queue.get())
-                
+
+            last_packets = 0
+            last_flows = 0
+            last_bytes = 0
+
             if packets:
                 log_info(logger, f"[INFO] Processing {len(packets)} queued packets")
                 total_flows = 0
-                
+                total_bytes = 0
+                total_packets = 0
+
                 for data, addr in packets:
                     if len(data) < 24:
                         continue
-                        
+
                     version, count, *header_fields = parse_netflow_v5_header(data)
                     if version != 5:
                         continue
-                        
+
                     unix_secs = header_fields[1]
                     uptime = header_fields[2]
-                    
+
                     offset = 24
                     for _ in range(count):
                         if offset + 48 > len(data):
                             break
-                            
+
                         record = parse_netflow_v5_record(data, offset, unix_secs, uptime)
                         offset += 48
-                        
+
                         # Apply tags and update flow database
                         record = apply_tags(record, ignorelist, broadcast_addresses, tag_entries, config_dict, CONST_LINK_LOCAL_RANGE)
                         update_new_flow(record)
                         total_flows += 1
-                        
+                        total_bytes += record.get('bytes', 0)
+                        total_packets += record.get('packets', 0)
+
                 log_info(logger, f"[INFO] Processed {total_flows} flows from {len(packets)} packets")
-                
+
+                last_flows = total_flows
+                last_bytes = total_bytes
+                last_packets = total_packets
+
+            # Update flow metrics in the configuration database
+            update_flow_metrics(last_packets, last_flows, last_bytes)
+
             # Wait for next processing interval
             interval = int(config_dict.get('CollectorProcessingInterval', 60))
             time.sleep(interval)
-            
+
         except Exception as e:
             log_error(logger, f"[ERROR] Failed to process NetFlow packets: {e}")
             time.sleep(60)  # Wait before retry
