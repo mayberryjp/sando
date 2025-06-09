@@ -28,3 +28,28 @@ rest:
         value_template: "{{ value_json.average_threat_score }}"
         icon: mdi:shield-star
 
+      - name: HomelabIDS Total Packets Processed
+        value_template: "{{ value_json.total_packets }}"
+        icon: mdi:shield-star
+      - name: HomelabIDS Total Flow Count Processed
+        value_template: "{{ value_json.total_flows }}"
+        icon: mdi:shield-star
+      - name: HomelabIDS Total Bytes Processed
+        value_template: "{{ value_json.total_bytes }}"
+        icon: mdi:shield-star
+      - name: HomelabIDS Last Packet Count Processed
+        value_template: "{{ value_json.last_packets }}"
+        icon: mdi:shield-star
+      - name: HomelabIDS Last Flow Count Processed
+        value_template: "{{ value_json.last_flows }}"
+        icon: mdi:shield-star
+      - name: HomelabIDS Last Bytes Processed
+        value_template: "{{ value_json.total_bytes }}"
+        icon: mdi:shield-star
+      - name: HomelabIDS Last Flow Seen
+        value_template: "{{ value_json.last_flow_seen }}"
+        icon: mdi:shield-star
+      - name: HomelabIDS Is Healthy
+        value_template: "{{ value_json.is_healthy }}"
+        icon: mdi:shield-star
+ 

@@ -297,7 +297,7 @@ def collect_database_counts():
         "last_flows": 0,
         "last_bytes": 0,
         "last_flow_seen": None,
-        "is_healthy": False
+        "is_healthy": "Down"
     }
 
     try:
@@ -373,7 +373,7 @@ def collect_database_counts():
                     if (time_difference <= 600 and 
                         counts["last_flows"] > 0 and 
                         counts["last_packets"] > 0):
-                        counts["is_healthy"] = True
+                        counts["is_healthy"] = "Up"
                         log_info(logger, f"[INFO] System is healthy: Last flow seen {time_difference:.0f} seconds ago")
                     else:
                         log_warn(logger, f"[WARN] System health check failed: Last flow {time_difference:.0f} seconds ago, "
