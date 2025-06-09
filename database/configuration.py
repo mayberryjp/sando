@@ -36,7 +36,7 @@ def get_config_settings():
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
 
-def update_config_setting(key, value):
+def update_config_setting(key, value, silent=False):
     """
     Insert or update a configuration setting in the database.
     
@@ -67,7 +67,8 @@ def update_config_setting(key, value):
         # Commit the changes
         conn.commit()
         
-        log_info(logger, f"[INFO] Successfully updated configuration setting: {key}")
+        if not silent:
+            log_info(logger, f"[INFO] Successfully updated configuration setting: {key}")
         return True
         
     except sqlite3.Error as e:
@@ -108,16 +109,16 @@ def update_flow_metrics(last_packets, last_flows, last_bytes):
 
         # Update each value in the config database
         success = True
-        success &= update_config_setting("TotalPackets", str(new_total_packets))
-        success &= update_config_setting("TotalFlows", str(new_total_flows))
-        success &= update_config_setting("TotalBytes", str(new_total_bytes))
-        success &= update_config_setting("LastPackets", str(last_packets))
-        success &= update_config_setting("LastFlows", str(last_flows))
-        success &= update_config_setting("LastBytes", str(last_bytes))
+        success &= update_config_setting("TotalPackets", str(new_total_packets), silent=True)
+        success &= update_config_setting("TotalFlows", str(new_total_flows), silent=True)
+        success &= update_config_setting("TotalBytes", str(new_total_bytes), silent=True)
+        success &= update_config_setting("LastPackets", str(last_packets), silent=True)
+        success &= update_config_setting("LastFlows", str(last_flows), silent=True)
+        success &= update_config_setting("LastBytes", str(last_bytes), silent=True)
         # Set Last Flow Seen to current timestamp
         from datetime import datetime
         last_flow_seen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        success &= update_config_setting("LastFlowSeen", last_flow_seen)
+        success &= update_config_setting("LastFlowSeen", last_flow_seen, silent=True)
 
         if success:
             log_info(logger, f"[INFO] Successfully updated flow metrics in configuration database. Packets: {last_packets}, Flows: {last_flows}, Bytes: {last_bytes}")
