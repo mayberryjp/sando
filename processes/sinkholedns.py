@@ -303,6 +303,8 @@ def handle_signal(sig, frame):
 
 if __name__ == "__main__":
     # Create and start the resolver
+    STARTUP_DELAY = 30
+    time.sleep(STARTUP_DELAY)  # Wait a bit for startup
     logger = logging.getLogger(__name__)
     config_dict = get_config_settings()
     if not config_dict:
