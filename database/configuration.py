@@ -118,7 +118,8 @@ def update_flow_metrics(last_packets, last_flows, last_bytes):
         # Set Last Flow Seen to current timestamp
         from datetime import datetime
         last_flow_seen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        success &= update_config_setting("LastFlowSeen", last_flow_seen, silent=True)
+        if last_flows > 0 and last_packets > 0 and last_bytes > 0:
+            success &= update_config_setting("LastFlowSeen", last_flow_seen, silent=True)
 
         if success:
             log_info(logger, f"[INFO] Successfully updated flow metrics in configuration database. Packets: {last_packets}, Flows: {last_flows}, Bytes: {last_bytes}")
