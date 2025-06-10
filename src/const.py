@@ -1,4 +1,4 @@
-VERSION="v0.3.620"
+VERSION="v0.3.679"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -284,7 +284,7 @@ CONST_INSTALL_CONFIGS = [
     ('TelegramChatId',''),
     ('ScheduleProcessor','0'),
     ('StartCollector','1'),
-    ('CleanNewFlows','0'),
+    ('CleanNewFlows','1'),
     ('DeadConnectionDetection','0'),
     ('IgnoreListEntries', ''),
     ('DnsResolverTimeout', 3),
@@ -319,7 +319,7 @@ CONST_INSTALL_CONFIGS = [
     ('CollectorProcessingInterval','60'),
     ('SendErrorsToCloudApi','0'),
     ('RemoveMulticastFlows','1'),
-    ('TagEntries', ''), 
+    ('TagEntries', '[]'), 
     ('AlertOnCustomTagList',''),  
     ('AlertOnCustomTags','0'), 
     ('SendConfigurationToCloudApi','0'),

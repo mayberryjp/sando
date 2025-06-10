@@ -19,14 +19,15 @@ if (IS_CONTAINER):
 def write_daily_log(message, config_dict):
     """Write a log message to a daily log file in /database/ if enabled in config."""
     try:
-        if config_dict.get("WriteLogFile", 0) == 1:
-            # Explicitly use /database/ as the log directory
-            log_dir = os.path.abspath(os.path.join(os.sep, "database"))
-            os.makedirs(log_dir, exist_ok=True)
-            log_filename = datetime.now().strftime("%Y-%m-%d.log")
-            log_path = os.path.join(log_dir, log_filename)
-            with open(log_path, "a", encoding="utf-8") as f:
-                f.write(message + "\n")
+        if config_dict != None:
+            if config_dict.get("WriteLogFile", 0) == 1:
+                # Explicitly use /database/ as the log directory
+                log_dir = os.path.abspath(os.path.join(os.sep, "database"))
+                os.makedirs(log_dir, exist_ok=True)
+                log_filename = datetime.now().strftime("%Y-%m-%d.log")
+                log_path = os.path.join(log_dir, log_filename)
+                with open(log_path, "a", encoding="utf-8") as f:
+                    f.write(message + "\n")
     except Exception as e:
         # Fallback: print error if logging fails
         print(f"[WARN] Failed to write to daily log file: {e}")
@@ -75,7 +76,10 @@ def log_error(logger, message):
     excluded_messages = [
         "[ERROR] Failed to download country blocks CSV: 429",
         "[ERROR] Error updating Tor nodes: HTTPSConnectionPool(host='www.dan.me.uk', port=443): Read timed out. (read timeout=30)",
-        "[ERROR] Error creating geolocation database: (\"Connection broken: ConnectionResetError(104, 'Connection reset by peer')\", ConnectionResetError(104, 'Connection reset by peer'))"
+        "[ERROR] Error creating geolocation database: (\"Connection broken: ConnectionResetError(104, 'Connection reset by peer')\", ConnectionResetError(104, 'Connection reset by peer'))",
+        "[ERROR] Error updating Tor nodes: HTTPSConnectionPool(host='www.dan.me.uk', port=443): Max retries exceeded with url: /torlist/?full (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x76eb94effd90>: Failed to establish a new connection: [Errno 101] Network unreachable'))",
+        "[ERROR] Failed to download Tor node list: 403"
+
     ]
 
     if config_dict.get('SendErrorsToCloudApi', 0) == 1:

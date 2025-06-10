@@ -30,7 +30,6 @@ if __name__ == "__main__":
         log_info(logger, f"[INFO] Consolidated database not found, creating at {CONST_CONSOLIDATED_DB}. We assume this is a first time install. ")
         create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_CONFIG_SQL, "configuration")
         create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
-        log_info(logger, f"[INFO] No site-specific configuration found at {site_config_path}. This is OK. ")    
         config_dict = init_configurations_from_variable()
         insert_action("If you just performed initial installation then detections are not enabled by default. Please navigate to Settings -> Processes and turn on Detection Processing and to Settings -> Detections to turn on New Host Detections. You can then customize the system further.")
 
@@ -72,7 +71,6 @@ if __name__ == "__main__":
     store_site_name(SITE)
     check_update_database_schema(config_dict)
     
-    log_info(logger,f"NTP config settings are : {config_dict.get('BypassLocalNtpDetection', '0')}, {config_dict.get('ApprovedLocalNtpServersList', '')}, {config_dict.get('ApprovedNtpStratumServersList', '')}")
     # Add NTP whitelists if bypass detection is enabled and servers are configured
     if config_dict.get('BypassLocalNtpDetection', 0) == 1 and config_dict.get('ApprovedLocalNtpServersList', '') and config_dict.get('ApprovedNtpStratumServersList', ''):
 
@@ -82,7 +80,6 @@ if __name__ == "__main__":
         else:
             log_warn(logger, "[WARN] Some NTP whitelists could not be created.")
 
-    log_info(logger,f"DNS config settings are : {config_dict.get('BypassLocalDnsDetection', '0')}, {config_dict.get('ApprovedLocalDnsServersList', '')}, {config_dict.get('ApprovedAuthoritativeDnsServersList', '')}")
     # Add DNS whitelists if bypass detection is enabled and servers are configured
     if config_dict.get('BypassLocalDnsDetection', 0) == 1 and config_dict.get('ApprovedLocalDnsServersList', '') and config_dict.get('ApprovedAuthoritativeDnsServersList', ''):
 

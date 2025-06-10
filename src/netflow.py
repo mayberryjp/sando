@@ -91,28 +91,38 @@ def process_netflow_packets():
 
     while True:
         try:
+
             ignorelist = get_ignorelist()
             config_dict = get_config_settings()
-
+ 
             if not config_dict:
                 log_error(logger, "[ERROR] Failed to load configuration settings")
                 time.sleep(60)  # Wait before retry
                 continue
 
             tag_entries_json = config_dict.get("TagEntries", "[]")
-            tag_entries = json.loads(tag_entries_json)
-
-            LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+            if tag_entries_json != "[]":
+                tag_entries = json.loads(tag_entries_json)
+  
+            networks = config_dict.get('LocalNetworks', None)
+            LOCAL_NETWORKS = set()
+            if networks:
+                log_info(logger, f"[INFO] Local networks configured: {networks}")
+                LOCAL_NETWORKS = set(networks.split(','))
 
             # Calculate broadcast addresses for all local networks
             broadcast_addresses = set()
-            for network in LOCAL_NETWORKS:
-                broadcast_ip = calculate_broadcast(network)
-                if broadcast_ip:
-                    broadcast_addresses.add(broadcast_ip)
-            broadcast_addresses.add('255.255.255.255')
-            broadcast_addresses.add('0.0.0.0')
+            if len(LOCAL_NETWORKS) > 0:
+                for network in LOCAL_NETWORKS:
+                    broadcast_ip = calculate_broadcast(network)
+                    if broadcast_ip:
+                        broadcast_addresses.add(broadcast_ip)
+                broadcast_addresses.add('255.255.255.255')
+                broadcast_addresses.add('0.0.0.0')
+        except Exception as e:
+            log_error(logger, f"[ERROR] Dependencies for collector not met {e}")
 
+        try:
             packets = []
             # Collect all available packets
             while not netflow_queue.empty():
