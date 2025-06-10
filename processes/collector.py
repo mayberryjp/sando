@@ -25,12 +25,17 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__) 
  
     site_config_path = os.path.join("/database/", f"{SITE}.py")
+    database_path = os.path.join("/database/", CONST_CONSOLIDATED_DB)
+    schema_file_path = os.path.join(parent_dir, '/database', 'database.schema')
     
     if not os.path.exists(CONST_CONSOLIDATED_DB):
         log_info(logger, f"[INFO] Consolidated database not found, creating at {CONST_CONSOLIDATED_DB}. We assume this is a first time install. ")
         create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_CONFIG_SQL, "configuration")
         create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
         config_dict = init_configurations_from_variable()
+        os.makedirs(os.path.dirname(schema_file_path), exist_ok=True)
+        with open(schema_file_path, 'w') as f:
+            f.write(str(CONST_DATABASE_SCHEMA_VERSION))
         insert_action("If you just performed initial installation then detections are not enabled by default. Please navigate to Settings -> Processes and turn on Detection Processing and to Settings -> Detections to turn on New Host Detections. You can then customize the system further.")
 
     if os.path.exists(site_config_path):
@@ -64,11 +69,14 @@ if __name__ == "__main__":
     create_table(CONST_EXPLORE_DB, CONST_CREATE_DNSKEYVALUE_SQL, "dnskeyvalue")
     create_table(CONST_PERFORMANCE_DB, CONST_CREATE_DBPERFORMANCE_SQL, "dbperformance")
 
-    config_dict = get_config_settings()
-
     store_machine_unique_identifier()
     store_version()
     store_site_name(SITE)
+
+    config_dict = get_config_settings()
+
+    log_info(logger, f"[INFO] Current configuration at start, config will refresh automatically every time processor runs:\n {dump_json(config_dict)}")
+
     check_update_database_schema(config_dict)
     
     # Add NTP whitelists if bypass detection is enabled and servers are configured
@@ -93,7 +101,6 @@ if __name__ == "__main__":
         log_error(logger, "[ERROR] Failed to load configuration settings")
         exit(1)
 
-    log_info(logger, f"[INFO] Current configuration at start, config will refresh automatically every time processor runs:\n {dump_json(config_dict)}")
     log_info(logger, f"[INFO] Starting NetFlow v5 collector {VERSION} at {SITE}")
     if config_dict['StartCollector'] == 1:
         # Start the collector

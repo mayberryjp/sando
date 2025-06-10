@@ -1,4 +1,4 @@
-VERSION="v0.3.682"
+VERSION="v0.3.695"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -338,5 +338,5 @@ CONST_INSTALL_CONFIGS = [
     ('PerformDnsResponseLookupsForInvestigations','0'),
     ('ProcessRunInterval','60'),
     ('IntegrationFetchInterval','86400'),
-    
+    ('DatabaseSchemaVersion', '13'),
 ]
