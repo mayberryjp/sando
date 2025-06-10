@@ -101,6 +101,7 @@ def process_netflow_packets():
                 continue
 
             tag_entries_json = config_dict.get("TagEntries", "[]")
+            tag_entries = []
             if tag_entries_json != "[]":
                 tag_entries = json.loads(tag_entries_json)
   
