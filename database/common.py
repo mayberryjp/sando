@@ -368,11 +368,9 @@ def collect_database_counts():
                     time_difference = (current_time - last_flow_time).total_seconds()
                     
                     # System is healthy if:
-                    # 1. Last flow was seen within the last 10 minutes (600 seconds)
+                    # 1. Last flow was seen within the last 5 minutes (300 seconds)
                     # 2. We have non-zero flows and packets in the last batch
-                    if (time_difference <= 600 and 
-                        counts["last_flows"] > 0 and 
-                        counts["last_packets"] > 0):
+                    if (time_difference <= 300):
                         counts["is_healthy"] = "Up"
                         log_info(logger, f"[INFO] System is healthy: Last flow seen {time_difference:.0f} seconds ago")
                     else:
