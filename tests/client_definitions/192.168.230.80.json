@@ -1,0 +1,30 @@
+{
+    "ip_address": "192.168.230.80",
+    "export_date": "2025-06-12T01:35:51.755075",
+    "instance_identifier": "4f658d7aaf0c3df27c309d03c448dc4128d8eed15511fff4b1b09de388e987bd",
+    "host_info": {
+        "ip_address": "192.168.230.80",
+        "mac_address": null,
+        "mac_vendor": null,
+        "dhcp_hostname": null,
+        "dns_hostname": null,
+        "os_fingerprint": null,
+        "lease_hostname": null,
+        "icon": null,
+        "local_description": null
+    },
+    "dns_queries": [],
+    "flows": [
+        {
+            "destination": "239.255.255.250",
+            "port": 1900,
+            "protocol": 17,
+            "flow_count": 5,
+            "total_packets": 30,
+            "total_bytes": 10542,
+            "last_seen": "2025-06-12 01:30:11",
+            "first_seen": "2025-06-12 01:06:41"
+        }
+    ],
+    "actions": []
+}

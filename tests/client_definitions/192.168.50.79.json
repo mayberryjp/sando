@@ -1,10 +1,10 @@
 {
     "ip_address": "192.168.50.79",
-    "export_date": "2025-05-25T20:08:42.067850",
-    "instance_identifier": "9a72641185275de6aee6384294035d373d4c94dc73c430210b6c1a3770519bb7",
+    "export_date": "2025-06-12T10:34:59.755604",
+    "instance_identifier": "b8d1c13f7c1fee3dc8d8dcb09c474c9c6312db33f5f7d11878dc2ed3af807e93",
     "host_info": {
         "ip_address": "192.168.50.79",
-        "mac_address": null,
+        "mac_address": "54:EF:44:54:83:FF",
         "mac_vendor": null,
         "dhcp_hostname": null,
         "dns_hostname": "Presence-Sensor-FP2-83FF.832-5.com.",
@@ -16,9 +16,9 @@
     "dns_queries": [
         {
             "domain": "aiot-coap.aqara.cn",
-            "times_queried": 4,
-            "first_query": "2025-05-23 22:20:40",
-            "last_query": "2025-05-08 06:51:40"
+            "times_queried": 395324,
+            "first_query": "2025-06-12 10:29:28",
+            "last_query": "2025-05-27 09:39:57"
         }
     ],
     "flows": [
@@ -26,91 +26,51 @@
             "destination": "224.0.0.251",
             "port": 5353,
             "protocol": 17,
-            "flow_count": 16,
-            "total_packets": 28584,
-            "total_bytes": 7293675,
-            "first_seen": "2025-05-22 15:43:10",
-            "last_seen": "9238"
-        },
-        {
-            "destination": "43.138.77.31",
-            "port": 11111,
-            "protocol": 6,
-            "flow_count": 8,
-            "total_packets": 43689,
-            "total_bytes": 6673348,
-            "first_seen": "2025-05-18 00:53:52",
-            "last_seen": "14323"
-        },
-        {
-            "destination": "81.70.161.152",
-            "port": 11111,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 16254,
-            "total_bytes": 2425806,
-            "first_seen": "2025-05-22 04:11:24",
-            "last_seen": "15171"
+            "flow_count": 122,
+            "total_packets": 28511,
+            "total_bytes": 7257986,
+            "last_seen": "2025-06-11 20:24:57",
+            "first_seen": "2025-06-02 22:57:38"
         },
         {
             "destination": "230.0.0.1",
             "port": 10008,
             "protocol": 17,
-            "flow_count": 15,
-            "total_packets": 10095,
-            "total_bytes": 2059380,
-            "first_seen": "2025-05-22 15:43:10",
-            "last_seen": "32841"
+            "flow_count": 97,
+            "total_packets": 5500,
+            "total_bytes": 1122000,
+            "last_seen": "2025-06-11 07:36:10",
+            "first_seen": "2025-06-04 05:02:09"
         },
         {
-            "destination": "101.42.246.140",
-            "port": 11111,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 12304,
-            "total_bytes": 1860028,
-            "first_seen": "2025-05-08 07:13:37",
-            "last_seen": "32513036"
-        },
-        {
-            "destination": "101.43.186.217",
-            "port": 11111,
-            "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 12079,
-            "total_bytes": 1829831,
-            "first_seen": "2025-05-23 21:07:36",
-            "last_seen": "203887686"
-        },
-        {
-            "destination": "49.233.237.221",
-            "port": 5050,
-            "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 10,
-            "total_bytes": 642,
-            "first_seen": "2025-05-22 04:13:48",
-            "last_seen": "181092288"
+            "destination": "192.168.50.220",
+            "port": 53,
+            "protocol": 17,
+            "flow_count": 3,
+            "total_packets": 9,
+            "total_bytes": 576,
+            "last_seen": "2025-06-04 15:45:09",
+            "first_seen": "2025-06-04 15:45:09"
         },
         {
             "destination": "230.0.0.1",
             "port": 0,
             "protocol": 2,
             "flow_count": 2,
-            "total_packets": 4,
-            "total_bytes": 184,
-            "first_seen": "2025-05-22 04:08:59",
-            "last_seen": "181090782"
+            "total_packets": 7,
+            "total_bytes": 322,
+            "last_seen": "2025-06-11 07:44:43",
+            "first_seen": "2025-06-10 12:58:44"
         },
         {
             "destination": "224.0.0.251",
             "port": 0,
             "protocol": 2,
             "flow_count": 2,
-            "total_packets": 3,
-            "total_bytes": 138,
-            "first_seen": "2025-05-22 04:08:59",
-            "last_seen": "181091069"
+            "total_packets": 5,
+            "total_bytes": 230,
+            "last_seen": "2025-06-11 07:44:43",
+            "first_seen": "2025-06-10 12:58:44"
         }
     ],
     "actions": []

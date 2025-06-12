@@ -1,10 +1,10 @@
 {
     "ip_address": "192.168.230.10",
-    "export_date": "2025-05-23T05:45:47.096326",
+    "export_date": "2025-06-12T01:35:50.520823",
     "instance_identifier": "4f658d7aaf0c3df27c309d03c448dc4128d8eed15511fff4b1b09de388e987bd",
     "host_info": {
         "ip_address": "192.168.230.10",
-        "mac_address": null,
+        "mac_address": "54:07:7D:25:1F:95",
         "mac_vendor": null,
         "dhcp_hostname": null,
         "dns_hostname": "netgearswitch.",
@@ -19,11 +19,11 @@
             "destination": "192.168.8.1",
             "port": 0,
             "protocol": 1,
-            "flow_count": 49,
-            "total_packets": 49,
-            "total_bytes": 4116,
-            "first_seen": "2025-05-23 05:13:17",
-            "last_seen": "7330017"
+            "flow_count": 72,
+            "total_packets": 72,
+            "total_bytes": 6048,
+            "last_seen": "2025-06-12 01:31:12",
+            "first_seen": "2025-06-02 04:53:10"
         }
     ],
     "actions": []

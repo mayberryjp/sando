@@ -43,7 +43,7 @@ rest:
         value_template: "{{ value_json.last_flows }}"
         icon: mdi:shield-star
       - name: HomelabIDS Last Bytes Processed
-        value_template: "{{ value_json.total_bytes }}"
+        value_template: "{{ value_json.last_bytes }}"
         icon: mdi:shield-star
       - name: HomelabIDS Last Flow Seen
         value_template: "{{ value_json.last_flow_seen }}"

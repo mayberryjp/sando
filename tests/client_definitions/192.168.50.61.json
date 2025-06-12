@@ -1,1220 +1,2818 @@
 {
     "ip_address": "192.168.50.61",
-    "export_date": "2025-06-05T21:56:40.078415",
-    "instance_identifier": "0bcf67f6adb6c72fd190f637b814dd6e7b600a7dfdbf6bd1177587183bef08cc",
+    "export_date": "2025-06-12T10:34:53.226194",
+    "instance_identifier": "b8d1c13f7c1fee3dc8d8dcb09c474c9c6312db33f5f7d11878dc2ed3af807e93",
     "host_info": {
         "ip_address": "192.168.50.61",
         "mac_address": "1c:53:f9:79:a0:96",
         "mac_vendor": "Google, Inc.",
         "dhcp_hostname": "nest-desk.832-5.com",
         "dns_hostname": "nest-desk.832-5.com.",
-        "os_fingerprint": null,
+        "os_fingerprint": "Apple_Apple TV_5.X_86",
         "lease_hostname": "nest-desk",
-        "icon": null,
-        "local_description": null
+        "icon": "VOICE_ASSISTANT",
+        "local_description": "Google Home Nest"
     },
     "dns_queries": [
         {
             "domain": "clients3.google.com",
-            "times_queried": 19,
-            "first_query": "2025-06-05 21:54:24",
-            "last_query": "2025-06-05 21:54:24"
+            "times_queried": 132469,
+            "first_query": "2025-06-12 10:20:19",
+            "last_query": "2025-05-27 09:39:47"
         },
         {
             "domain": "www.gstatic.com",
-            "times_queried": 10,
-            "first_query": "2025-06-05 21:54:24",
-            "last_query": "2025-06-05 21:54:24"
+            "times_queried": 76427,
+            "first_query": "2025-06-12 10:20:19",
+            "last_query": "2025-05-27 09:39:47"
         },
         {
             "domain": "cast.home-assistant.io",
-            "times_queried": 5,
-            "first_query": "2025-06-05 21:54:24",
-            "last_query": "2025-06-05 21:54:24"
-        },
-        {
-            "domain": "play.googleapis.com",
-            "times_queried": 3,
-            "first_query": "2025-06-05 21:54:24",
-            "last_query": "2025-06-05 21:54:24"
-        },
-        {
-            "domain": "embeddedassistant.googleapis.com",
-            "times_queried": 2,
-            "first_query": "2025-06-05 21:54:24",
-            "last_query": "2025-06-05 21:54:24"
-        },
-        {
-            "domain": "instantmessaging-pa.googleapis.com",
-            "times_queried": 2,
-            "first_query": "2025-06-05 21:54:24",
-            "last_query": "2025-06-05 21:54:24"
+            "times_queried": 30995,
+            "first_query": "2025-06-12 10:20:19",
+            "last_query": "2025-05-27 09:39:47"
         },
         {
             "domain": "connectivitycheck.gstatic.com",
-            "times_queried": 1,
-            "first_query": "2025-06-05 21:54:24",
-            "last_query": "2025-06-05 21:54:24"
+            "times_queried": 23037,
+            "first_query": "2025-06-12 10:20:19",
+            "last_query": "2025-05-27 09:39:47"
         },
         {
-            "domain": "device-provisioning.googleapis.com",
-            "times_queried": 1,
-            "first_query": "2025-06-05 21:54:24",
-            "last_query": "2025-06-05 21:54:24"
+            "domain": "play.googleapis.com",
+            "times_queried": 17792,
+            "first_query": "2025-06-12 10:20:19",
+            "last_query": "2025-05-27 09:39:47"
+        },
+        {
+            "domain": "embeddedassistant.googleapis.com",
+            "times_queried": 16880,
+            "first_query": "2025-06-12 10:20:19",
+            "last_query": "2025-05-27 09:39:47"
+        },
+        {
+            "domain": "instantmessaging-pa.googleapis.com",
+            "times_queried": 12806,
+            "first_query": "2025-06-12 10:20:19",
+            "last_query": "2025-05-27 09:39:47"
         },
         {
             "domain": "homeassistant.mayberry.farm",
-            "times_queried": 1,
-            "first_query": "2025-06-05 21:54:24",
-            "last_query": "2025-06-05 21:54:24"
+            "times_queried": 8241,
+            "first_query": "2025-06-12 10:20:19",
+            "last_query": "2025-05-27 09:39:47"
+        },
+        {
+            "domain": "geller-pa.googleapis.com",
+            "times_queried": 7485,
+            "first_query": "2025-06-12 10:20:20",
+            "last_query": "2025-05-27 09:39:47"
         },
         {
             "domain": "www.youtube.com",
-            "times_queried": 1,
-            "first_query": "2025-06-05 21:54:24",
-            "last_query": "2025-06-05 21:54:24"
+            "times_queried": 5310,
+            "first_query": "2025-06-12 10:20:20",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "home-devices.googleapis.com",
+            "times_queried": 2855,
+            "first_query": "2025-06-12 10:20:19",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "www.googleapis.com",
+            "times_queried": 1917,
+            "first_query": "2025-06-12 10:20:20",
+            "last_query": "2025-05-27 09:39:47"
+        },
+        {
+            "domain": "mtalk.google.com",
+            "times_queried": 1666,
+            "first_query": "2025-06-12 06:17:48",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "clients2.google.com",
+            "times_queried": 1454,
+            "first_query": "2025-06-12 10:20:20",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "dl.google.com",
+            "times_queried": 1437,
+            "first_query": "2025-06-12 08:19:03",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "lycraservice-pa.googleapis.com",
+            "times_queried": 1312,
+            "first_query": "2025-06-12 09:19:46",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "homeplatformmesh-pa.googleapis.com",
+            "times_queried": 965,
+            "first_query": "2025-06-12 06:17:48",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "gcm-http.googleapis.com",
+            "times_queried": 386,
+            "first_query": "2025-06-11 11:08:30",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "ogads-pa.clients6.google.com",
+            "times_queried": 218,
+            "first_query": "2025-06-12 03:17:10",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "play.google.com",
+            "times_queried": 214,
+            "first_query": "2025-06-12 03:17:10",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "duo.google.com",
+            "times_queried": 213,
+            "first_query": "2025-06-12 03:17:11",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "stun1.l.google.com",
+            "times_queried": 198,
+            "first_query": "2025-06-11 16:11:30",
+            "last_query": "2025-05-27 10:55:47"
+        },
+        {
+            "domain": "stun2.l.google.com",
+            "times_queried": 198,
+            "first_query": "2025-06-11 16:11:30",
+            "last_query": "2025-05-27 10:55:47"
+        },
+        {
+            "domain": "fonts.googleapis.com",
+            "times_queried": 196,
+            "first_query": "2025-06-11 11:08:30",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "cast.home",
+            "times_queried": 188,
+            "first_query": "2025-06-12 03:17:10",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "lh3.googleusercontent.com",
+            "times_queried": 171,
+            "first_query": "2025-06-11 11:08:30",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "www.google.com",
+            "times_queried": 170,
+            "first_query": "2025-06-11 11:08:31",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "crt.sectigo.com",
+            "times_queried": 167,
+            "first_query": "2025-06-12 10:20:20",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "ajax.googleapis.com",
+            "times_queried": 161,
+            "first_query": "2025-06-11 11:08:31",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "static.doubleclick.net",
+            "times_queried": 149,
+            "first_query": "2025-06-12 04:17:21",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "apis.google.com",
+            "times_queried": 148,
+            "first_query": "2025-06-12 03:17:11",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "clients4.google.com",
+            "times_queried": 130,
+            "first_query": "2025-06-11 11:08:30",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "static.cloudflareinsights.com",
+            "times_queried": 129,
+            "first_query": "2025-06-12 04:17:21",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "www.home-assistant.io",
+            "times_queried": 124,
+            "first_query": "2025-06-12 04:17:21",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "unpkg.com",
+            "times_queried": 123,
+            "first_query": "2025-06-12 04:17:21",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "fonts.gstatic.com",
+            "times_queried": 119,
+            "first_query": "2025-06-11 11:08:31",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "gstatic.com",
+            "times_queried": 94,
+            "first_query": "2025-06-11 11:08:31",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "storage.googleapis.com",
+            "times_queried": 94,
+            "first_query": "2025-06-11 11:08:31",
+            "last_query": "2025-05-27 09:39:48"
+        },
+        {
+            "domain": "device-provisioning.googleapis.com",
+            "times_queried": 91,
+            "first_query": "2025-06-10 16:57:33",
+            "last_query": "2025-05-27 13:57:29"
+        },
+        {
+            "domain": "googlehomefoyer-pa.googleapis.com",
+            "times_queried": 74,
+            "first_query": "2025-06-11 16:11:30",
+            "last_query": "2025-05-27 10:55:47"
+        },
+        {
+            "domain": "api-partner.spotify.com",
+            "times_queried": 30,
+            "first_query": "2025-06-12 04:17:21",
+            "last_query": "2025-05-27 21:02:00"
+        },
+        {
+            "domain": "cast.scdn.co",
+            "times_queried": 30,
+            "first_query": "2025-06-12 04:17:21",
+            "last_query": "2025-05-27 21:02:00"
+        },
+        {
+            "domain": "o22381.ingest.sentry.io",
+            "times_queried": 30,
+            "first_query": "2025-06-12 04:17:21",
+            "last_query": "2025-05-27 21:02:00"
+        },
+        {
+            "domain": "i.pki.goog",
+            "times_queried": 14,
+            "first_query": "2025-06-01 15:27:48",
+            "last_query": "2025-05-29 19:11:08"
+        },
+        {
+            "domain": "raw.githubusercontent.com",
+            "times_queried": 8,
+            "first_query": "2025-06-12 03:17:10",
+            "last_query": "2025-06-11 20:13:28"
+        },
+        {
+            "domain": "apresolve.spotify.com",
+            "times_queried": 4,
+            "first_query": "2025-06-11 11:08:30",
+            "last_query": "2025-06-11 08:05:20"
+        },
+        {
+            "domain": "gae2-dealer.g2.spotify.com",
+            "times_queried": 4,
+            "first_query": "2025-06-11 11:08:30",
+            "last_query": "2025-06-11 08:05:20"
+        },
+        {
+            "domain": "gae2-spclient.spotify.com",
+            "times_queried": 4,
+            "first_query": "2025-06-11 11:08:30",
+            "last_query": "2025-06-11 08:05:20"
         }
     ],
     "flows": [
         {
-            "destination": "8.8.8.8",
-            "port": 771,
-            "protocol": 1,
-            "flow_count": 1,
-            "total_packets": 2829,
-            "total_bytes": 425759,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.161.234",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 13,
-            "total_packets": 747,
-            "total_bytes": 319390,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.76.138",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 9,
-            "total_packets": 2927,
-            "total_bytes": 221095,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.251.8.188",
-            "port": 5228,
-            "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 2864,
-            "total_bytes": 205036,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.25.170",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 25,
-            "total_packets": 480,
-            "total_bytes": 156733,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.207.110",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 9,
-            "total_packets": 782,
-            "total_bytes": 151612,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "104.26.4.238",
-            "port": 443,
+            "destination": "224.0.0.251",
+            "port": 5353,
             "protocol": 17,
-            "flow_count": 10,
-            "total_packets": 494,
-            "total_bytes": 134925,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 173,
+            "total_packets": 23427,
+            "total_bytes": 5979172,
+            "last_seen": "2025-06-11 07:36:10",
+            "first_seen": "2025-06-03 05:50:49"
         },
         {
             "destination": "172.217.25.174",
             "port": 443,
             "protocol": 17,
-            "flow_count": 6,
-            "total_packets": 274,
-            "total_bytes": 69371,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 594,
+            "total_packets": 16639,
+            "total_bytes": 5367054,
+            "last_seen": "2025-06-12 10:23:16",
+            "first_seen": "2025-06-02 11:33:58"
         },
         {
-            "destination": "142.251.42.142",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 2,
-            "total_packets": 552,
-            "total_bytes": 62266,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "142.250.207.110",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 7,
-            "total_packets": 106,
-            "total_bytes": 54882,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.207.106",
+            "destination": "142.250.76.138",
             "port": 443,
             "protocol": 6,
-            "flow_count": 24,
-            "total_packets": 228,
-            "total_bytes": 49837,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 443,
+            "total_packets": 19255,
+            "total_bytes": 4592518,
+            "last_seen": "2025-06-12 08:29:25",
+            "first_seen": "2025-06-02 12:54:20"
         },
         {
-            "destination": "142.250.206.227",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 217,
-            "total_bytes": 49770,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.207.99",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 24,
-            "total_packets": 434,
-            "total_bytes": 37115,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.31.174",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 3,
-            "total_packets": 106,
-            "total_bytes": 35567,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "8.8.4.4",
-            "port": 53,
-            "protocol": 17,
-            "flow_count": 499,
-            "total_packets": 504,
-            "total_bytes": 34033,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "8.8.8.8",
-            "port": 53,
-            "protocol": 17,
-            "flow_count": 500,
-            "total_packets": 504,
-            "total_bytes": 34033,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.161.227",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 31,
-            "total_packets": 310,
-            "total_bytes": 32241,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.76.142",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 4,
-            "total_packets": 58,
-            "total_bytes": 30953,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.31.174",
+            "destination": "172.217.161.234",
             "port": 443,
             "protocol": 6,
-            "flow_count": 7,
-            "total_packets": 359,
-            "total_bytes": 28950,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 234,
+            "total_packets": 20482,
+            "total_bytes": 3622422,
+            "last_seen": "2025-06-12 10:18:08",
+            "first_seen": "2025-06-02 19:15:17"
+        },
+        {
+            "destination": "172.67.68.90",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 389,
+            "total_packets": 7317,
+            "total_bytes": 3410538,
+            "last_seen": "2025-06-12 09:27:53",
+            "first_seen": "2025-06-02 11:33:58"
+        },
+        {
+            "destination": "172.217.161.206",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 273,
+            "total_packets": 13853,
+            "total_bytes": 3330629,
+            "last_seen": "2025-06-12 10:15:04",
+            "first_seen": "2025-06-03 07:24:41"
+        },
+        {
+            "destination": "172.217.25.174",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 1243,
+            "total_packets": 23538,
+            "total_bytes": 3180165,
+            "last_seen": "2025-06-12 10:26:21",
+            "first_seen": "2025-06-02 11:27:36"
+        },
+        {
+            "destination": "104.26.4.238",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 393,
+            "total_packets": 5599,
+            "total_bytes": 3173603,
+            "last_seen": "2025-06-12 10:31:29",
+            "first_seen": "2025-06-02 12:09:40"
+        },
+        {
+            "destination": "142.250.206.202",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 486,
+            "total_packets": 11659,
+            "total_bytes": 3151287,
+            "last_seen": "2025-06-12 09:48:24",
+            "first_seen": "2025-06-02 18:17:49"
+        },
+        {
+            "destination": "172.217.25.170",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 439,
+            "total_packets": 10436,
+            "total_bytes": 3068984,
+            "last_seen": "2025-06-12 09:44:18",
+            "first_seen": "2025-06-02 18:12:37"
         },
         {
             "destination": "104.26.5.238",
             "port": 443,
             "protocol": 17,
-            "flow_count": 4,
-            "total_packets": 57,
-            "total_bytes": 26648,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 381,
+            "total_packets": 5946,
+            "total_bytes": 2990432,
+            "last_seen": "2025-06-12 09:36:05",
+            "first_seen": "2025-06-02 17:43:21"
         },
         {
             "destination": "142.250.207.106",
             "port": 443,
-            "protocol": 17,
-            "flow_count": 3,
-            "total_packets": 38,
-            "total_bytes": 22740,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.196.132",
-            "port": 443,
             "protocol": 6,
-            "flow_count": 3,
-            "total_packets": 281,
-            "total_bytes": 22608,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "172.217.161.195",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 3,
-            "total_packets": 207,
-            "total_bytes": 22578,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.161.238",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 5,
-            "total_packets": 101,
-            "total_bytes": 20458,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.76.138",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 5,
-            "total_packets": 37,
-            "total_bytes": 18003,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 424,
+            "total_packets": 10882,
+            "total_bytes": 2880568,
+            "last_seen": "2025-06-12 08:22:13",
+            "first_seen": "2025-06-02 11:43:33"
         },
         {
             "destination": "172.217.161.202",
             "port": 443,
             "protocol": 6,
-            "flow_count": 3,
-            "total_packets": 63,
-            "total_bytes": 17600,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 329,
+            "total_packets": 12763,
+            "total_bytes": 2878602,
+            "last_seen": "2025-06-12 10:16:05",
+            "first_seen": "2025-06-02 12:48:02"
+        },
+        {
+            "destination": "142.250.206.234",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 420,
+            "total_packets": 12384,
+            "total_bytes": 2876261,
+            "last_seen": "2025-06-12 10:25:20",
+            "first_seen": "2025-06-02 18:14:42"
+        },
+        {
+            "destination": "142.250.207.110",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 276,
+            "total_packets": 9018,
+            "total_bytes": 2874743,
+            "last_seen": "2025-06-12 10:13:01",
+            "first_seen": "2025-06-02 11:43:33"
+        },
+        {
+            "destination": "142.250.76.142",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 220,
+            "total_packets": 15029,
+            "total_bytes": 2869501,
+            "last_seen": "2025-06-12 08:46:51",
+            "first_seen": "2025-06-02 17:52:43"
+        },
+        {
+            "destination": "8.8.4.4",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 178,
+            "total_packets": 18628,
+            "total_bytes": 2758184,
+            "last_seen": "2025-06-12 09:40:12",
+            "first_seen": "2025-06-02 11:38:12"
+        },
+        {
+            "destination": "142.250.206.195",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 4140,
+            "total_packets": 32546,
+            "total_bytes": 2709098,
+            "last_seen": "2025-06-12 10:19:10",
+            "first_seen": "2025-06-02 17:28:46"
+        },
+        {
+            "destination": "8.8.8.8",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 176,
+            "total_packets": 18160,
+            "total_bytes": 2683786,
+            "last_seen": "2025-06-12 08:36:35",
+            "first_seen": "2025-06-02 11:41:24"
+        },
+        {
+            "destination": "142.250.206.206",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 194,
+            "total_packets": 11271,
+            "total_bytes": 2434901,
+            "last_seen": "2025-06-12 02:14:27",
+            "first_seen": "2025-06-02 18:18:52"
+        },
+        {
+            "destination": "142.250.206.227",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 3388,
+            "total_packets": 27537,
+            "total_bytes": 2393825,
+            "last_seen": "2025-06-12 10:24:18",
+            "first_seen": "2025-06-02 11:26:31"
+        },
+        {
+            "destination": "142.250.206.238",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 178,
+            "total_packets": 10949,
+            "total_bytes": 2257953,
+            "last_seen": "2025-06-12 10:31:29",
+            "first_seen": "2025-06-03 04:02:14"
+        },
+        {
+            "destination": "142.250.76.131",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 4230,
+            "total_packets": 27305,
+            "total_bytes": 2133962,
+            "last_seen": "2025-06-11 23:07:03",
+            "first_seen": "2025-06-02 12:52:14"
         },
         {
             "destination": "172.217.161.238",
             "port": 443,
             "protocol": 17,
-            "flow_count": 3,
-            "total_packets": 30,
-            "total_bytes": 17529,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 173,
+            "total_packets": 9479,
+            "total_bytes": 2072201,
+            "last_seen": "2025-06-12 09:21:44",
+            "first_seen": "2025-06-02 18:00:04"
         },
         {
-            "destination": "142.250.206.227",
+            "destination": "8.8.4.4",
+            "port": 53,
+            "protocol": 17,
+            "flow_count": 27725,
+            "total_packets": 29753,
+            "total_bytes": 1989817,
+            "last_seen": "2025-06-12 10:33:32",
+            "first_seen": "2025-06-02 11:27:36"
+        },
+        {
+            "destination": "8.8.8.8",
+            "port": 53,
+            "protocol": 17,
+            "flow_count": 27718,
+            "total_packets": 29742,
+            "total_bytes": 1989109,
+            "last_seen": "2025-06-12 10:33:32",
+            "first_seen": "2025-06-02 11:27:36"
+        },
+        {
+            "destination": "172.217.161.227",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 664,
+            "total_packets": 17500,
+            "total_bytes": 1898734,
+            "last_seen": "2025-06-12 08:33:30",
+            "first_seen": "2025-06-02 21:36:13"
+        },
+        {
+            "destination": "172.217.25.163",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 1447,
+            "total_packets": 16794,
+            "total_bytes": 1507283,
+            "last_seen": "2025-06-12 10:34:33",
+            "first_seen": "2025-06-02 11:31:50"
+        },
+        {
+            "destination": "172.217.161.206",
             "port": 443,
             "protocol": 6,
-            "flow_count": 8,
-            "total_packets": 154,
-            "total_bytes": 16814,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 551,
+            "total_packets": 11265,
+            "total_bytes": 1476446,
+            "last_seen": "2025-06-11 23:27:33",
+            "first_seen": "2025-06-03 02:04:12"
         },
         {
-            "destination": "142.250.196.131",
+            "destination": "142.250.207.110",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 541,
+            "total_packets": 10974,
+            "total_bytes": 1392678,
+            "last_seen": "2025-06-12 10:15:04",
+            "first_seen": "2025-06-02 11:32:54"
+        },
+        {
+            "destination": "172.217.161.195",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 393,
+            "total_packets": 11814,
+            "total_bytes": 1244477,
+            "last_seen": "2025-06-11 23:52:09",
+            "first_seen": "2025-06-02 18:30:23"
+        },
+        {
+            "destination": "142.250.206.195",
             "port": 443,
             "protocol": 17,
-            "flow_count": 2,
-            "total_packets": 88,
-            "total_bytes": 16669,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 161,
+            "total_packets": 1345,
+            "total_bytes": 1188716,
+            "last_seen": "2025-06-11 07:32:52",
+            "first_seen": "2025-06-03 01:55:56"
+        },
+        {
+            "destination": "142.250.76.142",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 427,
+            "total_packets": 7727,
+            "total_bytes": 1066406,
+            "last_seen": "2025-06-12 10:02:45",
+            "first_seen": "2025-06-02 17:24:35"
+        },
+        {
+            "destination": "142.250.199.110",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 94,
+            "total_packets": 3186,
+            "total_bytes": 941513,
+            "last_seen": "2025-06-11 23:11:09",
+            "first_seen": "2025-06-03 19:02:58"
         },
         {
             "destination": "142.250.206.206",
             "port": 443,
             "protocol": 6,
+            "flow_count": 356,
+            "total_packets": 7164,
+            "total_bytes": 937192,
+            "last_seen": "2025-06-12 00:08:30",
+            "first_seen": "2025-06-02 18:19:54"
+        },
+        {
+            "destination": "142.250.207.99",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 467,
+            "total_packets": 9252,
+            "total_bytes": 911126,
+            "last_seen": "2025-06-12 10:15:04",
+            "first_seen": "2025-06-02 11:29:43"
+        },
+        {
+            "destination": "172.217.161.238",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 326,
+            "total_packets": 6160,
+            "total_bytes": 799737,
+            "last_seen": "2025-06-12 03:49:41",
+            "first_seen": "2025-06-02 18:04:16"
+        },
+        {
+            "destination": "142.250.206.238",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 325,
+            "total_packets": 6087,
+            "total_bytes": 762574,
+            "last_seen": "2025-06-12 10:34:33",
+            "first_seen": "2025-06-03 03:05:50"
+        },
+        {
+            "destination": "74.125.204.188",
+            "port": 5228,
+            "protocol": 6,
             "flow_count": 8,
-            "total_packets": 160,
-            "total_bytes": 16640,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "total_packets": 9966,
+            "total_bytes": 708466,
+            "last_seen": "2025-06-11 20:08:30",
+            "first_seen": "2025-06-04 13:58:39"
+        },
+        {
+            "destination": "216.239.32.223",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 156,
+            "total_packets": 3273,
+            "total_bytes": 680509,
+            "last_seen": "2025-06-12 10:14:02",
+            "first_seen": "2025-06-02 11:43:33"
+        },
+        {
+            "destination": "216.239.38.223",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 151,
+            "total_packets": 3205,
+            "total_bytes": 662823,
+            "last_seen": "2025-06-12 07:23:47",
+            "first_seen": "2025-06-02 19:14:14"
+        },
+        {
+            "destination": "216.239.34.223",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 152,
+            "total_packets": 3102,
+            "total_bytes": 652864,
+            "last_seen": "2025-06-12 09:44:18",
+            "first_seen": "2025-06-02 18:17:49"
+        },
+        {
+            "destination": "74.125.203.188",
+            "port": 5228,
+            "protocol": 6,
+            "flow_count": 18,
+            "total_packets": 8584,
+            "total_bytes": 620316,
+            "last_seen": "2025-06-11 16:46:26",
+            "first_seen": "2025-06-03 02:21:55"
         },
         {
             "destination": "216.239.36.223",
             "port": 443,
             "protocol": 6,
-            "flow_count": 3,
-            "total_packets": 68,
-            "total_bytes": 15361,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 159,
+            "total_packets": 3145,
+            "total_bytes": 563757,
+            "last_seen": "2025-06-12 05:09:35",
+            "first_seen": "2025-06-02 17:19:19"
+        },
+        {
+            "destination": "142.250.76.131",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 38,
+            "total_packets": 1792,
+            "total_bytes": 511430,
+            "last_seen": "2025-06-11 08:07:20",
+            "first_seen": "2025-06-04 13:03:17"
+        },
+        {
+            "destination": "142.251.42.170",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 23,
+            "total_packets": 1327,
+            "total_bytes": 503276,
+            "last_seen": "2025-06-12 00:12:36",
+            "first_seen": "2025-06-03 20:59:53"
+        },
+        {
+            "destination": "108.177.97.188",
+            "port": 5228,
+            "protocol": 6,
+            "flow_count": 5,
+            "total_packets": 6810,
+            "total_bytes": 499540,
+            "last_seen": "2025-06-09 04:52:08",
+            "first_seen": "2025-06-03 02:02:07"
+        },
+        {
+            "destination": "142.250.199.110",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 195,
+            "total_packets": 3688,
+            "total_bytes": 483703,
+            "last_seen": "2025-06-10 23:49:33",
+            "first_seen": "2025-06-03 09:59:10"
         },
         {
             "destination": "142.251.222.42",
             "port": 443,
             "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 45,
-            "total_bytes": 15095,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 43,
+            "total_packets": 3859,
+            "total_bytes": 447828,
+            "last_seen": "2025-06-11 20:44:26",
+            "first_seen": "2025-06-03 16:21:17"
         },
         {
-            "destination": "172.217.161.74",
+            "destination": "142.251.42.138",
             "port": 443,
             "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 44,
-            "total_bytes": 14880,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
+            "flow_count": 46,
+            "total_packets": 1334,
+            "total_bytes": 440862,
+            "last_seen": "2025-06-11 22:47:34",
+            "first_seen": "2025-06-03 16:27:32"
         },
         {
-            "destination": "142.250.206.206",
+            "destination": "224.0.0.250",
+            "port": 10101,
+            "protocol": 17,
+            "flow_count": 102,
+            "total_packets": 5554,
+            "total_bytes": 438773,
+            "last_seen": "2025-06-11 07:36:10",
+            "first_seen": "2025-06-04 05:02:09"
+        },
+        {
+            "destination": "239.255.255.251",
+            "port": 10101,
+            "protocol": 17,
+            "flow_count": 102,
+            "total_packets": 5554,
+            "total_bytes": 438773,
+            "last_seen": "2025-06-11 07:36:10",
+            "first_seen": "2025-06-04 05:02:09"
+        },
+        {
+            "destination": "142.250.196.138",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 31,
+            "total_packets": 4918,
+            "total_bytes": 387882,
+            "last_seen": "2025-06-11 21:14:09",
+            "first_seen": "2025-06-03 14:02:42"
+        },
+        {
+            "destination": "142.250.196.110",
             "port": 443,
             "protocol": 17,
-            "flow_count": 2,
-            "total_packets": 26,
-            "total_bytes": 14787,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
+            "flow_count": 12,
+            "total_packets": 3321,
+            "total_bytes": 381001,
+            "last_seen": "2025-06-11 20:12:37",
+            "first_seen": "2025-06-04 23:25:33"
+        },
+        {
+            "destination": "255.255.255.255",
+            "port": 9478,
+            "protocol": 17,
+            "flow_count": 98,
+            "total_packets": 5541,
+            "total_bytes": 376788,
+            "last_seen": "2025-06-10 08:03:09",
+            "first_seen": "2025-06-04 05:02:09"
+        },
+        {
+            "destination": "142.251.42.142",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 12,
+            "total_packets": 2959,
+            "total_bytes": 368611,
+            "last_seen": "2025-06-11 22:10:35",
+            "first_seen": "2025-06-03 10:03:20"
+        },
+        {
+            "destination": "8.8.8.8",
+            "port": 2048,
+            "protocol": 1,
+            "flow_count": 101,
+            "total_packets": 5606,
+            "total_bytes": 336360,
+            "last_seen": "2025-06-11 07:36:10",
+            "first_seen": "2025-06-04 05:02:09"
+        },
+        {
+            "destination": "192.168.49.1",
+            "port": 2048,
+            "protocol": 1,
+            "flow_count": 101,
+            "total_packets": 5502,
+            "total_bytes": 330120,
+            "last_seen": "2025-06-11 07:36:10",
+            "first_seen": "2025-06-04 05:02:09"
+        },
+        {
+            "destination": "64.233.189.188",
+            "port": 5228,
+            "protocol": 6,
+            "flow_count": 10,
+            "total_packets": 4439,
+            "total_bytes": 327617,
+            "last_seen": "2025-06-12 00:05:26",
+            "first_seen": "2025-06-07 03:19:36"
+        },
+        {
+            "destination": "74.125.23.188",
+            "port": 5228,
+            "protocol": 6,
+            "flow_count": 5,
+            "total_packets": 4465,
+            "total_bytes": 320641,
+            "last_seen": "2025-06-11 17:41:50",
+            "first_seen": "2025-06-04 13:00:08"
+        },
+        {
+            "destination": "255.255.255.255",
+            "port": 9999,
+            "protocol": 17,
+            "flow_count": 101,
+            "total_packets": 5539,
+            "total_bytes": 315723,
+            "last_seen": "2025-06-10 08:03:09",
+            "first_seen": "2025-06-04 05:02:09"
+        },
+        {
+            "destination": "172.67.68.90",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 74,
+            "total_packets": 1686,
+            "total_bytes": 309610,
+            "last_seen": "2025-06-12 07:41:13",
+            "first_seen": "2025-06-02 11:35:01"
+        },
+        {
+            "destination": "173.194.174.188",
+            "port": 5228,
+            "protocol": 6,
+            "flow_count": 7,
+            "total_packets": 4117,
+            "total_bytes": 299491,
+            "last_seen": "2025-06-11 19:03:49",
+            "first_seen": "2025-06-05 19:01:26"
+        },
+        {
+            "destination": "172.217.26.234",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 39,
+            "total_packets": 906,
+            "total_bytes": 290720,
+            "last_seen": "2025-06-11 18:27:57",
+            "first_seen": "2025-06-02 22:47:09"
+        },
+        {
+            "destination": "142.250.206.227",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 19,
+            "total_packets": 913,
+            "total_bytes": 289564,
+            "last_seen": "2025-06-12 01:06:52",
+            "first_seen": "2025-06-03 02:04:12"
         },
         {
             "destination": "104.26.4.238",
             "port": 443,
             "protocol": 6,
+            "flow_count": 80,
+            "total_packets": 1239,
+            "total_bytes": 287514,
+            "last_seen": "2025-06-12 06:11:01",
+            "first_seen": "2025-06-02 21:36:13"
+        },
+        {
+            "destination": "142.251.42.174",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 14,
+            "total_packets": 1648,
+            "total_bytes": 287126,
+            "last_seen": "2025-06-11 22:12:39",
+            "first_seen": "2025-06-02 20:07:28"
+        },
+        {
+            "destination": "172.217.161.227",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 43,
+            "total_packets": 263,
+            "total_bytes": 287015,
+            "last_seen": "2025-06-10 08:12:44",
+            "first_seen": "2025-06-07 22:23:58"
+        },
+        {
+            "destination": "104.26.5.238",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 72,
+            "total_packets": 1500,
+            "total_bytes": 283515,
+            "last_seen": "2025-06-12 00:06:27",
+            "first_seen": "2025-06-02 18:55:26"
+        },
+        {
+            "destination": "216.58.220.110",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 5,
+            "total_packets": 2600,
+            "total_bytes": 276874,
+            "last_seen": "2025-06-11 11:18:49",
+            "first_seen": "2025-06-04 22:21:54"
+        },
+        {
+            "destination": "142.250.207.10",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 35,
+            "total_packets": 1277,
+            "total_bytes": 265879,
+            "last_seen": "2025-06-11 22:23:57",
+            "first_seen": "2025-06-03 19:46:50"
+        },
+        {
+            "destination": "142.250.196.106",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 38,
+            "total_packets": 819,
+            "total_bytes": 250041,
+            "last_seen": "2025-06-11 21:16:12",
+            "first_seen": "2025-06-02 21:20:36"
+        },
+        {
+            "destination": "142.251.222.46",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 18,
+            "total_packets": 747,
+            "total_bytes": 248202,
+            "last_seen": "2025-06-11 20:41:21",
+            "first_seen": "2025-06-03 21:12:24"
+        },
+        {
+            "destination": "142.250.199.106",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 32,
+            "total_packets": 2243,
+            "total_bytes": 235167,
+            "last_seen": "2025-06-11 20:08:30",
+            "first_seen": "2025-06-03 20:01:27"
+        },
+        {
+            "destination": "172.217.25.170",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 29,
+            "total_packets": 431,
+            "total_bytes": 217983,
+            "last_seen": "2025-06-12 04:23:28",
+            "first_seen": "2025-06-03 02:09:24"
+        },
+        {
+            "destination": "142.250.207.42",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 28,
+            "total_packets": 670,
+            "total_bytes": 208145,
+            "last_seen": "2025-06-11 20:13:39",
+            "first_seen": "2025-06-04 13:03:17"
+        },
+        {
+            "destination": "142.250.206.202",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 23,
+            "total_packets": 273,
+            "total_bytes": 191423,
+            "last_seen": "2025-06-11 22:21:54",
+            "first_seen": "2025-06-02 18:50:14"
+        },
+        {
+            "destination": "172.217.25.163",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 9,
+            "total_packets": 632,
+            "total_bytes": 187186,
+            "last_seen": "2025-06-12 08:58:08",
+            "first_seen": "2025-06-03 01:55:56"
+        },
+        {
+            "destination": "142.250.76.138",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 24,
+            "total_packets": 318,
+            "total_bytes": 183326,
+            "last_seen": "2025-06-11 12:05:08",
+            "first_seen": "2025-06-03 00:51:22"
+        },
+        {
+            "destination": "142.250.207.106",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 24,
+            "total_packets": 323,
+            "total_bytes": 181659,
+            "last_seen": "2025-06-11 17:06:58",
+            "first_seen": "2025-06-03 02:04:12"
+        },
+        {
+            "destination": "142.251.42.174",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 32,
+            "total_packets": 975,
+            "total_bytes": 179394,
+            "last_seen": "2025-06-11 22:14:43",
+            "first_seen": "2025-06-02 20:51:22"
+        },
+        {
+            "destination": "142.250.76.131",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 52,
+            "total_packets": 1218,
+            "total_bytes": 172637,
+            "last_seen": "2025-06-11 08:06:14",
+            "first_seen": "2025-06-04 09:52:52"
+        },
+        {
+            "destination": "142.250.206.195",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 36,
+            "total_packets": 1278,
+            "total_bytes": 165289,
+            "last_seen": "2025-06-11 07:45:48",
+            "first_seen": "2025-06-03 02:08:21"
+        },
+        {
+            "destination": "142.250.198.14",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 13,
+            "total_packets": 770,
+            "total_bytes": 165075,
+            "last_seen": "2025-06-10 23:35:34",
+            "first_seen": "2025-06-03 21:57:19"
+        },
+        {
+            "destination": "172.217.175.10",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 23,
+            "total_packets": 515,
+            "total_bytes": 160163,
+            "last_seen": "2025-06-11 20:24:57",
+            "first_seen": "2025-06-03 18:17:07"
+        },
+        {
+            "destination": "172.217.26.238",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 5,
+            "total_packets": 1077,
+            "total_bytes": 157730,
+            "last_seen": "2025-06-11 21:17:14",
+            "first_seen": "2025-06-08 20:44:10"
+        },
+        {
+            "destination": "172.217.175.42",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 34,
+            "total_packets": 710,
+            "total_bytes": 155933,
+            "last_seen": "2025-06-11 19:43:52",
+            "first_seen": "2025-06-03 14:56:47"
+        },
+        {
+            "destination": "74.125.247.227",
+            "port": 19305,
+            "protocol": 17,
+            "flow_count": 3,
+            "total_packets": 1950,
+            "total_bytes": 150641,
+            "last_seen": "2025-06-11 10:43:12",
+            "first_seen": "2025-06-09 09:57:01"
+        },
+        {
+            "destination": "142.251.42.206",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 5,
+            "total_packets": 1244,
+            "total_bytes": 147267,
+            "last_seen": "2025-06-11 16:12:34",
+            "first_seen": "2025-06-02 23:00:45"
+        },
+        {
+            "destination": "172.217.175.234",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 24,
+            "total_packets": 483,
+            "total_bytes": 143215,
+            "last_seen": "2025-06-11 20:13:39",
+            "first_seen": "2025-06-02 20:39:48"
+        },
+        {
+            "destination": "172.217.31.170",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 33,
+            "total_packets": 546,
+            "total_bytes": 142210,
+            "last_seen": "2025-06-11 20:10:33",
+            "first_seen": "2025-06-03 19:59:22"
+        },
+        {
+            "destination": "172.217.175.106",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 18,
+            "total_packets": 567,
+            "total_bytes": 138103,
+            "last_seen": "2025-06-11 22:46:32",
+            "first_seen": "2025-06-03 14:52:37"
+        },
+        {
+            "destination": "142.251.8.188",
+            "port": 5228,
+            "protocol": 6,
+            "flow_count": 3,
+            "total_packets": 2045,
+            "total_bytes": 135640,
+            "last_seen": "2025-06-07 03:19:36",
+            "first_seen": "2025-06-05 18:03:59"
+        },
+        {
+            "destination": "108.177.125.188",
+            "port": 5228,
+            "protocol": 6,
+            "flow_count": 2,
+            "total_packets": 1864,
+            "total_bytes": 134787,
+            "last_seen": "2025-06-11 20:08:30",
+            "first_seen": "2025-06-10 08:01:01"
+        },
+        {
+            "destination": "216.58.220.106",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 27,
+            "total_packets": 557,
+            "total_bytes": 127360,
+            "last_seen": "2025-06-11 22:48:36",
+            "first_seen": "2025-06-03 16:53:41"
+        },
+        {
+            "destination": "172.217.175.14",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 3,
+            "total_packets": 729,
+            "total_bytes": 126830,
+            "last_seen": "2025-06-11 21:06:59",
+            "first_seen": "2025-06-04 00:58:16"
+        },
+        {
+            "destination": "172.217.174.110",
+            "port": 443,
+            "protocol": 17,
             "flow_count": 4,
-            "total_packets": 91,
-            "total_bytes": 14515,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "total_packets": 918,
+            "total_bytes": 123723,
+            "last_seen": "2025-06-11 18:27:57",
+            "first_seen": "2025-06-05 23:17:42"
+        },
+        {
+            "destination": "74.125.247.239",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 2,
+            "total_packets": 211,
+            "total_bytes": 113370,
+            "last_seen": "2025-06-05 15:24:15",
+            "first_seen": "2025-06-03 13:49:07"
+        },
+        {
+            "destination": "74.125.247.239",
+            "port": 19305,
+            "protocol": 17,
+            "flow_count": 2,
+            "total_packets": 1401,
+            "total_bytes": 112143,
+            "last_seen": "2025-06-05 15:24:15",
+            "first_seen": "2025-06-03 13:49:07"
+        },
+        {
+            "destination": "142.250.206.234",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 16,
+            "total_packets": 171,
+            "total_bytes": 103375,
+            "last_seen": "2025-06-12 10:23:16",
+            "first_seen": "2025-06-02 12:50:08"
+        },
+        {
+            "destination": "142.250.198.10",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 39,
+            "total_packets": 622,
+            "total_bytes": 102310,
+            "last_seen": "2025-06-11 22:20:53",
+            "first_seen": "2025-06-02 20:39:48"
+        },
+        {
+            "destination": "172.217.161.202",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 17,
+            "total_packets": 179,
+            "total_bytes": 101918,
+            "last_seen": "2025-06-09 05:30:52",
+            "first_seen": "2025-06-04 13:03:17"
+        },
+        {
+            "destination": "74.125.247.235",
+            "port": 19305,
+            "protocol": 17,
+            "flow_count": 1,
+            "total_packets": 1296,
+            "total_bytes": 99066,
+            "last_seen": "2025-06-11 11:53:50",
+            "first_seen": "2025-06-11 11:53:50"
+        },
+        {
+            "destination": "172.217.175.78",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 2,
+            "total_packets": 886,
+            "total_bytes": 94556,
+            "last_seen": "2025-06-10 20:20:26",
+            "first_seen": "2025-06-08 22:04:09"
+        },
+        {
+            "destination": "172.217.175.74",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 14,
+            "total_packets": 273,
+            "total_bytes": 90569,
+            "last_seen": "2025-06-11 21:11:05",
+            "first_seen": "2025-06-03 19:24:50"
+        },
+        {
+            "destination": "104.18.1.22",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 6,
+            "total_packets": 207,
+            "total_bytes": 90341,
+            "last_seen": "2025-06-11 21:09:02",
+            "first_seen": "2025-06-03 02:05:14"
+        },
+        {
+            "destination": "142.251.222.14",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 4,
+            "total_packets": 540,
+            "total_bytes": 88760,
+            "last_seen": "2025-06-11 21:26:27",
+            "first_seen": "2025-06-03 13:37:37"
+        },
+        {
+            "destination": "142.250.206.227",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 47,
+            "total_packets": 752,
+            "total_bytes": 88737,
+            "last_seen": "2025-06-12 10:17:07",
+            "first_seen": "2025-06-02 17:47:31"
+        },
+        {
+            "destination": "172.217.31.163",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 9,
+            "total_packets": 586,
+            "total_bytes": 83184,
+            "last_seen": "2025-06-11 13:16:00",
+            "first_seen": "2025-06-04 22:38:38"
+        },
+        {
+            "destination": "172.217.161.74",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 16,
+            "total_packets": 406,
+            "total_bytes": 81423,
+            "last_seen": "2025-06-10 22:13:49",
+            "first_seen": "2025-06-03 11:42:56"
+        },
+        {
+            "destination": "74.125.247.227",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 2,
+            "total_packets": 160,
+            "total_bytes": 81183,
+            "last_seen": "2025-06-11 10:43:12",
+            "first_seen": "2025-06-09 09:57:01"
+        },
+        {
+            "destination": "172.217.31.138",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 16,
+            "total_packets": 417,
+            "total_bytes": 77971,
+            "last_seen": "2025-06-11 22:52:42",
+            "first_seen": "2025-06-03 16:43:11"
+        },
+        {
+            "destination": "172.217.161.42",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 15,
+            "total_packets": 285,
+            "total_bytes": 77113,
+            "last_seen": "2025-06-11 22:42:26",
+            "first_seen": "2025-06-03 15:58:20"
+        },
+        {
+            "destination": "142.251.222.46",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 17,
+            "total_packets": 588,
+            "total_bytes": 74460,
+            "last_seen": "2025-06-11 20:43:24",
+            "first_seen": "2025-06-03 21:15:32"
+        },
+        {
+            "destination": "142.251.222.10",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 20,
+            "total_packets": 279,
+            "total_bytes": 70649,
+            "last_seen": "2025-06-10 19:13:38",
+            "first_seen": "2025-06-03 19:57:17"
+        },
+        {
+            "destination": "142.251.42.202",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 26,
+            "total_packets": 421,
+            "total_bytes": 65721,
+            "last_seen": "2025-06-11 21:13:08",
+            "first_seen": "2025-06-03 18:53:35"
+        },
+        {
+            "destination": "142.250.198.14",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 23,
+            "total_packets": 610,
+            "total_bytes": 65704,
+            "last_seen": "2025-06-10 23:36:39",
+            "first_seen": "2025-06-05 10:28:18"
+        },
+        {
+            "destination": "172.217.26.238",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 10,
+            "total_packets": 430,
+            "total_bytes": 65701,
+            "last_seen": "2025-06-11 21:20:18",
+            "first_seen": "2025-06-02 19:21:33"
+        },
+        {
+            "destination": "142.250.207.3",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 22,
+            "total_packets": 504,
+            "total_bytes": 65528,
+            "last_seen": "2025-06-08 16:21:46",
+            "first_seen": "2025-06-04 11:06:07"
+        },
+        {
+            "destination": "142.250.196.131",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 4,
+            "total_packets": 446,
+            "total_bytes": 64396,
+            "last_seen": "2025-06-11 17:12:05",
+            "first_seen": "2025-06-09 20:54:39"
+        },
+        {
+            "destination": "35.186.224.24",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 6,
+            "total_packets": 190,
+            "total_bytes": 62772,
+            "last_seen": "2025-06-11 21:19:17",
+            "first_seen": "2025-06-03 02:15:39"
+        },
+        {
+            "destination": "142.251.222.35",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 18,
+            "total_packets": 456,
+            "total_bytes": 59691,
+            "last_seen": "2025-06-10 11:13:23",
+            "first_seen": "2025-06-04 18:08:18"
+        },
+        {
+            "destination": "104.18.0.22",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 4,
+            "total_packets": 205,
+            "total_bytes": 59530,
+            "last_seen": "2025-06-10 13:05:10",
+            "first_seen": "2025-06-04 13:04:19"
+        },
+        {
+            "destination": "142.250.207.100",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 18,
+            "total_packets": 734,
+            "total_bytes": 59110,
+            "last_seen": "2025-06-11 07:43:39",
+            "first_seen": "2025-06-03 01:55:56"
+        },
+        {
+            "destination": "142.250.206.196",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 18,
+            "total_packets": 691,
+            "total_bytes": 54906,
+            "last_seen": "2025-06-11 07:31:47",
+            "first_seen": "2025-06-05 19:05:32"
+        },
+        {
+            "destination": "64.233.187.188",
+            "port": 5228,
+            "protocol": 6,
+            "flow_count": 7,
+            "total_packets": 737,
+            "total_bytes": 53949,
+            "last_seen": "2025-06-11 07:45:48",
+            "first_seen": "2025-06-08 07:22:56"
+        },
+        {
+            "destination": "142.251.42.131",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 123,
+            "total_packets": 721,
+            "total_bytes": 53398,
+            "last_seen": "2025-06-05 22:18:18",
+            "first_seen": "2025-06-02 22:44:02"
+        },
+        {
+            "destination": "74.125.247.231",
+            "port": 19305,
+            "protocol": 17,
+            "flow_count": 1,
+            "total_packets": 656,
+            "total_bytes": 51909,
+            "last_seen": "2025-06-09 18:24:12",
+            "first_seen": "2025-06-09 18:24:12"
+        },
+        {
+            "destination": "172.217.25.163",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 14,
+            "total_packets": 333,
+            "total_bytes": 50927,
+            "last_seen": "2025-06-11 08:16:21",
+            "first_seen": "2025-06-03 01:46:44"
+        },
+        {
+            "destination": "216.58.220.110",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 20,
+            "total_packets": 493,
+            "total_bytes": 50176,
+            "last_seen": "2025-06-05 20:24:33",
+            "first_seen": "2025-06-03 21:08:14"
+        },
+        {
+            "destination": "172.217.161.78",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 5,
+            "total_packets": 307,
+            "total_bytes": 49897,
+            "last_seen": "2025-06-09 19:21:40",
+            "first_seen": "2025-06-08 20:00:29"
+        },
+        {
+            "destination": "104.18.1.22",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 6,
+            "total_packets": 353,
+            "total_bytes": 47062,
+            "last_seen": "2025-06-11 21:11:05",
+            "first_seen": "2025-06-03 02:12:32"
         },
         {
             "destination": "142.250.207.14",
             "port": 443,
             "protocol": 17,
             "flow_count": 2,
-            "total_packets": 23,
-            "total_bytes": 14465,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
+            "total_packets": 94,
+            "total_bytes": 45644,
+            "last_seen": "2025-06-11 20:25:59",
+            "first_seen": "2025-06-11 20:24:57"
         },
         {
-            "destination": "142.250.76.142",
+            "destination": "172.217.174.106",
             "port": 443,
             "protocol": 6,
-            "flow_count": 9,
-            "total_packets": 140,
-            "total_bytes": 14249,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 17,
+            "total_packets": 246,
+            "total_bytes": 45259,
+            "last_seen": "2025-06-11 22:49:38",
+            "first_seen": "2025-06-02 18:49:11"
         },
         {
-            "destination": "172.217.25.174",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 8,
-            "total_packets": 139,
-            "total_bytes": 13607,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "destination": "74.125.247.235",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 1,
+            "total_packets": 88,
+            "total_bytes": 45118,
+            "last_seen": "2025-06-11 11:53:50",
+            "first_seen": "2025-06-11 11:53:50"
         },
         {
-            "destination": "142.251.222.35",
+            "destination": "142.250.199.99",
             "port": 80,
-            "protocol": 6,
-            "flow_count": 19,
-            "total_packets": 139,
-            "total_bytes": 12685,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.251.42.174",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 3,
-            "total_packets": 50,
-            "total_bytes": 12491,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.207.3",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 19,
-            "total_packets": 138,
-            "total_bytes": 12069,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.251.42.174",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 2,
-            "total_packets": 21,
-            "total_bytes": 11693,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.206.195",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 23,
-            "total_packets": 148,
-            "total_bytes": 11682,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.67.68.90",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 2,
-            "total_packets": 22,
-            "total_bytes": 11409,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.206.202",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 6,
-            "total_packets": 69,
-            "total_bytes": 10217,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.207.99",
-            "port": 443,
             "protocol": 6,
             "flow_count": 4,
-            "total_packets": 69,
-            "total_bytes": 9922,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.26.227",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 23,
-            "total_packets": 130,
-            "total_bytes": 9543,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.206.227",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 16,
-            "total_packets": 111,
-            "total_bytes": 9413,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.175.14",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 19,
-            "total_bytes": 8514,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "142.250.206.238",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 89,
-            "total_bytes": 8237,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "216.58.220.110",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 18,
-            "total_bytes": 8168,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "total_packets": 312,
+            "total_bytes": 43900,
+            "last_seen": "2025-06-11 11:12:39",
+            "first_seen": "2025-06-08 13:01:37"
         },
         {
             "destination": "142.251.42.142",
             "port": 443,
             "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 38,
-            "total_bytes": 7877,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 16,
+            "total_packets": 404,
+            "total_bytes": 43836,
+            "last_seen": "2025-06-11 20:13:39",
+            "first_seen": "2025-06-03 10:04:23"
         },
         {
-            "destination": "172.217.31.142",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 16,
-            "total_bytes": 7809,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "172.217.31.138",
+            "destination": "199.232.214.248",
             "port": 443,
             "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 98,
-            "total_bytes": 7805,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 4,
+            "total_packets": 390,
+            "total_bytes": 43286,
+            "last_seen": "2025-06-11 08:02:51",
+            "first_seen": "2025-06-03 02:07:19"
         },
         {
-            "destination": "142.250.196.142",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 12,
-            "total_bytes": 7583,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "172.217.31.170",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 14,
-            "total_bytes": 7405,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.174.110",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 11,
-            "total_bytes": 7390,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "172.217.175.234",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 10,
-            "total_bytes": 7062,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "142.251.222.10",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 10,
-            "total_bytes": 7057,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.161.74",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 10,
-            "total_bytes": 7057,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.161.42",
+            "destination": "142.250.196.110",
             "port": 443,
             "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 75,
-            "total_bytes": 6870,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 10,
+            "total_packets": 291,
+            "total_bytes": 42772,
+            "last_seen": "2025-06-11 21:25:25",
+            "first_seen": "2025-06-08 18:55:48"
         },
         {
-            "destination": "216.58.220.131",
+            "destination": "142.251.170.188",
+            "port": 5228,
+            "protocol": 6,
+            "flow_count": 5,
+            "total_packets": 529,
+            "total_bytes": 38951,
+            "last_seen": "2025-06-11 07:23:09",
+            "first_seen": "2025-06-08 12:58:22"
+        },
+        {
+            "destination": "142.250.196.99",
             "port": 80,
             "protocol": 6,
-            "flow_count": 7,
-            "total_packets": 65,
-            "total_bytes": 6746,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 9,
+            "total_packets": 326,
+            "total_bytes": 37661,
+            "last_seen": "2025-06-09 17:23:32",
+            "first_seen": "2025-06-08 19:17:59"
+        },
+        {
+            "destination": "216.58.220.142",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 1,
+            "total_packets": 110,
+            "total_bytes": 35242,
+            "last_seen": "2025-06-11 20:16:44",
+            "first_seen": "2025-06-11 20:16:44"
+        },
+        {
+            "destination": "172.217.161.234",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 5,
+            "total_packets": 59,
+            "total_bytes": 35214,
+            "last_seen": "2025-06-09 13:30:34",
+            "first_seen": "2025-06-04 13:23:08"
+        },
+        {
+            "destination": "108.177.125.188",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 485,
+            "total_bytes": 32370,
+            "last_seen": "2025-06-10 08:01:01",
+            "first_seen": "2025-06-10 08:01:01"
         },
         {
             "destination": "142.250.207.35",
             "port": 80,
             "protocol": 6,
             "flow_count": 11,
-            "total_packets": 75,
-            "total_bytes": 6734,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "total_packets": 241,
+            "total_bytes": 31233,
+            "last_seen": "2025-06-09 20:48:15",
+            "first_seen": "2025-06-03 21:10:19"
         },
         {
-            "destination": "142.251.222.46",
+            "destination": "172.217.31.142",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 3,
+            "total_packets": 64,
+            "total_bytes": 31220,
+            "last_seen": "2025-06-11 15:36:43",
+            "first_seen": "2025-06-08 17:21:16"
+        },
+        {
+            "destination": "35.186.224.24",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 2,
+            "total_packets": 64,
+            "total_bytes": 31206,
+            "last_seen": "2025-06-11 21:08:00",
+            "first_seen": "2025-06-11 08:06:14"
+        },
+        {
+            "destination": "216.58.220.138",
             "port": 443,
             "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 65,
-            "total_bytes": 6409,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 17,
+            "total_packets": 218,
+            "total_bytes": 31000,
+            "last_seen": "2025-06-10 23:26:58",
+            "first_seen": "2025-06-03 19:59:22"
         },
         {
-            "destination": "142.250.207.14",
+            "destination": "172.217.161.196",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 6,
+            "total_packets": 338,
+            "total_bytes": 26790,
+            "last_seen": "2025-06-11 08:46:23",
+            "first_seen": "2025-06-11 08:45:21"
+        },
+        {
+            "destination": "199.232.210.248",
             "port": 443,
             "protocol": 6,
             "flow_count": 4,
-            "total_packets": 60,
-            "total_bytes": 6042,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
+            "total_packets": 190,
+            "total_bytes": 26458,
+            "last_seen": "2025-06-11 21:11:05",
+            "first_seen": "2025-06-06 02:04:41"
         },
         {
-            "destination": "142.250.198.10",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 14,
-            "total_bytes": 5974,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.25.187",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 58,
-            "total_bytes": 5778,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "216.239.38.223",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 37,
-            "total_bytes": 5516,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "142.250.207.3",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 35,
-            "total_bytes": 5437,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.25.163",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 13,
-            "total_packets": 72,
-            "total_bytes": 5392,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "216.239.32.223",
+            "destination": "142.251.222.14",
             "port": 443,
             "protocol": 6,
             "flow_count": 3,
-            "total_packets": 35,
-            "total_bytes": 5341,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "total_packets": 93,
+            "total_bytes": 26242,
+            "last_seen": "2025-06-11 21:30:33",
+            "first_seen": "2025-06-03 13:38:40"
         },
         {
-            "destination": "142.250.206.234",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 7,
-            "total_packets": 47,
-            "total_bytes": 5136,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.251.222.3",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 7,
-            "total_packets": 56,
-            "total_bytes": 4962,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.175.10",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 31,
-            "total_bytes": 4936,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.206.238",
+            "destination": "142.250.207.99",
             "port": 443,
             "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 10,
-            "total_bytes": 4667,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 3,
+            "total_packets": 37,
+            "total_bytes": 24921,
+            "last_seen": "2025-06-11 20:12:37",
+            "first_seen": "2025-06-08 11:22:50"
         },
         {
-            "destination": "142.250.196.142",
+            "destination": "104.18.0.22",
             "port": 443,
             "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 34,
-            "total_bytes": 4590,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
+            "flow_count": 5,
+            "total_packets": 166,
+            "total_bytes": 24489,
+            "last_seen": "2025-06-10 13:10:32",
+            "first_seen": "2025-06-04 13:10:36"
         },
         {
-            "destination": "142.250.199.99",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 11,
-            "total_packets": 59,
-            "total_bytes": 4586,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.207.3",
+            "destination": "172.217.31.174",
             "port": 443,
             "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 6,
-            "total_bytes": 4151,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.206.193",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 20,
-            "total_bytes": 3741,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.198.14",
-            "port": 443,
-            "protocol": 6,
             "flow_count": 2,
-            "total_packets": 40,
-            "total_bytes": 3582,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "total_packets": 45,
+            "total_bytes": 23218,
+            "last_seen": "2025-06-11 16:57:44",
+            "first_seen": "2025-06-08 22:00:53"
         },
         {
-            "destination": "172.217.175.46",
+            "destination": "172.217.161.46",
             "port": 443,
             "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 38,
-            "total_bytes": 3442,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.161.202",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 8,
-            "total_bytes": 3388,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.206.202",
-            "port": 443,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 7,
-            "total_bytes": 3325,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.175.14",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 30,
-            "total_bytes": 3174,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "216.58.220.110",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 29,
-            "total_bytes": 2840,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "142.250.198.10",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 30,
-            "total_bytes": 2565,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "216.58.220.99",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 6,
-            "total_packets": 35,
-            "total_bytes": 2546,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "142.251.42.131",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 6,
-            "total_packets": 34,
-            "total_bytes": 2494,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 5,
+            "total_packets": 109,
+            "total_bytes": 23038,
+            "last_seen": "2025-06-11 12:49:13",
+            "first_seen": "2025-06-08 19:00:38"
         },
         {
             "destination": "224.0.0.22",
             "port": 0,
             "protocol": 2,
-            "flow_count": 1,
-            "total_packets": 53,
-            "total_bytes": 2470,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.175.227",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 6,
-            "total_packets": 33,
-            "total_bytes": 2442,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "172.217.175.234",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 16,
-            "total_bytes": 2442,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "142.250.196.131",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 6,
-            "total_packets": 32,
-            "total_bytes": 2390,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "142.250.196.99",
-            "port": 80,
-            "protocol": 6,
-            "flow_count": 5,
-            "total_packets": 31,
-            "total_bytes": 2217,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "172.217.31.142",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 22,
-            "total_bytes": 2196,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "142.250.199.110",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 23,
-            "total_bytes": 2051,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
+            "flow_count": 22,
+            "total_packets": 484,
+            "total_bytes": 22492,
+            "last_seen": "2025-06-11 20:07:29",
+            "first_seen": "2025-06-03 01:55:56"
         },
         {
             "destination": "142.251.42.206",
             "port": 443,
             "protocol": 6,
+            "flow_count": 8,
+            "total_packets": 227,
+            "total_bytes": 21958,
+            "last_seen": "2025-06-11 22:12:39",
+            "first_seen": "2025-06-02 23:01:48"
+        },
+        {
+            "destination": "142.250.198.10",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 3,
+            "total_packets": 36,
+            "total_bytes": 21664,
+            "last_seen": "2025-06-10 13:10:32",
+            "first_seen": "2025-06-04 13:07:27"
+        },
+        {
+            "destination": "142.250.76.129",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 2,
+            "total_packets": 64,
+            "total_bytes": 21486,
+            "last_seen": "2025-06-11 08:06:14",
+            "first_seen": "2025-06-11 08:06:14"
+        },
+        {
+            "destination": "142.250.206.193",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 7,
+            "total_packets": 142,
+            "total_bytes": 21296,
+            "last_seen": "2025-06-08 13:06:30",
+            "first_seen": "2025-06-03 02:04:12"
+        },
+        {
+            "destination": "142.250.207.42",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 4,
+            "total_packets": 46,
+            "total_bytes": 21113,
+            "last_seen": "2025-06-08 13:11:25",
+            "first_seen": "2025-06-04 13:03:17"
+        },
+        {
+            "destination": "142.250.76.129",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 3,
+            "total_packets": 104,
+            "total_bytes": 20077,
+            "last_seen": "2025-06-11 08:06:14",
+            "first_seen": "2025-06-09 05:01:51"
+        },
+        {
+            "destination": "172.217.161.46",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 4,
+            "total_packets": 55,
+            "total_bytes": 19728,
+            "last_seen": "2025-06-09 21:19:15",
+            "first_seen": "2025-06-09 00:10:26"
+        },
+        {
+            "destination": "172.217.174.106",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 3,
+            "total_packets": 36,
+            "total_bytes": 19643,
+            "last_seen": "2025-06-10 13:14:49",
+            "first_seen": "2025-06-04 14:12:25"
+        },
+        {
+            "destination": "172.217.175.234",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 3,
+            "total_packets": 42,
+            "total_bytes": 19033,
+            "last_seen": "2025-06-11 20:12:37",
+            "first_seen": "2025-06-10 13:06:15"
+        },
+        {
+            "destination": "216.58.220.99",
+            "port": 80,
+            "protocol": 6,
             "flow_count": 1,
-            "total_packets": 21,
-            "total_bytes": 1861,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "total_packets": 128,
+            "total_bytes": 18320,
+            "last_seen": "2025-06-09 22:57:35",
+            "first_seen": "2025-06-09 22:57:35"
+        },
+        {
+            "destination": "172.217.31.131",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 6,
+            "total_packets": 140,
+            "total_bytes": 18232,
+            "last_seen": "2025-06-06 21:53:20",
+            "first_seen": "2025-06-05 16:59:27"
+        },
+        {
+            "destination": "172.217.175.74",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 3,
+            "total_packets": 31,
+            "total_bytes": 17825,
+            "last_seen": "2025-06-10 13:05:10",
+            "first_seen": "2025-06-04 13:09:33"
+        },
+        {
+            "destination": "216.58.220.142",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 6,
+            "total_packets": 180,
+            "total_bytes": 17497,
+            "last_seen": "2025-06-11 18:49:28",
+            "first_seen": "2025-06-09 17:31:00"
+        },
+        {
+            "destination": "142.251.222.3",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 40,
+            "total_packets": 239,
+            "total_bytes": 17276,
+            "last_seen": "2025-06-10 20:46:23",
+            "first_seen": "2025-06-04 22:59:29"
+        },
+        {
+            "destination": "74.125.247.231",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 1,
+            "total_packets": 35,
+            "total_bytes": 17135,
+            "last_seen": "2025-06-09 18:24:12",
+            "first_seen": "2025-06-09 18:24:12"
+        },
+        {
+            "destination": "34.120.195.249",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 4,
+            "total_packets": 75,
+            "total_bytes": 16648,
+            "last_seen": "2025-06-11 08:16:21",
+            "first_seen": "2025-06-03 02:15:39"
+        },
+        {
+            "destination": "142.251.42.138",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 3,
+            "total_packets": 33,
+            "total_bytes": 16448,
+            "last_seen": "2025-06-09 19:32:22",
+            "first_seen": "2025-06-04 13:05:22"
+        },
+        {
+            "destination": "35.186.224.22",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 3,
+            "total_packets": 72,
+            "total_bytes": 16388,
+            "last_seen": "2025-06-11 08:06:14",
+            "first_seen": "2025-06-11 08:02:51"
+        },
+        {
+            "destination": "172.217.26.227",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 37,
+            "total_packets": 213,
+            "total_bytes": 15891,
+            "last_seen": "2025-06-09 20:53:35",
+            "first_seen": "2025-06-02 22:40:53"
+        },
+        {
+            "destination": "172.217.175.110",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 1,
+            "total_packets": 30,
+            "total_bytes": 15482,
+            "last_seen": "2025-06-11 21:45:54",
+            "first_seen": "2025-06-11 21:45:54"
+        },
+        {
+            "destination": "142.250.196.106",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 2,
+            "total_packets": 27,
+            "total_bytes": 14770,
+            "last_seen": "2025-06-08 21:36:08",
+            "first_seen": "2025-06-06 20:44:44"
+        },
+        {
+            "destination": "142.251.222.42",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 2,
+            "total_packets": 22,
+            "total_bytes": 14655,
+            "last_seen": "2025-06-05 18:09:06",
+            "first_seen": "2025-06-05 18:07:03"
+        },
+        {
+            "destination": "142.250.206.228",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 6,
+            "total_packets": 190,
+            "total_bytes": 14643,
+            "last_seen": "2025-06-10 13:00:52",
+            "first_seen": "2025-06-09 05:56:48"
+        },
+        {
+            "destination": "142.250.76.132",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 6,
+            "total_packets": 170,
+            "total_bytes": 13699,
+            "last_seen": "2025-06-05 18:02:57",
+            "first_seen": "2025-06-04 14:01:51"
+        },
+        {
+            "destination": "172.217.25.187",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 2,
+            "total_packets": 134,
+            "total_bytes": 12972,
+            "last_seen": "2025-06-08 13:06:30",
+            "first_seen": "2025-06-05 18:10:07"
+        },
+        {
+            "destination": "142.250.76.155",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 136,
+            "total_bytes": 12460,
+            "last_seen": "2025-06-11 07:45:48",
+            "first_seen": "2025-06-11 07:45:48"
+        },
+        {
+            "destination": "216.58.220.106",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 2,
+            "total_packets": 32,
+            "total_bytes": 11945,
+            "last_seen": "2025-06-07 22:23:58",
+            "first_seen": "2025-06-05 18:20:22"
         },
         {
             "destination": "172.217.161.78",
             "port": 443,
             "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 20,
-            "total_bytes": 1797,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 5,
+            "total_packets": 130,
+            "total_bytes": 11891,
+            "last_seen": "2025-06-11 16:53:37",
+            "first_seen": "2025-06-09 18:02:55"
         },
         {
-            "destination": "172.217.175.78",
+            "destination": "172.217.175.14",
             "port": 443,
             "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 20,
-            "total_bytes": 1773,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
+            "flow_count": 4,
+            "total_packets": 102,
+            "total_bytes": 11382,
+            "last_seen": "2025-06-11 20:35:12",
+            "first_seen": "2025-06-11 12:20:31"
         },
         {
-            "destination": "172.217.25.174",
-            "port": 771,
-            "protocol": 1,
-            "flow_count": 1,
-            "total_packets": 3,
-            "total_bytes": 1728,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
-        },
-        {
-            "destination": "172.217.175.238",
+            "destination": "34.120.195.249",
             "port": 443,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 19,
-            "total_bytes": 1721,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "74.125.203.188",
-            "port": 5228,
-            "protocol": 6,
+            "protocol": 17,
             "flow_count": 1,
             "total_packets": 18,
-            "total_bytes": 1718,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "total_bytes": 10812,
+            "last_seen": "2025-06-11 21:09:02",
+            "first_seen": "2025-06-11 21:09:02"
+        },
+        {
+            "destination": "142.250.207.123",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 2,
+            "total_packets": 100,
+            "total_bytes": 10756,
+            "last_seen": "2025-06-07 03:25:45",
+            "first_seen": "2025-06-03 02:07:19"
+        },
+        {
+            "destination": "172.217.161.219",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 2,
+            "total_packets": 100,
+            "total_bytes": 10732,
+            "last_seen": "2025-06-09 05:01:51",
+            "first_seen": "2025-06-04 13:03:17"
+        },
+        {
+            "destination": "192.168.50.173",
+            "port": 63638,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 10,
+            "total_bytes": 10527,
+            "last_seen": "2025-06-10 09:10:26",
+            "first_seen": "2025-06-10 09:10:26"
+        },
+        {
+            "destination": "142.250.196.142",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 5,
+            "total_packets": 103,
+            "total_bytes": 10307,
+            "last_seen": "2025-06-10 20:17:12",
+            "first_seen": "2025-06-08 13:09:47"
         },
         {
             "destination": "172.217.161.195",
             "port": 443,
             "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 15,
-            "total_bytes": 1711,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 9,
+            "total_packets": 87,
+            "total_bytes": 9747,
+            "last_seen": "2025-06-05 18:07:03",
+            "first_seen": "2025-06-04 13:00:08"
         },
         {
-            "destination": "142.250.196.110",
+            "destination": "192.168.50.173",
+            "port": 5333,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 8,
+            "total_bytes": 8914,
+            "last_seen": "2025-06-10 09:10:26",
+            "first_seen": "2025-06-10 09:10:26"
+        },
+        {
+            "destination": "172.217.175.110",
             "port": 443,
             "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 18,
-            "total_bytes": 1669,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 3,
+            "total_packets": 82,
+            "total_bytes": 8445,
+            "last_seen": "2025-06-07 03:35:59",
+            "first_seen": "2025-06-07 03:25:45"
         },
         {
-            "destination": "142.250.198.1",
+            "destination": "172.217.26.234",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 1,
+            "total_packets": 6,
+            "total_bytes": 8268,
+            "last_seen": "2025-06-09 20:58:57",
+            "first_seen": "2025-06-09 20:58:57"
+        },
+        {
+            "destination": "74.125.250.129",
+            "port": 19305,
+            "protocol": 17,
+            "flow_count": 27,
+            "total_packets": 171,
+            "total_bytes": 8208,
+            "last_seen": "2025-06-11 11:53:50",
+            "first_seen": "2025-06-03 13:48:04"
+        },
+        {
+            "destination": "172.217.31.142",
             "port": 443,
             "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 16,
-            "total_bytes": 1666,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
-        },
-        {
-            "destination": "108.177.125.188",
-            "port": 5228,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 12,
-            "total_bytes": 1623,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 5,
+            "total_packets": 80,
+            "total_bytes": 8121,
+            "last_seen": "2025-06-09 17:06:30",
+            "first_seen": "2025-06-08 17:22:54"
         },
         {
             "destination": "142.251.222.10",
             "port": 443,
-            "protocol": 6,
+            "protocol": 17,
             "flow_count": 1,
-            "total_packets": 13,
-            "total_bytes": 1549,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "total_packets": 15,
+            "total_bytes": 7971,
+            "last_seen": "2025-06-03 22:39:23",
+            "first_seen": "2025-06-03 22:39:23"
         },
         {
-            "destination": "142.251.42.195",
+            "destination": "192.168.20.4",
+            "port": 52845,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 17,
+            "total_bytes": 7772,
+            "last_seen": "2025-06-08 20:26:26",
+            "first_seen": "2025-06-08 20:26:26"
+        },
+        {
+            "destination": "192.168.20.4",
+            "port": 52847,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 15,
+            "total_bytes": 7677,
+            "last_seen": "2025-06-08 20:26:26",
+            "first_seen": "2025-06-08 20:26:26"
+        },
+        {
+            "destination": "35.186.224.40",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 36,
+            "total_bytes": 7532,
+            "last_seen": "2025-06-11 08:02:51",
+            "first_seen": "2025-06-11 08:02:51"
+        },
+        {
+            "destination": "172.217.175.251",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 63,
+            "total_bytes": 7416,
+            "last_seen": "2025-06-10 13:07:19",
+            "first_seen": "2025-06-10 13:07:19"
+        },
+        {
+            "destination": "142.250.207.99",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 5,
+            "total_packets": 58,
+            "total_bytes": 7292,
+            "last_seen": "2025-06-11 20:12:37",
+            "first_seen": "2025-06-08 12:13:01"
+        },
+        {
+            "destination": "142.250.199.106",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 1,
+            "total_packets": 5,
+            "total_bytes": 6890,
+            "last_seen": "2025-06-08 14:12:17",
+            "first_seen": "2025-06-08 14:12:17"
+        },
+        {
+            "destination": "185.199.109.133",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 2,
+            "total_packets": 30,
+            "total_bytes": 6834,
+            "last_seen": "2025-06-11 20:10:33",
+            "first_seen": "2025-06-11 20:09:32"
+        },
+        {
+            "destination": "142.250.206.225",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 2,
+            "total_packets": 46,
+            "total_bytes": 6737,
+            "last_seen": "2025-06-11 07:46:54",
+            "first_seen": "2025-06-10 13:07:19"
+        },
+        {
+            "destination": "172.217.161.74",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 1,
+            "total_packets": 10,
+            "total_bytes": 6634,
+            "last_seen": "2025-06-08 19:00:38",
+            "first_seen": "2025-06-08 19:00:38"
+        },
+        {
+            "destination": "104.18.38.233",
             "port": 80,
             "protocol": 6,
-            "flow_count": 3,
-            "total_packets": 18,
-            "total_bytes": 1524,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 9,
+            "total_packets": 59,
+            "total_bytes": 6257,
+            "last_seen": "2025-06-12 06:58:10",
+            "first_seen": "2025-06-03 22:59:13"
         },
         {
-            "destination": "192.168.10.5",
-            "port": 61214,
+            "destination": "172.217.31.174",
+            "port": 443,
             "protocol": 6,
+            "flow_count": 3,
+            "total_packets": 49,
+            "total_bytes": 5931,
+            "last_seen": "2025-06-11 16:58:45",
+            "first_seen": "2025-06-08 22:00:53"
+        },
+        {
+            "destination": "172.64.149.23",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 8,
+            "total_packets": 55,
+            "total_bytes": 5526,
+            "last_seen": "2025-06-11 08:44:19",
+            "first_seen": "2025-06-03 02:10:27"
+        },
+        {
+            "destination": "172.217.161.65",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 2,
+            "total_packets": 34,
+            "total_bytes": 5207,
+            "last_seen": "2025-06-05 18:12:10",
+            "first_seen": "2025-06-05 18:08:04"
+        },
+        {
+            "destination": "172.217.31.138",
+            "port": 443,
+            "protocol": 17,
             "flow_count": 1,
-            "total_packets": 4,
-            "total_bytes": 1392,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
+            "total_packets": 11,
+            "total_bytes": 4734,
+            "last_seen": "2025-06-07 03:23:42",
+            "first_seen": "2025-06-07 03:23:42"
+        },
+        {
+            "destination": "142.250.199.99",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 5,
+            "total_packets": 42,
+            "total_bytes": 4715,
+            "last_seen": "2025-06-08 13:01:37",
+            "first_seen": "2025-06-08 12:59:58"
+        },
+        {
+            "destination": "142.250.196.138",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 1,
+            "total_packets": 10,
+            "total_bytes": 4667,
+            "last_seen": "2025-06-10 13:06:15",
+            "first_seen": "2025-06-10 13:06:15"
+        },
+        {
+            "destination": "74.125.247.134",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 7,
+            "total_packets": 66,
+            "total_bytes": 4598,
+            "last_seen": "2025-06-11 11:53:50",
+            "first_seen": "2025-06-03 13:48:04"
+        },
+        {
+            "destination": "172.217.161.206",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 1,
+            "total_packets": 12,
+            "total_bytes": 4440,
+            "last_seen": "2025-06-11 20:12:37",
+            "first_seen": "2025-06-11 20:12:37"
+        },
+        {
+            "destination": "142.250.207.46",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 1,
+            "total_packets": 8,
+            "total_bytes": 4325,
+            "last_seen": "2025-06-08 20:58:51",
+            "first_seen": "2025-06-08 20:58:51"
+        },
+        {
+            "destination": "74.125.247.134",
+            "port": 19305,
+            "protocol": 6,
+            "flow_count": 7,
+            "total_packets": 58,
+            "total_bytes": 4260,
+            "last_seen": "2025-06-11 11:53:50",
+            "first_seen": "2025-06-03 13:48:04"
+        },
+        {
+            "destination": "172.217.175.227",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 5,
+            "total_packets": 58,
+            "total_bytes": 4226,
+            "last_seen": "2025-06-11 21:26:27",
+            "first_seen": "2025-06-11 21:23:22"
+        },
+        {
+            "destination": "172.217.31.170",
+            "port": 443,
+            "protocol": 17,
+            "flow_count": 1,
+            "total_packets": 7,
+            "total_bytes": 4224,
+            "last_seen": "2025-06-05 18:09:06",
+            "first_seen": "2025-06-05 18:09:06"
+        },
+        {
+            "destination": "172.217.161.227",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 2,
+            "total_packets": 20,
+            "total_bytes": 3872,
+            "last_seen": "2025-06-09 05:01:51",
+            "first_seen": "2025-06-07 23:18:12"
         },
         {
             "destination": "172.217.174.110",
             "port": 443,
             "protocol": 6,
             "flow_count": 1,
-            "total_packets": 8,
-            "total_bytes": 1273,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
+            "total_packets": 40,
+            "total_bytes": 3704,
+            "last_seen": "2025-06-11 18:09:30",
+            "first_seen": "2025-06-11 18:09:30"
+        },
+        {
+            "destination": "74.125.250.129",
+            "port": 19302,
+            "protocol": 17,
+            "flow_count": 27,
+            "total_packets": 70,
+            "total_bytes": 3360,
+            "last_seen": "2025-06-11 11:53:50",
+            "first_seen": "2025-06-03 13:48:04"
+        },
+        {
+            "destination": "172.217.175.46",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 14,
+            "total_bytes": 3122,
+            "last_seen": "2025-06-08 19:22:49",
+            "first_seen": "2025-06-08 19:22:49"
+        },
+        {
+            "destination": "172.217.161.67",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 6,
+            "total_packets": 38,
+            "total_bytes": 2702,
+            "last_seen": "2025-06-03 21:23:54",
+            "first_seen": "2025-06-03 21:18:40"
         },
         {
             "destination": "142.251.42.163",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 6,
+            "total_packets": 35,
+            "total_bytes": 2546,
+            "last_seen": "2025-06-09 12:04:29",
+            "first_seen": "2025-06-09 11:59:10"
+        },
+        {
+            "destination": "142.251.42.195",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 6,
+            "total_packets": 33,
+            "total_bytes": 2442,
+            "last_seen": "2025-06-09 15:46:41",
+            "first_seen": "2025-06-09 15:42:25"
+        },
+        {
+            "destination": "172.217.175.3",
+            "port": 80,
+            "protocol": 6,
+            "flow_count": 5,
+            "total_packets": 31,
+            "total_bytes": 2217,
+            "last_seen": "2025-06-02 22:42:59",
+            "first_seen": "2025-06-02 22:39:50"
+        },
+        {
+            "destination": "142.250.157.188",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 2,
+            "total_packets": 33,
+            "total_bytes": 2106,
+            "last_seen": "2025-06-10 13:00:52",
+            "first_seen": "2025-06-08 14:10:38"
+        },
+        {
+            "destination": "192.168.20.4",
+            "port": 52883,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 10,
+            "total_bytes": 2078,
+            "last_seen": "2025-06-08 20:49:07",
+            "first_seen": "2025-06-08 20:49:07"
+        },
+        {
+            "destination": "108.177.97.188",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 2,
+            "total_packets": 27,
+            "total_bytes": 1742,
+            "last_seen": "2025-06-09 03:42:46",
+            "first_seen": "2025-06-08 19:37:48"
+        },
+        {
+            "destination": "142.250.207.97",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 13,
+            "total_bytes": 1486,
+            "last_seen": "2025-06-09 04:56:58",
+            "first_seen": "2025-06-09 04:56:58"
+        },
+        {
+            "destination": "74.125.203.188",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 10,
+            "total_bytes": 1442,
+            "last_seen": "2025-06-10 12:59:48",
+            "first_seen": "2025-06-10 12:59:48"
+        },
+        {
+            "destination": "142.250.207.33",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 12,
+            "total_bytes": 1434,
+            "last_seen": "2025-06-10 13:05:10",
+            "first_seen": "2025-06-10 13:05:10"
+        },
+        {
+            "destination": "192.168.20.4",
+            "port": 62901,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 1114,
+            "last_seen": "2025-06-08 18:55:48",
+            "first_seen": "2025-06-08 18:55:48"
+        },
+        {
+            "destination": "192.168.20.4",
+            "port": 63010,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 1114,
+            "last_seen": "2025-06-08 18:55:48",
+            "first_seen": "2025-06-08 18:55:48"
+        },
+        {
+            "destination": "172.217.26.227",
             "port": 443,
             "protocol": 6,
             "flow_count": 1,
             "total_packets": 12,
             "total_bytes": 1092,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "last_seen": "2025-06-09 18:24:12",
+            "first_seen": "2025-06-09 18:24:12"
         },
         {
-            "destination": "142.251.42.138",
-            "port": 443,
-            "protocol": 6,
+            "destination": "142.250.199.110",
+            "port": 771,
+            "protocol": 1,
             "flow_count": 1,
-            "total_packets": 9,
-            "total_bytes": 1023,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "total_packets": 1,
+            "total_bytes": 576,
+            "last_seen": "2025-06-05 22:42:52",
+            "first_seen": "2025-06-05 22:42:52"
         },
         {
-            "destination": "104.18.38.233",
+            "destination": "142.250.76.131",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 576,
+            "last_seen": "2025-06-10 17:13:24",
+            "first_seen": "2025-06-10 17:13:24"
+        },
+        {
+            "destination": "192.168.20.4",
+            "port": 52884,
+            "protocol": 6,
+            "flow_count": 2,
+            "total_packets": 12,
+            "total_bytes": 558,
+            "last_seen": "2025-06-08 23:57:31",
+            "first_seen": "2025-06-08 21:45:54"
+        },
+        {
+            "destination": "172.217.25.174",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 4,
+            "total_packets": 4,
+            "total_bytes": 518,
+            "last_seen": "2025-06-10 18:19:53",
+            "first_seen": "2025-06-04 14:26:02"
+        },
+        {
+            "destination": "142.250.198.3",
             "port": 80,
             "protocol": 6,
             "flow_count": 1,
-            "total_packets": 5,
-            "total_bytes": 565,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "total_packets": 6,
+            "total_bytes": 508,
+            "last_seen": "2025-06-08 12:06:36",
+            "first_seen": "2025-06-08 12:06:36"
         },
         {
-            "destination": "142.250.207.42",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 4,
-            "total_bytes": 216,
-            "last_seen": "2025-06-05 21:49:52",
-            "first_seen": "2025-06-05 21:49:52"
+            "destination": "142.250.207.110",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 2,
+            "total_packets": 2,
+            "total_bytes": 259,
+            "last_seen": "2025-06-11 04:32:08",
+            "first_seen": "2025-06-02 17:24:35"
         },
         {
-            "destination": "142.250.207.100",
+            "destination": "142.250.76.142",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 2,
+            "total_packets": 3,
+            "total_bytes": 257,
+            "last_seen": "2025-06-11 07:45:48",
+            "first_seen": "2025-06-09 04:55:22"
+        },
+        {
+            "destination": "172.217.161.228",
             "port": 443,
             "protocol": 6,
             "flow_count": 3,
             "total_packets": 3,
             "total_bytes": 156,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "last_seen": "2025-06-09 04:52:08",
+            "first_seen": "2025-06-09 04:52:08"
+        },
+        {
+            "destination": "192.168.20.4",
+            "port": 52880,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 3,
+            "total_bytes": 150,
+            "last_seen": "2025-06-08 20:26:26",
+            "first_seen": "2025-06-08 20:26:26"
+        },
+        {
+            "destination": "142.250.207.42",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 134,
+            "last_seen": "2025-06-04 13:04:19",
+            "first_seen": "2025-06-04 13:04:19"
+        },
+        {
+            "destination": "172.217.25.170",
+            "port": 771,
+            "protocol": 1,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 122,
+            "last_seen": "2025-06-03 02:09:24",
+            "first_seen": "2025-06-03 02:09:24"
+        },
+        {
+            "destination": "192.168.20.4",
+            "port": 52878,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 52,
+            "last_seen": "2025-06-08 20:26:26",
+            "first_seen": "2025-06-08 20:26:26"
+        },
+        {
+            "destination": "192.168.50.173",
+            "port": 20741,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 46,
+            "last_seen": "2025-06-09 22:57:35",
+            "first_seen": "2025-06-09 22:57:35"
+        },
+        {
+            "destination": "192.168.50.173",
+            "port": 42573,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 46,
+            "last_seen": "2025-06-09 20:13:01",
+            "first_seen": "2025-06-09 20:13:01"
+        },
+        {
+            "destination": "192.168.50.173",
+            "port": 42901,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 46,
+            "last_seen": "2025-06-10 23:00:04",
+            "first_seen": "2025-06-10 23:00:04"
         }
     ],
     "actions": []

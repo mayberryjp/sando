@@ -1,39 +1,62 @@
 {
     "ip_address": "192.168.50.40",
-    "export_date": "2025-06-05T21:56:40.397364",
-    "instance_identifier": "0bcf67f6adb6c72fd190f637b814dd6e7b600a7dfdbf6bd1177587183bef08cc",
+    "export_date": "2025-06-12T10:34:59.063689",
+    "instance_identifier": "b8d1c13f7c1fee3dc8d8dcb09c474c9c6312db33f5f7d11878dc2ed3af807e93",
     "host_info": {
         "ip_address": "192.168.50.40",
-        "mac_address": null,
-        "mac_vendor": null,
-        "dhcp_hostname": null,
+        "mac_address": "C4:DD:57:07:67:F3",
+        "mac_vendor": "Espressif Inc.",
+        "dhcp_hostname": "plug1.832-5.com",
         "dns_hostname": "plug1.",
-        "os_fingerprint": null,
+        "os_fingerprint": "lwIP_lwIP_None_99",
         "lease_hostname": "plug1",
-        "icon": null,
-        "local_description": null
+        "icon": "PLUG",
+        "local_description": "Tuya Smart Plug"
     },
-    "dns_queries": [],
-    "flows": [
+    "dns_queries": [
         {
-            "destination": "255.255.255.255",
-            "port": 6667,
-            "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 2,
-            "total_bytes": 432,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "domain": "m2.tuyaus.com",
+            "times_queried": 127791,
+            "first_query": "2025-06-12 10:29:28",
+            "last_query": "2025-05-27 09:39:56"
         },
+        {
+            "domain": "a3.tuyaus.com",
+            "times_queried": 4054,
+            "first_query": "2025-06-12 10:29:28",
+            "last_query": "2025-05-27 09:39:56"
+        }
+    ],
+    "flows": [
         {
             "destination": "255.255.255.255",
             "port": 67,
             "protocol": 17,
-            "flow_count": 1,
-            "total_packets": 1,
-            "total_bytes": 336,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "flow_count": 59,
+            "total_packets": 64,
+            "total_bytes": 21504,
+            "last_seen": "2025-06-12 08:58:08",
+            "first_seen": "2025-06-05 06:03:33"
+        },
+        {
+            "destination": "255.255.255.255",
+            "port": 6667,
+            "protocol": 17,
+            "flow_count": 6,
+            "total_packets": 20,
+            "total_bytes": 4320,
+            "last_seen": "2025-06-11 07:47:59",
+            "first_seen": "2025-06-05 03:15:38"
+        },
+        {
+            "destination": "224.0.0.1",
+            "port": 0,
+            "protocol": 2,
+            "flow_count": 3,
+            "total_packets": 5,
+            "total_bytes": 230,
+            "last_seen": "2025-06-11 07:44:43",
+            "first_seen": "2025-06-05 03:11:31"
         }
     ],
     "actions": []

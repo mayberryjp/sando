@@ -1,13 +1,13 @@
 {
     "ip_address": "192.168.230.5",
-    "export_date": "2025-05-23T05:45:43.087916",
+    "export_date": "2025-06-12T01:35:45.964716",
     "instance_identifier": "4f658d7aaf0c3df27c309d03c448dc4128d8eed15511fff4b1b09de388e987bd",
     "host_info": {
         "ip_address": "192.168.230.5",
         "mac_address": "d8:d6:68:99:3c:8e",
         "mac_vendor": "Tuya Smart Inc.",
-        "dhcp_hostname": "tuya-shedwaterpump.832-5.com",
-        "dns_hostname": "tuya-shedwaterpump.832-5.com.",
+        "dhcp_hostname": "tuya-shedwaterpump",
+        "dns_hostname": "tuya-shedwaterpump.",
         "os_fingerprint": "lwIP_lwIP_None_99",
         "lease_hostname": "tuya-shedwaterpump",
         "icon": "WATER_PUMP",
@@ -15,16 +15,16 @@
     },
     "dns_queries": [
         {
-            "domain": "m2.tuyaus.com",
-            "times_queried": 233,
-            "first_query": "2025-05-18 06:54:41",
-            "last_query": "2025-05-16 07:30:36"
+            "domain": "a3.tuyaus.com",
+            "times_queried": 1020,
+            "first_query": "2025-06-11 23:17:59",
+            "last_query": "2025-05-27 08:59:19"
         },
         {
-            "domain": "a3.tuyaus.com",
-            "times_queried": 5,
-            "first_query": "2025-05-20 09:00:37",
-            "last_query": "2025-05-18 06:54:41"
+            "domain": "m2.tuyaus.com",
+            "times_queried": 560,
+            "first_query": "2025-06-11 22:17:58",
+            "last_query": "2025-06-01 00:00:01"
         }
     ],
     "flows": [
@@ -32,61 +32,71 @@
             "destination": "255.255.255.255",
             "port": 6667,
             "protocol": 17,
-            "flow_count": 1007,
-            "total_packets": 186383,
-            "total_bytes": 43240856,
-            "first_seen": "2025-05-23 05:36:33",
-            "last_seen": "1803790767"
+            "flow_count": 1523,
+            "total_packets": 140519,
+            "total_bytes": 32600408,
+            "last_seen": "2025-06-12 01:31:12",
+            "first_seen": "2025-06-02 10:33:57"
         },
         {
-            "destination": "100.21.156.247",
+            "destination": "54.148.153.241",
             "port": 8886,
             "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 8758,
-            "total_bytes": 687037,
-            "first_seen": "2025-05-12 18:19:41",
-            "last_seen": "2015742964"
-        },
-        {
-            "destination": "34.211.189.2",
-            "port": 8886,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 7534,
-            "total_bytes": 591141,
-            "first_seen": "2025-05-09 18:17:28",
-            "last_seen": "1792878917"
+            "flow_count": 552,
+            "total_packets": 16315,
+            "total_bytes": 1282216,
+            "last_seen": "2025-06-10 23:13:25",
+            "first_seen": "2025-06-04 04:35:53"
         },
         {
             "destination": "54.187.112.38",
             "port": 443,
             "protocol": 6,
-            "flow_count": 411,
-            "total_packets": 4552,
-            "total_bytes": 529760,
-            "first_seen": "2025-05-23 05:41:52",
-            "last_seen": "132343984"
+            "flow_count": 369,
+            "total_packets": 3729,
+            "total_bytes": 458083,
+            "last_seen": "2025-06-10 22:57:56",
+            "first_seen": "2025-06-02 04:05:13"
         },
         {
-            "destination": "54.69.37.156",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 363,
-            "total_packets": 3920,
-            "total_bytes": 465179,
-            "first_seen": "2025-05-19 16:18:22",
-            "last_seen": "100773801"
-        },
-        {
-            "destination": "35.161.158.54",
+            "destination": "35.162.13.26",
             "port": 8886,
             "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 4394,
-            "total_bytes": 345877,
-            "first_seen": "2025-05-19 16:23:38",
-            "last_seen": "311949"
+            "flow_count": 2,
+            "total_packets": 5324,
+            "total_bytes": 418470,
+            "last_seen": "2025-06-06 00:26:21",
+            "first_seen": "2025-06-06 00:26:21"
+        },
+        {
+            "destination": "34.218.147.23",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 163,
+            "total_packets": 1654,
+            "total_bytes": 203471,
+            "last_seen": "2025-06-12 01:12:50",
+            "first_seen": "2025-06-04 04:51:14"
+        },
+        {
+            "destination": "52.43.232.245",
+            "port": 8886,
+            "protocol": 6,
+            "flow_count": 62,
+            "total_packets": 631,
+            "total_bytes": 49636,
+            "last_seen": "2025-06-08 05:03:54",
+            "first_seen": "2025-06-07 23:52:16"
+        },
+        {
+            "destination": "52.35.54.49",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 3,
+            "total_packets": 31,
+            "total_bytes": 2920,
+            "last_seen": "2025-06-06 00:39:37",
+            "first_seen": "2025-06-04 04:51:14"
         },
         {
             "destination": "35.164.57.66",
@@ -95,18 +105,8 @@
             "flow_count": 1,
             "total_packets": 10,
             "total_bytes": 958,
-            "first_seen": "2025-05-16 07:49:26",
-            "last_seen": "331876"
-        },
-        {
-            "destination": "52.35.54.49",
-            "port": 443,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 2,
-            "total_bytes": 92,
-            "first_seen": "2025-05-16 08:09:34",
-            "last_seen": "4294967294"
+            "last_seen": "2025-06-04 04:39:59",
+            "first_seen": "2025-06-04 04:39:59"
         }
     ],
     "actions": []

@@ -1,13 +1,13 @@
 {
     "ip_address": "192.168.230.119",
-    "export_date": "2025-05-23T05:45:47.277576",
+    "export_date": "2025-06-12T01:35:50.720134",
     "instance_identifier": "4f658d7aaf0c3df27c309d03c448dc4128d8eed15511fff4b1b09de388e987bd",
     "host_info": {
         "ip_address": "192.168.230.119",
-        "mac_address": null,
+        "mac_address": "A0:B7:65:CC:F6:AF",
         "mac_vendor": null,
         "dhcp_hostname": null,
-        "dns_hostname": "btproxy.832-5.com.",
+        "dns_hostname": "btproxy.",
         "os_fingerprint": "Garmin_embedded_None_96",
         "lease_hostname": "btproxy",
         "icon": "BLUETOOTH_RADIO",
@@ -19,21 +19,11 @@
             "destination": "224.0.0.251",
             "port": 5353,
             "protocol": 17,
-            "flow_count": 297,
-            "total_packets": 588,
-            "total_bytes": 206988,
-            "first_seen": "2025-05-23 05:35:29",
-            "last_seen": "1806767574"
-        },
-        {
-            "destination": "224.0.0.251",
-            "port": 0,
-            "protocol": 2,
-            "flow_count": 4,
-            "total_packets": 8,
-            "total_bytes": 368,
-            "first_seen": "2025-05-18 03:57:10",
-            "last_seen": "1818116164"
+            "flow_count": 221,
+            "total_packets": 431,
+            "total_bytes": 153005,
+            "last_seen": "2025-06-12 01:08:45",
+            "first_seen": "2025-06-02 04:28:42"
         }
     ],
     "actions": []

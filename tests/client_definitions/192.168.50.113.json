@@ -1,10 +1,10 @@
 {
     "ip_address": "192.168.50.113",
-    "export_date": "2025-05-25T20:08:42.100532",
-    "instance_identifier": "9a72641185275de6aee6384294035d373d4c94dc73c430210b6c1a3770519bb7",
+    "export_date": "2025-06-12T10:34:59.796299",
+    "instance_identifier": "b8d1c13f7c1fee3dc8d8dcb09c474c9c6312db33f5f7d11878dc2ed3af807e93",
     "host_info": {
         "ip_address": "192.168.50.113",
-        "mac_address": null,
+        "mac_address": "00:08:DC:6C:92:4B",
         "mac_vendor": null,
         "dhcp_hostname": null,
         "dns_hostname": "coway.",
@@ -16,71 +16,61 @@
     "dns_queries": [
         {
             "domain": "airjpf4l.coway.co.kr",
-            "times_queried": 28,
-            "first_query": "2025-05-23 22:20:40",
-            "last_query": "2025-05-18 03:30:22"
+            "times_queried": 848,
+            "first_query": "2025-06-10 12:41:57",
+            "last_query": "2025-05-27 09:39:57"
         }
     ],
     "flows": [
         {
-            "destination": "3.37.6.132",
-            "port": 9090,
-            "protocol": 6,
-            "flow_count": 6,
-            "total_packets": 7544,
-            "total_bytes": 844973,
-            "first_seen": "2025-05-23 21:04:28",
-            "last_seen": "12448"
-        },
-        {
-            "destination": "3.34.55.48",
-            "port": 9090,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 5405,
-            "total_bytes": 619044,
-            "first_seen": "2025-05-21 10:38:19",
-            "last_seen": "29367"
-        },
-        {
-            "destination": "15.164.35.18",
-            "port": 9090,
-            "protocol": 6,
-            "flow_count": 1,
-            "total_packets": 317,
-            "total_bytes": 34689,
-            "first_seen": "2025-05-09 22:44:35",
-            "last_seen": "317611356"
-        },
-        {
             "destination": "3.36.236.58",
             "port": 9090,
             "protocol": 6,
-            "flow_count": 7,
-            "total_packets": 251,
-            "total_bytes": 27446,
-            "first_seen": "2025-05-24 00:50:35",
-            "last_seen": "137588132"
+            "flow_count": 1,
+            "total_packets": 14753,
+            "total_bytes": 1640790,
+            "last_seen": "2025-06-07 22:20:53",
+            "first_seen": "2025-06-07 22:20:53"
+        },
+        {
+            "destination": "3.36.224.82",
+            "port": 9090,
+            "protocol": 6,
+            "flow_count": 6,
+            "total_packets": 2290,
+            "total_bytes": 255168,
+            "last_seen": "2025-06-10 00:03:49",
+            "first_seen": "2025-06-08 13:35:58"
+        },
+        {
+            "destination": "13.209.255.223",
+            "port": 9090,
+            "protocol": 6,
+            "flow_count": 8,
+            "total_packets": 1621,
+            "total_bytes": 182487,
+            "last_seen": "2025-06-11 07:46:54",
+            "first_seen": "2025-06-08 10:07:29"
         },
         {
             "destination": "8.8.8.8",
             "port": 53,
             "protocol": 17,
-            "flow_count": 21,
-            "total_packets": 44,
-            "total_bytes": 2904,
-            "first_seen": "2025-05-24 00:53:40",
-            "last_seen": "11347"
+            "flow_count": 106,
+            "total_packets": 216,
+            "total_bytes": 14256,
+            "last_seen": "2025-06-12 00:07:28",
+            "first_seen": "2025-06-03 01:55:56"
         },
         {
             "destination": "0.0.0.0",
             "port": 9090,
             "protocol": 6,
-            "flow_count": 2,
-            "total_packets": 9,
-            "total_bytes": 432,
-            "first_seen": "2025-05-18 06:04:00",
-            "last_seen": "276"
+            "flow_count": 3,
+            "total_packets": 20,
+            "total_bytes": 960,
+            "last_seen": "2025-06-11 08:37:08",
+            "first_seen": "2025-06-09 21:52:20"
         }
     ],
     "actions": []

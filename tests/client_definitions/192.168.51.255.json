@@ -1,19 +1,660 @@
 {
     "ip_address": "192.168.51.255",
-    "export_date": "2025-06-05T21:56:39.636450",
-    "instance_identifier": "0bcf67f6adb6c72fd190f637b814dd6e7b600a7dfdbf6bd1177587183bef08cc",
+    "export_date": "2025-06-12T10:35:00.067403",
+    "instance_identifier": "b8d1c13f7c1fee3dc8d8dcb09c474c9c6312db33f5f7d11878dc2ed3af807e93",
     "host_info": {
         "ip_address": "192.168.51.255",
-        "mac_address": null,
+        "mac_address": "1C:53:F9:79:A0:96",
         "mac_vendor": null,
         "dhcp_hostname": null,
         "dns_hostname": "broadcast.",
-        "os_fingerprint": null,
+        "os_fingerprint": "D-Link_embedded_None_94",
         "lease_hostname": null,
-        "icon": null,
-        "local_description": null
+        "icon": "BROADCAST_ADDRESS",
+        "local_description": "Broadcast Address"
     },
     "dns_queries": [],
-    "flows": [],
+    "flows": [
+        {
+            "destination": "192.168.50.220",
+            "port": 33052,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-07 13:18:57",
+            "first_seen": "2025-06-07 13:18:57"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 33054,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-03 23:00:16",
+            "first_seen": "2025-06-03 23:00:16"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 33324,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-04 04:40:43",
+            "first_seen": "2025-06-04 04:40:43"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 33580,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-04 04:40:43",
+            "first_seen": "2025-06-04 04:40:43"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 34126,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-05 08:03:42",
+            "first_seen": "2025-06-05 08:03:42"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 34382,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-05 08:03:42",
+            "first_seen": "2025-06-05 08:03:42"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 36177,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-05 14:49:22",
+            "first_seen": "2025-06-05 14:49:22"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 36433,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-05 14:49:22",
+            "first_seen": "2025-06-05 14:49:22"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 37381,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-06 15:44:35",
+            "first_seen": "2025-06-06 15:44:35"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 37637,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-06 15:44:35",
+            "first_seen": "2025-06-06 15:44:35"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 39411,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-03 08:56:34",
+            "first_seen": "2025-06-03 08:56:34"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 39667,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-03 08:56:34",
+            "first_seen": "2025-06-03 08:56:34"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 39788,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-03 01:35:14",
+            "first_seen": "2025-06-03 01:35:14"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 40044,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-03 01:35:14",
+            "first_seen": "2025-06-03 01:35:14"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 42378,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-10 07:38:34",
+            "first_seen": "2025-06-10 07:38:34"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 42634,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-10 07:38:34",
+            "first_seen": "2025-06-10 07:38:34"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 43948,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-03 13:48:04",
+            "first_seen": "2025-06-03 13:48:04"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 44048,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-07 02:33:33",
+            "first_seen": "2025-06-07 02:33:33"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 44204,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-03 13:48:04",
+            "first_seen": "2025-06-03 13:48:04"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 44304,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-07 02:33:33",
+            "first_seen": "2025-06-07 02:33:33"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 46337,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-08 10:15:31",
+            "first_seen": "2025-06-08 10:15:31"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 46593,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-08 10:15:31",
+            "first_seen": "2025-06-08 10:15:31"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 46959,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-04 13:12:41",
+            "first_seen": "2025-06-04 13:12:41"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 47215,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-04 13:12:41",
+            "first_seen": "2025-06-04 13:12:41"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 47845,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-06 05:37:52",
+            "first_seen": "2025-06-06 05:37:52"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 48034,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-09 08:58:35",
+            "first_seen": "2025-06-09 08:58:35"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 48101,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-06 05:37:52",
+            "first_seen": "2025-06-06 05:37:52"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 48212,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-07 06:48:22",
+            "first_seen": "2025-06-07 06:48:22"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 48290,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-09 08:58:35",
+            "first_seen": "2025-06-09 08:58:35"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 48468,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-07 06:48:22",
+            "first_seen": "2025-06-07 06:48:22"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 49509,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-08 18:37:35",
+            "first_seen": "2025-06-08 18:37:35"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 49765,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-08 18:37:35",
+            "first_seen": "2025-06-08 18:37:35"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 51281,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-06 23:54:09",
+            "first_seen": "2025-06-06 23:54:09"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 51525,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-10 12:54:37",
+            "first_seen": "2025-06-10 12:54:37"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 51537,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-06 23:54:09",
+            "first_seen": "2025-06-06 23:54:09"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 51781,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-10 12:54:37",
+            "first_seen": "2025-06-10 12:54:37"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 51840,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-04 05:02:09",
+            "first_seen": "2025-06-04 05:02:09"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 52096,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-04 05:02:09",
+            "first_seen": "2025-06-04 05:02:09"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 52462,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-03 14:52:37",
+            "first_seen": "2025-06-03 14:52:37"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 52718,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-03 14:52:37",
+            "first_seen": "2025-06-03 14:52:37"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 53368,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-06 13:51:53",
+            "first_seen": "2025-06-06 13:51:53"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 53501,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-09 02:52:09",
+            "first_seen": "2025-06-09 02:52:09"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 53624,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-06 13:51:53",
+            "first_seen": "2025-06-06 13:51:53"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 53733,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-07 17:49:36",
+            "first_seen": "2025-06-07 17:49:36"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 53757,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-09 02:52:09",
+            "first_seen": "2025-06-09 02:52:09"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 53773,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-04 23:52:06",
+            "first_seen": "2025-06-04 23:52:06"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 53989,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-07 17:49:36",
+            "first_seen": "2025-06-07 17:49:36"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 54029,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-04 23:52:06",
+            "first_seen": "2025-06-04 23:52:06"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 54859,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-06 13:23:43",
+            "first_seen": "2025-06-06 13:23:43"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 55115,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-06 13:23:43",
+            "first_seen": "2025-06-06 13:23:43"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 55420,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-08 02:02:58",
+            "first_seen": "2025-06-08 02:02:58"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 55676,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-08 02:02:58",
+            "first_seen": "2025-06-08 02:02:58"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 60453,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-10 03:27:25",
+            "first_seen": "2025-06-10 03:27:25"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 60709,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-10 03:27:25",
+            "first_seen": "2025-06-10 03:27:25"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 62196,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-10 16:04:43",
+            "first_seen": "2025-06-10 16:04:43"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 62452,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-10 16:04:43",
+            "first_seen": "2025-06-10 16:04:43"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 62866,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-10 06:21:43",
+            "first_seen": "2025-06-10 06:21:43"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 63023,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-05 14:12:16",
+            "first_seen": "2025-06-05 14:12:16"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 63122,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-10 06:21:43",
+            "first_seen": "2025-06-10 06:21:43"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 63279,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-05 14:12:16",
+            "first_seen": "2025-06-05 14:12:16"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 63475,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-09 19:05:41",
+            "first_seen": "2025-06-09 19:05:41"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 63731,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-09 19:05:41",
+            "first_seen": "2025-06-09 19:05:41"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 65057,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-07 13:18:57",
+            "first_seen": "2025-06-07 13:18:57"
+        },
+        {
+            "destination": "192.168.50.220",
+            "port": 65059,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 40,
+            "last_seen": "2025-06-03 23:00:16",
+            "first_seen": "2025-06-03 23:00:16"
+        }
+    ],
     "actions": []
 }

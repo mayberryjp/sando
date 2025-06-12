@@ -1,0 +1,63 @@
+{
+    "ip_address": "192.168.49.100",
+    "export_date": "2025-06-12T10:35:00.110802",
+    "instance_identifier": "b8d1c13f7c1fee3dc8d8dcb09c474c9c6312db33f5f7d11878dc2ed3af807e93",
+    "host_info": {
+        "ip_address": "192.168.49.100",
+        "mac_address": "24:5E:BE:83:D2:0C",
+        "mac_vendor": null,
+        "dhcp_hostname": null,
+        "dns_hostname": "qnapswitch.",
+        "os_fingerprint": "Linux_Linux_5.X_96",
+        "lease_hostname": null,
+        "icon": "NETWORK_SWITCH",
+        "local_description": "QNAP QSW M2116P-2T2S"
+    },
+    "dns_queries": [
+        {
+            "domain": "update.qnap.com",
+            "times_queried": 42,
+            "first_query": "2025-06-10 16:57:44",
+            "last_query": "2025-06-10 13:42:09"
+        },
+        {
+            "domain": "download.qnap.com",
+            "times_queried": 8,
+            "first_query": "2025-06-10 15:57:24",
+            "last_query": "2025-06-10 13:42:09"
+        }
+    ],
+    "flows": [
+        {
+            "destination": "3.163.218.40",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 30,
+            "total_bytes": 2055,
+            "last_seen": "2025-06-10 13:05:10",
+            "first_seen": "2025-06-10 13:05:10"
+        },
+        {
+            "destination": "3.163.218.53",
+            "port": 443,
+            "protocol": 6,
+            "flow_count": 1,
+            "total_packets": 30,
+            "total_bytes": 2055,
+            "last_seen": "2025-06-10 13:24:28",
+            "first_seen": "2025-06-10 13:24:28"
+        },
+        {
+            "destination": "255.255.255.255",
+            "port": 8097,
+            "protocol": 17,
+            "flow_count": 1,
+            "total_packets": 1,
+            "total_bytes": 197,
+            "last_seen": "2025-06-10 13:03:01",
+            "first_seen": "2025-06-10 13:03:01"
+        }
+    ],
+    "actions": []
+}

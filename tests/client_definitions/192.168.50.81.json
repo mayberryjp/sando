@@ -1,17 +1,17 @@
 {
     "ip_address": "192.168.50.81",
-    "export_date": "2025-06-05T21:56:33.317740",
-    "instance_identifier": "0bcf67f6adb6c72fd190f637b814dd6e7b600a7dfdbf6bd1177587183bef08cc",
+    "export_date": "2025-06-12T10:35:00.033418",
+    "instance_identifier": "b8d1c13f7c1fee3dc8d8dcb09c474c9c6312db33f5f7d11878dc2ed3af807e93",
     "host_info": {
         "ip_address": "192.168.50.81",
-        "mac_address": null,
+        "mac_address": "A0:B7:65:F1:EB:33",
         "mac_vendor": null,
         "dhcp_hostname": null,
         "dns_hostname": "olimex-esp32-bedroom.832-5.com.",
-        "os_fingerprint": null,
+        "os_fingerprint": "Garmin_embedded_None_96",
         "lease_hostname": "olimex-esp32-bedroom",
-        "icon": null,
-        "local_description": null
+        "icon": "BLUETOOTH_RADIO",
+        "local_description": "ESP32 Bluetooth Proxy"
     },
     "dns_queries": [],
     "flows": [
@@ -19,11 +19,21 @@
             "destination": "224.0.0.251",
             "port": 5353,
             "protocol": 17,
+            "flow_count": 243,
+            "total_packets": 514,
+            "total_bytes": 184088,
+            "last_seen": "2025-06-12 10:02:45",
+            "first_seen": "2025-06-02 11:29:43"
+        },
+        {
+            "destination": "224.0.0.251",
+            "port": 0,
+            "protocol": 2,
             "flow_count": 1,
-            "total_packets": 6,
-            "total_bytes": 2154,
-            "last_seen": "2025-06-05 21:49:51",
-            "first_seen": "2025-06-05 21:49:51"
+            "total_packets": 2,
+            "total_bytes": 92,
+            "last_seen": "2025-06-10 12:57:40",
+            "first_seen": "2025-06-10 12:57:40"
         }
     ],
     "actions": []
