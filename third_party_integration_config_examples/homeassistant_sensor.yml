@@ -6,49 +6,93 @@ rest:
       - name: HomelabIDS Acknowledged Alerts
         value_template: "{{ value_json.acknowledged_alerts }}"
         icon: mdi:check-circle-outline
+        unit_of_measurement: alerts
+        state_class: measurement
+
       - name: HomelabIDS Unacknowledged Alerts
         value_template: "{{ value_json.unacknowledged_alerts }}"
         icon: mdi:alert-circle-outline
+        unit_of_measurement: alerts
+        state_class: measurement
+
       - name: HomelabIDS Total Alerts
         value_template: "{{ value_json.total_alerts }}"
         icon: mdi:counter
+        unit_of_measurement: alerts
+        state_class: measurement
+
       - name: HomelabIDS Localhosts Count
         value_template: "{{ value_json.total_localhosts_count }}"
         icon: mdi:server
+        unit_of_measurement: hosts
+        state_class: measurement
+
       - name: HomelabIDS IgnoreList Count
         value_template: "{{ value_json.ignorelist_count }}"
         icon: mdi:shield-check-outline
+        unit_of_measurement: entries
+        state_class: measurement
+
       - name: HomelabIDS Acknowledged Localhosts Count
         value_template: "{{ value_json.acknowledged_localhosts_count }}"
         icon: mdi:shield-check-outline
+        unit_of_measurement: hosts
+        state_class: measurement
+
       - name: HomelabIDS Unacknowledged Localhosts Count
         value_template: "{{ value_json.unacknowledged_localhosts_count }}"
         icon: mdi:shield-check-outline
+        unit_of_measurement: hosts
+        state_class: measurement
+
       - name: HomelabIDS Average Threat Score
         value_template: "{{ value_json.average_threat_score }}"
         icon: mdi:shield-star
+        unit_of_measurement: score
+        state_class: measurement
+
       - name: HomelabIDS Total Packets Processed
         value_template: "{{ value_json.total_packets }}"
         icon: mdi:shield-star
+        unit_of_measurement: packets
+        state_class: total_increasing
+
       - name: HomelabIDS Total Flow Count Processed
         value_template: "{{ value_json.total_flows }}"
         icon: mdi:shield-star
+        unit_of_measurement: flows
+        state_class: total_increasing
+
       - name: HomelabIDS Total Bytes Processed
         value_template: "{{ value_json.total_bytes }}"
         icon: mdi:shield-star
+        unit_of_measurement: B
+        state_class: total_increasing
+
       - name: HomelabIDS Last Packet Count Processed
         value_template: "{{ value_json.last_packets }}"
         icon: mdi:shield-star
+        unit_of_measurement: packets
+        state_class: measurement
+
       - name: HomelabIDS Last Flow Count Processed
         value_template: "{{ value_json.last_flows }}"
         icon: mdi:shield-star
+        unit_of_measurement: flows
+        state_class: measurement
+
       - name: HomelabIDS Last Bytes Processed
         value_template: "{{ value_json.last_bytes }}"
         icon: mdi:shield-star
+        unit_of_measurement: B
+        state_class: measurement
+
       - name: HomelabIDS Last Flow Seen
         value_template: "{{ value_json.last_flow_seen }}"
-        icon: mdi:shield-star
+        icon: mdi:clock-outline
+        device_class: timestamp
+
       - name: HomelabIDS Is Healthy
         value_template: "{{ value_json.is_healthy }}"
         icon: mdi:shield-star
- 
+
