@@ -1,6 +1,6 @@
  #pick the ones you prefer and remove the rest
  - Site Network Security:
-      icon: mdi-security-network-#FFFFFF
+      icon: homelabids
       widget:
         type: customapi
         url: http://192.168.230.236:8044/api/homepage
