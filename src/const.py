@@ -1,4 +1,4 @@
-VERSION="v0.3.707"
+VERSION="v0.3.710"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -262,7 +262,7 @@ CONST_CREATE_ACTIONS_SQL = '''
 '''
 
 CONST_INSTALL_CONFIGS = [
-    ('NewHostsDetection', 0),
+    ('NewHostsDetection', 1),
     ('LocalFlowsDetection', 0),
     ('RouterFlowsDetection', 0),
     ('ForeignFlowsDetection', 0),
@@ -282,7 +282,7 @@ CONST_INSTALL_CONFIGS = [
     ('ProcessingInterval','60'),
     ('TelegramBotToken',''),
     ('TelegramChatId',''),
-    ('ScheduleProcessor','0'),
+    ('ScheduleProcessor','1'),
     ('StartCollector','1'),
     ('CleanNewFlows','1'),
     ('DeadConnectionDetection','0'),

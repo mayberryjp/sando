@@ -6,7 +6,6 @@ services:
     restart: "unless-stopped"
     image: homelabids:latest
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - /docker/homelabids:/database
     environment: 
       - TZ=Asia/Tokyo
