@@ -39,3 +39,9 @@
             label: Last Flow Seen
           - field: is_healthy
             label: Site Healthy?
+          - field: acknowledged_actions
+            label: Actions Acked
+          - field: unacknowledged_actions
+            label: Actions Unacked
+          - field: total_actions
+            label: Total Actions

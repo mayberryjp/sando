@@ -96,3 +96,12 @@ rest:
         value_template: "{{ value_json.is_healthy }}"
         icon: mdi:shield-star
 
+      - name: HomelabIDS Actions Acknowledged
+        value_template: "{{ value_json.acknowledged_actions}}"
+        icon: mdi:shield-star
+      - name: HomelabIDS Actions Unacknowledged
+        value_template: "{{ value_json.unacknowledged_actions }}"
+        icon: mdi:shield-star
+      - name: HomelabIDS Actions Total
+        value_template: "{{ value_json.total_actions }}"
+        icon: mdi:shield-star
