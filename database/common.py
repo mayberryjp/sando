@@ -297,7 +297,10 @@ def collect_database_counts():
         "last_flows": 0,
         "last_bytes": 0,
         "last_flow_seen": None,
-        "is_healthy": "Down"
+        "is_healthy": "Down",
+        "unacknowledged_actions": 0,
+        "acknowledged_actions": 0,
+        "total_actions": 0,
     }
 
     try:
@@ -316,6 +319,25 @@ def collect_database_counts():
             # Count total alerts
             cursor.execute("SELECT COUNT(*) FROM alerts")
             counts["total_alerts"] = cursor.fetchone()[0]
+
+            conn.close()
+        else:
+            log_error(logger, "[ERROR] Unable to connect to alerts database")
+
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "actions")
+        if conn:
+            cursor = conn.cursor()
+            # Count acknowledged alerts
+            cursor.execute("SELECT COUNT(*) FROM actions WHERE acknowledged = 1")
+            counts["acknowledged_actions"] = cursor.fetchone()[0]
+
+            # Count unacknowledged alerts
+            cursor.execute("SELECT COUNT(*) FROM actions WHERE acknowledged = 0")
+            counts["unacknowledged_actions"] = cursor.fetchone()[0]
+
+            # Count total alerts
+            cursor.execute("SELECT COUNT(*) FROM actions")
+            counts["total_actions"] = cursor.fetchone()[0]
 
             conn.close()
         else:
