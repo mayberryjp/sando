@@ -1,4 +1,4 @@
-VERSION="v0.3.718"
+VERSION="v0.3.729"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -6,6 +6,7 @@ CONST_API_LISTEN_PORT=8044
 CONST_API_LISTEN_ADDRESS="0.0.0.0"
 IS_CONTAINER=1
 CONST_CONSOLIDATED_DB = "/database/consolidated.db"
+CONST_CONFIGURATION_DB = "/database/configuration.db"
 CONST_PERFORMANCE_DB= "/database/performance.db"
 CONST_EXPLORE_DB= "/database/explore.db"
 #CONST_TEST_SOURCE_DB = ['/database/test_source_1.db','/database/test_source_2.db']
@@ -13,7 +14,7 @@ CONST_TEST_SOURCE_DB = ['/database/test_source_1.db']
 CONST_SITE= 'TESTPPE'
 CONST_LINK_LOCAL_RANGE = ["169.254.0.0/16"]
 CONST_REINITIALIZE_DB = 0
-CONST_DATABASE_SCHEMA_VERSION=13
+CONST_DATABASE_SCHEMA_VERSION=14
 CONST_CREATE_DBPERFORMANCE_SQL='''
             CREATE TABLE IF NOT EXISTS dbperformance (
                 id INTEGER PRIMARY KEY,

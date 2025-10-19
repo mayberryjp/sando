@@ -18,7 +18,7 @@ def get_config_settings():
     """Read configuration settings from the configuration database into a dictionary."""
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "configuration")
+        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
         if not conn:
             log_error(logger,"[ERROR] Unable to connect to configuration database")
             return None
@@ -51,7 +51,7 @@ def update_config_setting(key, value, silent=False):
     
     try:
         # Connect to the configuration database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "configuration")
+        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to configuration database")
             return False

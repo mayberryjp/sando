@@ -122,6 +122,11 @@ def update_database_schema(current_version, target_version):
         if current_version_int < 13:
             log_info(logger, "[INFO] Version is less than 13, recreating explore view table")
             delete_all_records(CONST_PERFORMANCE_DB, "dbperformance")
+
+        if current_version_int < 14:  #RESUME HERE #TODO: Implement migration logic
+            log_info(logger, "[INFO] Version is less than 14, migrating configuration to dedicated configuration database")
+           # delete_all_records(CONST_PERFORMANCE_DB, "dbperformance")
+
         return True
         
     except ValueError as e:
@@ -150,7 +155,7 @@ def store_site_name(site_name):
             return False
             
         # Connect to the configuration database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "configuration")
+        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to configuration database")
             return False
@@ -190,7 +195,7 @@ def init_configurations_from_sitepy():
     config_dict = {}
 
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "configuration")
+        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
         if not conn:
             log_error(logger,"[ERROR] Unable to connect to configuration database")
             return config_dict
@@ -241,7 +246,7 @@ def init_configurations_from_variable():
     config_dict = {}
 
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "configuration")
+        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
         if not conn:
             log_error(logger,"[ERROR] Unable to connect to configuration database")
             return config_dict
@@ -429,7 +434,7 @@ def store_version():
         from src.const import VERSION
         
         # Connect to the configuration database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "configuration")
+        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to configuration database.")
             return False
@@ -480,7 +485,7 @@ def store_machine_unique_identifier():
             return False
 
         # Connect to the configuration database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "configuration")
+        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to configuration database.")
             return False
@@ -518,7 +523,7 @@ def get_machine_unique_identifier_from_db():
     logger = logging.getLogger(__name__)
     try:
         # Connect to the configuration database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "configuration")
+        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to configuration database.")
             return None

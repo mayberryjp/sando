@@ -336,6 +336,14 @@ def delete_localhost_database(ip_address):
             conn_flows.commit()
             log_info(logger, f"[INFO] Deleted flows from allflows for IP: {ip_address}")
             disconnect_from_db(conn_flows)
+
+        conn_flows = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
+        if conn_flows:
+            cursor_flows = conn_flows.cursor()
+            cursor_flows.execute("DELETE FROM dnsqueries WHERE client_ip = ?", (ip_address))
+            conn_flows.commit()
+            log_info(logger, f"[INFO] Deleted dns queries from dnsqueries for IP: {ip_address}")
+            disconnect_from_db(conn_flows)
         
         return localhost_deleted
         

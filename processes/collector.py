@@ -27,12 +27,15 @@ if __name__ == "__main__":
     site_config_path = os.path.join("/database/", f"{SITE}.py")
     database_path = os.path.join("/database/", CONST_CONSOLIDATED_DB)
     schema_file_path = os.path.join(parent_dir, '/database', 'database.schema')
-    
+
+    if not os.path.exists(CONST_CONFIGURATION_DB):
+        log_info(logger, f"[INFO] Configuration database not found, creating at {CONST_CONFIGURATION_DB}. We assume this is a first time install. ")
+        create_table(CONST_CONFIGURATION_DB, CONST_CREATE_CONFIG_SQL, "configuration")
+        config_dict = init_configurations_from_variable()
+
     if not os.path.exists(CONST_CONSOLIDATED_DB):
         log_info(logger, f"[INFO] Consolidated database not found, creating at {CONST_CONSOLIDATED_DB}. We assume this is a first time install. ")
-        create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_CONFIG_SQL, "configuration")
         create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
-        config_dict = init_configurations_from_variable()
         os.makedirs(os.path.dirname(schema_file_path), exist_ok=True)
         with open(schema_file_path, 'w') as f:
             f.write(str(CONST_DATABASE_SCHEMA_VERSION))
