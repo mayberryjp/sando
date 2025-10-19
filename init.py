@@ -170,7 +170,8 @@ from database.allflows import (
 from database.trafficstats import (
     update_traffic_stats, 
     delete_old_traffic_stats,
-    get_traffic_stats_for_ip
+    get_traffic_stats_for_ip,
+    get_all_ips_traffic_status
 )
 
 # Ignore List and Tag functions

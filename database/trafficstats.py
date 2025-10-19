@@ -103,6 +103,77 @@ def update_traffic_stats(rows, config_dict):
         disconnect_from_db(conn)
     disconnect_from_db(conn)
 
+def get_all_ips_traffic_status():
+    """
+    Retrieve all IP addresses and check if they had any traffic in the last 100 hours.
+    Uses timed queries for performance tracking.
+    
+    Returns:
+        dict: A dictionary with IP addresses as keys and traffic status as boolean values.
+              True if the IP had traffic in the last 100 hours, False otherwise.
+    """
+    logger = logging.getLogger(__name__)
+    ip_traffic_status = {}
+    total_query_time = 0
+    
+    try:
+        # Connect to the consolidated database
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "trafficstats")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to trafficstats database.")
+            return ip_traffic_status
+
+        cursor = conn.cursor()
+        
+        # Query to get all unique IP addresses
+        distinct_ip_query = "SELECT DISTINCT ip_address FROM localhosts"
+        ip_rows, ip_query_time = run_timed_query(
+            cursor,
+            distinct_ip_query,
+            (),
+            description="get_all_ips_traffic_status_distinct_ips"
+        )
+        
+        all_ips = [row[0] for row in ip_rows]
+
+        # Query to check traffic status for all IPs in the last 100 hours
+        # More efficient to do a single query than multiple individual ones
+        recent_traffic_query = """
+            SELECT DISTINCT ip_address 
+            FROM trafficstats
+            WHERE datetime(substr(timestamp, 1, 10) || ' ' || substr(timestamp, 12) || ':00:00') >= datetime('now', '-100 hours')
+        """
+        
+        active_ips_rows, active_query_time = run_timed_query(
+            cursor,
+            recent_traffic_query,
+            (),
+            description="get_all_ips_traffic_status_active_ips"
+        )
+        
+        # Convert to set for O(1) lookups
+        active_ips = {row[0] for row in active_ips_rows}
+        
+        # Build the result dictionary - True if IP is in active set, False otherwise
+        for ip in all_ips:
+            ip_traffic_status[ip] = ip in active_ips
+            
+        log_info(logger, f"[INFO] Successfully determined traffic status for {len(ip_traffic_status)} IPs " +
+                         f"({len(active_ips)} active) in {total_query_time:.2f} ms")
+            
+        return ip_traffic_status
+
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error retrieving IP traffic status: {e}")
+        return ip_traffic_status
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error retrieving IP traffic status: {e}")
+        return ip_traffic_status
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)
+
+
 def get_traffic_stats_for_ip(ip_address):
     """
     Retrieve traffic statistics for a specific IP address for the last 100 hours,

@@ -15,6 +15,32 @@ from init import *
 app = Bottle()
 
 def setup_trafficstats_routes(app):
+
+
+    @app.route('/api/trafficstatus', method=['GET'])
+    def get_all_ips_traffic_status_route():
+        """
+        API endpoint to get traffic status for all IP addresses.
+        Returns a mapping of IP addresses to boolean values indicating
+        if they had traffic in the last 100 hours.
+    
+        Returns:
+            JSON object containing IP addresses as keys and boolean traffic status as values.
+        """
+        logger = logging.getLogger(__name__)
+        try:
+            # Call the function to get traffic status for all IPs
+            ip_traffic_status = get_all_ips_traffic_status()
+            
+            response.content_type = 'application/json'
+            active_count = sum(1 for status in ip_traffic_status.values() if status)
+            log_info(logger, f"[INFO] Successfully retrieved traffic status for {len(ip_traffic_status)} IPs ({active_count} active)")
+            return json.dumps(ip_traffic_status)
+            
+        except Exception as e:
+            log_error(logger, f"[ERROR] Failed to get traffic status for IPs: {e}")
+            response.status = 500
+            return {"error": str(e)}    
         
     @app.route('/api/trafficstats/<ip_address>', method=['GET'])
     def get_traffic_stats(ip_address):
