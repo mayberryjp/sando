@@ -125,6 +125,7 @@ def update_database_schema(current_version, target_version):
 
         if current_version_int < 14:  #RESUME HERE #TODO: Implement migration logic
             log_info(logger, "[INFO] Version is less than 14, migrating configuration to dedicated configuration database")
+            migrate_configurations_schema13_to_schema14()
            # delete_all_records(CONST_PERFORMANCE_DB, "dbperformance")
 
         return True
@@ -135,6 +136,62 @@ def update_database_schema(current_version, target_version):
     except Exception as e:
         log_error(logger, f"[ERROR] Failed to update database schema: {e}")
         return False
+
+
+
+def migrate_configurations_schema13_to_schema14():
+    """
+    Migrates configurations from CONSOLIDATED_DB to CONFIGURATION_DB.
+    1. Gets all configurations from CONSOLIDATED_DB
+    2. Deletes the configurations table in CONSOLIDATED_DB
+    3. Creates a new configurations table in CONFIGURATION_DB
+    4. Inserts all configurations into the new table
+    """
+    logger = logging.getLogger(__name__)
+    log_info(logger, "[INFO] Starting configuration migration from CONSOLIDATED_DB to CONFIGURATION_DB")
+
+    
+    try:
+        # Step 1: Get all configurations from CONSOLIDATED_DB
+        conn_consolidated = connect_to_db(CONST_CONSOLIDATED_DB, "configuration")
+        if not conn_consolidated:
+            log_error(logger, "[ERROR] Failed to connect to CONSOLIDATED_DB")
+            return False
+            
+        cursor = conn_consolidated.cursor()
+        cursor.execute("SELECT key, value, last_updated FROM configuration")
+        rows = cursor.fetchall()
+
+        
+        delete_table(CONST_CONSOLIDATED_DB, "configuration")
+        
+        # Step 3: Create new configurations table in CONFIGURATION_DB
+        conn_config = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
+        if not conn_config:
+            log_error(logger, "[ERROR] Failed to connect to CONFIGURATION_DB")
+            return False
+            
+        for row in rows:
+            key, value, last_updated = row
+            update_config_setting(key,value)
+
+        log_info(logger, f"[INFO] Inserted {len(rows)} configuration entries into CONFIGURATION_DB")
+        disconnect_from_db(conn_config)
+        
+        return True
+        
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error during configuration migration: {e}")
+        return False
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error during configuration migration: {e}")
+        return False
+    finally:
+        # Ensure all connections are closed
+        if 'conn_consolidated' in locals() and conn_consolidated:
+            disconnect_from_db(conn_consolidated)
+        if 'conn_config' in locals() and conn_config:
+            disconnect_from_db(conn_config)
 
 
 def store_site_name(site_name):
