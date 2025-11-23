@@ -159,7 +159,7 @@ def migrate_configurations_schema13_to_schema14():
             return False
             
         cursor = conn_consolidated.cursor()
-        cursor.execute("SELECT key, value, last_updated FROM configuration")
+        cursor.execute("SELECT key, value, last_changed FROM configuration")
         rows = cursor.fetchall()
 
         

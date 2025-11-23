@@ -49,56 +49,24 @@ def setup_localhosts_routes(app):
     def modify_localhost(ip_address):
         """
         API endpoint to update properties of an existing localhost device.
-        
-        This endpoint allows modification of a device's metadata including its description,
-        icon, and acknowledgment status. The device must already exist in the database.
-        
-        Args:
-            ip_address (str): The IP address of the localhost device to modify.
-                              Must be a valid IPv4 address in the database.
-        
-        Request Body (JSON):
-            {
-                "local_description": str,  # Optional - Human-readable description of the device
-                "icon": str,               # Optional - Icon identifier for the device
-                "acknowledged": bool       # Optional - Whether the device has been acknowledged
-            }
-            At least one of these fields must be provided in the request.
-        
-        Returns:
-            200 OK: JSON object with success message
-                {
-                    "message": "Local host updated successfully"
-                }
-                
-            500 Internal Server Error: JSON object with error details
-                {
-                    "error": "Error message"
-                }
-        
-        Notes:
-            - If the device with the specified IP address doesn't exist, the function will
-              attempt to create a classification for it.
-            - Updates are performed via the classify_localhost function which handles
-              the database operations.
-            - All fields in the request body are optional, but at least one should be provided.
+        Now accepts 'mac_address' in the request body.
         """
         logger = logging.getLogger(__name__)
 
         if request.method == 'PUT':
-            # Update a local host
             data = request.json
             local_description = data.get('local_description')
             icon = data.get('icon')
             management_link = data.get('management_link')
-
+            mac_address = data.get('mac_address')  # <-- Accept mac_address
 
             try:
                 # Update the localhost classification in the database
-                classify_localhost(ip_address, local_description, icon, management_link)
+                # You need to update classify_localhost to accept mac_address if you want to store it
+                classify_localhost(ip_address, local_description, icon, management_link, mac_address)
 
                 response.content_type = 'application/json'
-                log_info(logger, f"Updated local host: {ip_address}")
+                log_info(logger, f"Updated local host: {ip_address} (MAC: {mac_address})")
                 return {"message": "Local host updated successfully"}
             except Exception as e:
                 log_error(logger, f"Error updating local host: {e}")

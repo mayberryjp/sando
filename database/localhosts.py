@@ -240,45 +240,52 @@ def insert_localhost_basic(ip_address, original_flow=None):
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
 
-def classify_localhost(ip_address, description, icon, management_link):
+def classify_localhost(ip_address, description, icon, management_link, mac_address=None):
     """
-    Classify a localhost by setting its description, icon, and acknowledging it.
-    
+    Classify a localhost by setting its description, icon, acknowledged status, management link, and optionally mac_address.
+
     Args:
         ip_address (str): The IP address of the localhost to classify
-        description (str): A descriptive label for the localhost (e.g., "Office Printer", "Media Server")
-        icon (str): The icon identifier to use for this device (e.g., "printer", "server", "desktop")
-        
+        description (str): A descriptive label for the localhost
+        icon (str): The icon identifier to use for this device
+        management_link (str): Management link for the device
+        mac_address (str, optional): The MAC address to update (if provided)
+
     Returns:
         bool: True if the classification was successful, False otherwise
     """
     logger = logging.getLogger(__name__)
-    
+
     try:
-        # Connect to the localhosts database
         conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return False
 
         cursor = conn.cursor()
-        
-        # Update the localhost record with classification details
-        cursor.execute("""
-            UPDATE localhosts
-            SET local_description = ?, icon = ?, acknowledged = 1, management_link = ?
-            WHERE ip_address = ?
-        """, (description, icon, management_link, ip_address,))
-        
-        # Check if a row was affected
+
+        if mac_address:
+            cursor.execute("""
+                UPDATE localhosts
+                SET local_description = ?, icon = ?, acknowledged = 1, management_link = ?, mac_address = ?
+                WHERE ip_address = ?
+            """, (description, icon, management_link, mac_address, ip_address))
+        else:
+            cursor.execute("""
+                UPDATE localhosts
+                SET local_description = ?, icon = ?, acknowledged = 1, management_link = ?
+                WHERE ip_address = ?
+            """, (description, icon, management_link, ip_address))
+
         if cursor.rowcount > 0:
             conn.commit()
-            log_info(logger, f"[INFO] Successfully classified localhost {ip_address} as '{description}' with icon '{icon}'")
+            log_info(logger, f"[INFO] Successfully classified localhost {ip_address} as '{description}' with icon '{icon}'" +
+                              (f" and MAC '{mac_address}'" if mac_address else ""))
             return True
         else:
             log_warn(logger, f"[WARN] No localhost found with IP {ip_address} to classify")
             return False
-        
+
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while classifying localhost {ip_address}: {e}")
         return False

@@ -1,4 +1,4 @@
-VERSION="v0.3.733"
+VERSION="v0.3.841"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -184,7 +184,8 @@ CONST_CREATE_LOCALHOSTS_SQL = """
         acknowledged INTEGER DEFAULT 0,
         threat_score INTEGER DEFAULT 1, -- New column for threat score
         alerts_enabled INTEGER DEFAULT 1,
-        management_link TEXT -- New column for management link
+        management_link TEXT,
+        last_seen TEXT -- New column for management link
     )
 """
 
@@ -277,7 +278,7 @@ CONST_INSTALL_CONFIGS = [
     ('ApprovedLocalDnsServersList',''),
     ('ApprovedAuthoritativeDnsServersList',''),
     ('ApprovedNtpStratumServersList',''),
-    ('BannedCountryList','China,North Korea,Iran,Russia,Ukraine,Georgia,Armenia,Azerbaijan,Belarus,Syria,Venezuela,Cuba,Myanmar,Afghanistan'),
+    ('BannedCountryList','North Korea,Iran,Russia,Ukraine,Georgia,Armenia,Azerbaijan,Belarus,Syria,Venezuela,Cuba,Myanmar,Afghanistan'),
     ('LocalNetworks',''),
     ('RouterIpAddresses',''),
     ('ProcessingInterval','60'),
