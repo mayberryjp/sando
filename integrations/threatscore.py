@@ -15,6 +15,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from init import *
 from database.alerts import summarize_alerts_by_ip
 from database.localhosts import update_localhost_threat_score
+from database.trafficstats import get_all_ips_traffic_status
 
 def calculate_update_threat_scores():
     """
@@ -64,30 +65,39 @@ def calculate_update_threat_scores():
     # Calculate and update threat scores
     results = {}
     
+    # Get traffic status for all IPs
+    traffic_status = get_all_ips_traffic_status()  # Returns {ip: True/False}
+
     for ip_address in localhosts:
         try:
-            # Get alert count for this IP
-            alert_count = alert_counts.get(ip_address, 0)
-            
-            # Calculate threat score (0-100 scale)
-            # We use a non-linear scaling to emphasize differences at lower counts
-            if alert_count == 0:
-                threat_score = 0
+            # Set threat_score to -1 if no traffic
+            if not traffic_status.get(ip_address, False):
+                threat_score = -1
+                log_info(logger, f"[INFO] No traffic for {ip_address}, setting threat score to -1")
             else:
-                # Apply non-linear scaling that gives more weight to the first few alerts
-                if alert_count < 5:
-                    # Low counts: 1 alert → 10, 2 alerts → 20, etc.
-                    threat_score = min(10 * alert_count, 100)
-                elif alert_count < 20:
-                    # Medium counts: diminishing returns but still significant
-                    threat_score = min(40 + (alert_count - 5) * 2, 100)
+                # Get alert count for this IP
+                alert_count = alert_counts.get(ip_address, 0)
+                
+                # Calculate threat score (0-100 scale)
+                # We use a non-linear scaling to emphasize differences at lower counts
+                if alert_count == 0:
+                    threat_score = 0
                 else:
-                    # High counts: slower increase
-                    threat_score = min(70 + (alert_count - 20) * 0.5, 100)
+                    # Apply non-linear scaling that gives more weight to the first few alerts
+                    if alert_count < 5:
+                        # Low counts: 1 alert → 10, 2 alerts → 20, etc.
+                        threat_score = min(10 * alert_count, 100)
+                    elif alert_count < 20:
+                        # Medium counts: diminishing returns but still significant
+                        threat_score = min(40 + (alert_count - 5) * 2, 100)
+                    else:
+                        # High counts: slower increase
+                        threat_score = min(70 + (alert_count - 20) * 0.5, 100)
+                
+                # Round to integer
+                threat_score = round(threat_score)
+                log_info(logger, f"[DEBUG] Calculated threat score for {ip_address}: {threat_score} (based on {alert_count} alerts)")
             
-            # Round to integer
-            threat_score = round(threat_score)
-            log_info(logger, f"[DEBUG] Calculated threat score for {ip_address}: {threat_score} (based on {alert_count} alerts)")
             # Update the localhost's threat score in the database
             success = update_localhost_threat_score(ip_address, threat_score)
             
