@@ -24,7 +24,7 @@ def local_flows_detection(rows, config_dict):
     excluding any flows involving ROUTER_IPADDRESS.
     """
     logger = logging.getLogger(__name__)
-    ROUTER_LIST = set(config_dict['RouterIpAddresses'].split(','))
+    ROUTER_LIST = get_routers(config_dict)
     LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
 
     log_info(logger,"[INFO] Detecting flows for the same local networks going through the router")

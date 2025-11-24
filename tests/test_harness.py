@@ -646,7 +646,7 @@ def main():
     for ip, data in combined_results.items():
         update_localhosts(
             ip_address=ip,
-            mac_address=data.get("mac_address"),
+           # mac_address=data.get("mac_address"),
             mac_vendor=data.get("mac_vendor"),
             dhcp_hostname=data.get("dhcp_hostname"),
             dns_hostname=data.get("dns_hostname"),

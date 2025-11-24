@@ -190,6 +190,10 @@ def update_localhosts(ip_address, mac_vendor=None, dhcp_hostname=None, dns_hostn
     finally:
         disconnect_from_db(conn)
 
+
+
+
+
 def insert_localhost_basic(ip_address, original_flow=None):
     """
     Insert a new basic localhost record into the database.
@@ -538,3 +542,49 @@ def get_average_threat_score():
         return None
     finally:
         disconnect_from_db(conn)
+
+def insert_localhost_basic_by_mac(mac_address, original_flow=None):
+    """
+    Insert a new basic localhost record into the database using MAC address.
+
+    Args:
+        mac_address (str): The MAC address of the localhost (required)
+        original_flow (str/dict): The original flow information as a JSON string or dict (optional)
+
+    Returns:
+        bool: True if the insertion was successful, False otherwise
+    """
+    logger = logging.getLogger(__name__)
+
+    try:
+        # Connect to the localhosts database
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to localhosts database.")
+            return False
+
+        cursor = conn.cursor()
+
+        # Insert the localhost record
+        cursor.execute(
+            "INSERT INTO localhosts (mac_address, first_seen) VALUES (?, datetime('now', 'localtime'))",
+            (mac_address, original_flow)
+        )
+
+        conn.commit()
+        log_info(logger, f"[INFO] Successfully inserted basic localhost record for MAC: {mac_address}")
+        return True
+
+    except sqlite3.IntegrityError:
+        # Handle case where MAC already exists
+        #log_warn(logger, f"[WARN] Localhost with MAC: {mac_address} already exists in database")
+        return False
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while inserting localhost {mac_address}: {e}")
+        return False
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while inserting localhost {mac_address}: {e}")
+        return False
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)

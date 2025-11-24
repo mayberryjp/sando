@@ -230,16 +230,21 @@ class DHCPServer:
         return socket.inet_ntoa(struct.pack('!I', broadcast_int))
     
     def _get_registered_ip(self, mac):
-        """Get the registered IP address for a MAC address by querying the database in real time."""
-        mac = mac.lower()
+        """Get the registered IP address for a MAC address by querying the database in real time.
+        If not found, insert it using insert_localhost_basic_by_mac.
+        """
+        mac = mac.upper()
         try:
-            from database.localhosts import get_localhosts_all
+            from database.localhosts import get_localhosts_all, insert_localhost_basic_by_mac
             hosts = get_localhosts_all()
             for h in hosts:
-                if str(h.get("mac_address")).lower() == mac and h.get("ip_address"):
+                if str(h.get("mac_address")).upper() == mac and h.get("ip_address"):
                     return h.get("ip_address")
+            # Not found: insert new MAC
+            insert_localhost_basic_by_mac(mac)
+            log_info(self.logger, f"[INFO] Inserted new MAC address into localhosts database: {mac}")
         except Exception as e:
-            log_error(self.logger, f"[ERROR] Could not query registered devices: {e}")
+            log_error(self.logger, f"[ERROR] Could not query or insert registered devices: {e}")
         log_warn(self.logger, f"[WARN] Unregistered device attempted DHCP request: {mac}")
         return None
     
@@ -575,7 +580,7 @@ if __name__ == "__main__":
         hosts = get_localhosts_all()
         # Build MAC -> IP mapping (lowercase MAC)
         registered_devices = {
-            str(h.get("mac_address")).lower(): h.get("ip_address")
+            str(h.get("mac_address")).upper(): h.get("ip_address")
             for h in hosts
             if h.get("mac_address") and h.get("ip_address")
         }
