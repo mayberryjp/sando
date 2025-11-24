@@ -141,7 +141,7 @@ def get_localhosts():
     finally:
         disconnect_from_db(conn)
 
-def update_localhosts(ip_address, mac_address=None, mac_vendor=None, dhcp_hostname=None, dns_hostname=None, os_fingerprint=None, lease_hostname=None, lease_hwaddr=None, lease_clientid=None):
+def update_localhosts(ip_address, mac_vendor=None, dhcp_hostname=None, dns_hostname=None, os_fingerprint=None, lease_hostname=None, lease_hwaddr=None, lease_clientid=None):
     """
     Update or insert a record in the localhosts database for a given IP address.
 
@@ -170,7 +170,7 @@ def update_localhosts(ip_address, mac_address=None, mac_vendor=None, dhcp_hostna
 
         cursor.execute("""
             UPDATE localhosts
-            SET mac_address = COALESCE(?, mac_address),
+            SET 
                 mac_vendor = COALESCE(?, mac_vendor),
                 dhcp_hostname = COALESCE(?, dhcp_hostname),
                 dns_hostname = COALESCE(?, dns_hostname),
@@ -179,7 +179,7 @@ def update_localhosts(ip_address, mac_address=None, mac_vendor=None, dhcp_hostna
                 lease_clientid = COALESCE(?, lease_clientid),
                 lease_hostname = COALESCE(?, lease_hostname)
             WHERE ip_address = ?
-        """, (mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint, lease_hwaddr, lease_clientid, lease_hostname, ip_address))
+        """, (mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint, lease_hwaddr, lease_clientid, lease_hostname, ip_address))
         log_info(logger, f"[INFO] Discovery updated record for IP: {ip_address}")
 
         conn.commit()
