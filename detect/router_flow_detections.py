@@ -26,7 +26,7 @@ def router_flows_detection(rows, config_dict):
     logger = logging.getLogger(__name__)
     log_info(logger,"[INFO] Detecting flows to or from the router")
 
-    ROUTER_LIST = set(config_dict['RouterIpAddresses'].split(','))
+    ROUTER_LIST = get_routers(config_dict)
     for row in rows:
         src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes_, flow_start, flow_end, *_ = row
 

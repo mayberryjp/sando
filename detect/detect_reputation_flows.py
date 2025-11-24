@@ -52,7 +52,7 @@ def detect_reputation_flows(rows, config_dict, reputation_data):
         return (False,None)
 
     # Get local networks from the configuration
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
 
     # Process rows
     total = len(rows)

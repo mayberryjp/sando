@@ -31,7 +31,7 @@ def detect_many_destinations(rows, config_dict):
     log_info(logger, "[INFO] Started one source to many destinations detection")
 
     # Get configuration parameters
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
     dest_threshold = int(config_dict.get("MaxUniqueDestinations", "30"))
 
     # Track destinations per source IP

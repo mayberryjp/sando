@@ -36,7 +36,7 @@ def detect_high_bandwidth_flows(rows, config_dict):
 
     # Dictionary to track totals for each src_ip and dst_ip
     traffic_stats = {}
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
 
     # First pass: Aggregate traffic by src_ip and dst_ip
     for row in rows:

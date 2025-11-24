@@ -29,7 +29,7 @@ def detect_new_outbound_connections(rows, config_dict):
     logger = logging.getLogger(__name__)
     log_info(logger,f"[INFO] Preparing to detect new outbound connections")
 
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
 
     try:
 

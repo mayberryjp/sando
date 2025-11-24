@@ -34,7 +34,7 @@ def detect_unauthorized_dns(rows, config_dict):
         log_warn(logger, "[WARN] No approved DNS servers configured")
         return
     
-    LOCAL_NETWORKS=set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
     filtered_rows = [row for row in rows if row[3] == 53]
 
     for row in filtered_rows:

@@ -131,7 +131,9 @@ from database.ipasn import  (
 from database.configuration import (
     get_config_settings, 
     update_config_setting,
-    update_flow_metrics
+    update_flow_metrics,
+    get_local_network_cidrs,
+    get_routers
 )
 
 from database.dnsqueries import (

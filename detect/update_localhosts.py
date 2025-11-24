@@ -26,7 +26,7 @@ def update_local_hosts(rows, config_dict):
     logger = logging.getLogger(__name__)
     log_info(logger,"[INFO] Starting to update local hosts")
     # Connect to the localhosts database
-    LOCAL_NETWORKS=set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
 
     try:
 

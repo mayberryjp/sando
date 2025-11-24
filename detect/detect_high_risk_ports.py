@@ -45,7 +45,7 @@ def detect_high_risk_ports(rows, config_dict):
     )
     
     # Get local networks
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
     
     # Get ignorelisted destinations if configured
     approved_destinations = set(config_dict.get("ApprovedHighRiskDestinations", "").split(","))

@@ -36,7 +36,7 @@ def detect_custom_tag(rows, config_dict):
         log_warn(logger, "[WARN] No tags specified in AlertOnCustomTag.")
         return
 
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
 
     log_info(logger, f"[INFO] Alerting on the following tags: {alert_tags}")
 

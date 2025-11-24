@@ -105,11 +105,7 @@ def process_netflow_packets():
             if tag_entries_json != "[]":
                 tag_entries = json.loads(tag_entries_json)
   
-            networks = config_dict.get('LocalNetworks', None)
-            LOCAL_NETWORKS = set()
-            if networks:
-                log_info(logger, f"[INFO] Local networks configured: {networks}")
-                LOCAL_NETWORKS = set(networks.split(','))
+            LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
 
             # Calculate broadcast addresses for all local networks
             broadcast_addresses = set()

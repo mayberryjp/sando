@@ -12,6 +12,37 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from init import *
 
 
+def get_routers(config_dict):
+    """
+    Extracts a set of router IP addresses from the LocalNetworks config entry.
+    Args:
+        config_dict (dict): Configuration dictionary containing 'LocalNetworks' as a JSON array.
+    Returns:
+        set: Set of router IP addresses.
+    """
+    raw = config_dict.get('LocalNetworks', '[]')
+    try:
+        scopes = json.loads(raw)
+        return {scope['router'] for scope in scopes if 'router' in scope and scope['router']}
+    except Exception as e:
+        logging.getLogger(__name__).error(f"[ERROR] Could not parse LocalNetworks for routers: {e}")
+        return set()
+
+def get_local_network_cidrs(config_dict):
+    """
+    Extracts a set of CIDR strings from the LocalNetworks config entry.
+    Args:
+        config_dict (dict): Configuration dictionary containing 'LocalNetworks' as a JSON array.
+    Returns:
+        set: Set of CIDR strings.
+    """
+    raw = config_dict.get('LocalNetworks', '[]')
+    try:
+        scopes = json.loads(raw)
+        return {scope['cidr'] for scope in scopes if 'cidr' in scope}
+    except Exception as e:
+        logging.getLogger(__name__).error(f"[ERROR] Could not parse LocalNetworks: {e}")
+        return set()
 
 
 def get_config_settings():

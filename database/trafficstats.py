@@ -70,7 +70,7 @@ def update_traffic_stats(rows, config_dict):
         log_error(logger, "[ERROR] Unable to connect to allflows database.")
         return
 
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
 
     try:
         cursor = conn.cursor()

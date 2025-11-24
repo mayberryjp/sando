@@ -32,7 +32,7 @@ def create_geolocation_db():
     logger = logging.getLogger(__name__)
 
     config_dict = get_config_settings()
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
 
     api_key = config_dict.get('MaxMindAPIKey', None)
 

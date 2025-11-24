@@ -31,7 +31,7 @@ def detect_port_scanning(rows, config_dict):
     log_info(logger, "[INFO] Started detecting port scanning activity")
 
     # Get configuration parameters
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
     port_threshold = int(config_dict.get("MaxPortsPerDestination", "15"))
 
     # Dictionary to track {(src_ip, dst_ip): {ports}}

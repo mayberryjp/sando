@@ -54,7 +54,7 @@ def detect_vpn_traffic(rows, config_dict):
     }
     
     # Get local networks
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
     
     # Get ignorelisted VPN servers if configured
     approved_vpn_servers = set(config_dict.get("ApprovedVpnServersList", "").split(","))

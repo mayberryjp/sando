@@ -33,7 +33,7 @@ def detect_dead_connections(config_dict):
     log_info(logger, f"[INFO] Started detecting unresponsive destinations")
 
     # Get local networks from the configuration
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
     dead_connections = get_dead_connections_from_database()
     ignorelist_entries = get_ignorelist()
     log_info(logger, f"[INFO] Found {len(dead_connections)} potential dead connections")

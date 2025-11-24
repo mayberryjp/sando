@@ -391,7 +391,7 @@ def main():
     ignorelist_entries = get_ignorelist()
     customtag_entries = get_custom_tags()
 
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
 
     # Calculate broadcast addresses for all local networks
     broadcast_addresses = set()

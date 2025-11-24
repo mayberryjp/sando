@@ -25,7 +25,7 @@ def local_flows_detection(rows, config_dict):
     """
     logger = logging.getLogger(__name__)
     ROUTER_LIST = set(config_dict['RouterIpAddresses'].split(','))
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
 
     log_info(logger,"[INFO] Detecting flows for the same local networks going through the router")
     for row in rows:

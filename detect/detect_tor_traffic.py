@@ -32,7 +32,7 @@ def detect_tor_traffic(rows, config_dict):
     log_info(logger,"[INFO] Started detecting traffic to tor nodes")
 
     # Get local networks
-    LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
     
     try:
         tor_rows = get_all_tor_nodes()

@@ -186,7 +186,7 @@ def insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol, s
             from database.configuration import get_config_settings
             from src.network import is_ip_in_range
             config_dict = get_config_settings()
-            LOCAL_NETWORKS = set(config_dict['LocalNetworks'].split(','))
+            LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
             if is_ip_in_range(src_ip, LOCAL_NETWORKS):
                 dst_ip = src_ip
                 src_ip = "*"

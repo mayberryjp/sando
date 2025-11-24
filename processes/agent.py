@@ -465,7 +465,7 @@ class NLPProcessor:
             # Extract key variables
             version = config_dict.get("Version", "Unknown")
             router_ip = config_dict.get("RouterIpAddress", "Not configured")
-            local_networks = config_dict.get("LocalNetworks", "")
+            local_networks = get_local_network_cidrs(config_dict)
             send_errors = config_dict.get("SendErrorsToCloudApi", 0)
             site_name = config_dict.get("SiteName", "Unknown Site")
             
