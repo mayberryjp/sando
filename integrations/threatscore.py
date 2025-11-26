@@ -74,40 +74,37 @@ def calculate_update_threat_scores():
             if not traffic_status.get(ip_address, False):
                 threat_score = -1
                 log_info(logger, f"[INFO] No traffic for {ip_address}, setting threat score to -1")
-            else:
-                # Get alert count for this IP
-                alert_count = alert_counts.get(ip_address, 0)
-                
-                # Calculate threat score (0-100 scale)
-                # We use a non-linear scaling to emphasize differences at lower counts
-                if alert_count == 0:
-                    threat_score = 0
+                success = update_localhost_threat_score(ip_address, threat_score)
+                if success:
+                    log_info(logger, f"[INFO] Updated threat score for {ip_address}: {threat_score} (no traffic)")
                 else:
-                    # Apply non-linear scaling that gives more weight to the first few alerts
-                    if alert_count < 5:
-                        # Low counts: 1 alert → 10, 2 alerts → 20, etc.
-                        threat_score = min(10 * alert_count, 100)
-                    elif alert_count < 20:
-                        # Medium counts: diminishing returns but still significant
-                        threat_score = min(40 + (alert_count - 5) * 2, 100)
-                    else:
-                        # High counts: slower increase
-                        threat_score = min(70 + (alert_count - 20) * 0.5, 100)
-                
-                # Round to integer
-                threat_score = round(threat_score)
-                log_info(logger, f"[DEBUG] Calculated threat score for {ip_address}: {threat_score} (based on {alert_count} alerts)")
+                    log_error(logger, f"[ERROR] Failed to update threat score for {ip_address}")
+                results[ip_address] = threat_score
+                continue  # Skip to next IP
+
+            # Get alert count for this IP
+            alert_count = alert_counts.get(ip_address, 0)
             
-            # Update the localhost's threat score in the database
+            # Calculate threat score (0-100 scale)
+            if alert_count == 0:
+                threat_score = 0
+            else:
+                if alert_count < 5:
+                    threat_score = min(10 * alert_count, 100)
+                elif alert_count < 20:
+                    threat_score = min(40 + (alert_count - 5) * 2, 100)
+                else:
+                    threat_score = min(70 + (alert_count - 20) * 0.5, 100)
+            threat_score = round(threat_score)
+            log_info(logger, f"[DEBUG] Calculated threat score for {ip_address}: {threat_score} (based on {alert_count} alerts)")
+        
             success = update_localhost_threat_score(ip_address, threat_score)
-            
             if success:
                 log_info(logger, f"[INFO] Updated threat score for {ip_address}: {threat_score} (based on {alert_count} alerts)")
             else:
                 log_error(logger, f"[ERROR] Failed to update threat score for {ip_address}")
-                
             results[ip_address] = threat_score
-            
+
         except Exception as e:
             log_error(logger, f"[ERROR] Error calculating threat score: {e}")
     
