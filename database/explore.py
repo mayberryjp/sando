@@ -86,12 +86,19 @@ def bulk_populate_master_flow_view():
         master_rows = []
         total_flows = len(allflows_rows)
         progress_step = max(1, total_flows // 20)  # Log progress every 2%
+        # Load localhosts DNS hostnames
+        tgt_conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
+        tgt_cursor = tgt_conn.cursor()
+        tgt_cursor.execute("SELECT ip_address, dns_hostname FROM localhosts")
+        localhosts_dns = {row[0]: row[1] for row in tgt_cursor.fetchall()}
+        disconnect_from_db(tgt_conn)
+
         for idx, row in enumerate(allflows_rows, 1):
             (flow_id, src_ip, dst_ip, src_port, dst_port, protocol, tags, flow_start, last_seen, packets, bytes_, times_seen) = row
             src_ip_int = ip_to_int(src_ip)
             dst_ip_int = ip_to_int(dst_ip)
-            src_dns = dnskeyvalue.get(src_ip) or ''
-            dst_dns = dnskeyvalue.get(dst_ip) or ''
+            src_dns = dnskeyvalue.get(src_ip) or localhosts_dns.get(src_ip, '')
+            dst_dns = dnskeyvalue.get(dst_ip) or localhosts_dns.get(dst_ip, '')
             src_country = lookup_geo(src_ip_int) if src_ip_int is not None else None
             dst_country = lookup_geo(dst_ip_int) if dst_ip_int is not None else None
             src_asn, src_isp = lookup_ipasn(src_ip_int) if src_ip_int is not None else (None, None)

@@ -577,7 +577,7 @@ if __name__ == "__main__":
             log_error(logging(__name__), "[ERROR] Failed to load configuration settings")
 
         if not config_dict.get('DhcpServer', 0):
-            log_info(logging, "[INFO] Sinkhole DNS is disabled in configuration. Exiting.")
+            log_info(logging, "[INFO] DhcpServer is disabled in configuration. Exiting.")
         else:
             try:
                 hosts = get_localhosts_all()
@@ -607,5 +607,5 @@ if __name__ == "__main__":
             except KeyboardInterrupt:
                 log_info(logging.getLogger(__name__), "[INFO] KeyboardInterrupt received, shutting down DHCP server.")
                 server.stop()
-                
+
         time.sleep(STARTUP_DELAY) 

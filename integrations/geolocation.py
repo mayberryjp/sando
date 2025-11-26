@@ -164,16 +164,9 @@ def create_geolocation_db():
         log_info(logger, f"[INFO] Adding LOCAL_NETWORKS to geolocation database...")
         local_networks_batch = []
 
-        for network in LOCAL_NETWORKS:
-            start_ip, end_ip, netmask = ip_network_to_range(network)
-            if start_ip is None:
-                continue
-            local_networks_batch.append((network, start_ip, end_ip, netmask, SITE))
-
-        log_info(logger, f"[INFO] Adding Other Networks to geolocation database...")
-
         # Handle OtherNetworks from config_dict (format: AZURE=192.168.60.0/24,FARM=192.168.230.0/24)
         other_networks_str = config_dict.get("OtherNetworks", "")
+        other_networks_set = set()
         if other_networks_str:
             for pair in other_networks_str.split(","):
                 if "=" in pair:
@@ -183,6 +176,17 @@ def create_geolocation_db():
                     start_ip, end_ip, netmask = ip_network_to_range(network)
                     if start_ip is not None:
                         local_networks_batch.append((network, start_ip, end_ip, netmask, site_name))
+                        other_networks_set.add(network)
+
+        for network in LOCAL_NETWORKS:
+            if network in other_networks_set:
+                continue  # Skip if already in other_networks
+            start_ip, end_ip, netmask = ip_network_to_range(network)
+            if start_ip is None:
+                continue
+            local_networks_batch.append((network, start_ip, end_ip, netmask, SITE))
+
+        log_info(logger, f"[INFO] Adding Other Networks to geolocation database...")
 
         # Process the local networks batch
         if local_networks_batch:
