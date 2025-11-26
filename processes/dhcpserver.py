@@ -570,45 +570,42 @@ if __name__ == "__main__":
     STARTUP_DELAY = 30
     time.sleep(STARTUP_DELAY)  # Wait a bit for startup
     logger = logging.getLogger(__name__)
-    config_dict = get_config_settings()
-    if not config_dict:
-        log_error(logging(__name__), "[ERROR] Failed to load configuration settings")
 
-    if not config_dict.get('SinkHoleDns', 0):
-        log_info(logging, "[INFO] Sinkhole DNS is disabled in configuration. Exiting.")
-    try:
-        cfg = get_config_settings() or {}
-    except Exception as e:
-        log_error(logging.getLogger(__name__), f"[ERROR] Could not load configuration: {e}")
-        cfg = {}
+    while True:
+        config_dict = get_config_settings()
+        if not config_dict:
+            log_error(logging(__name__), "[ERROR] Failed to load configuration settings")
 
-    # Get registered devices from localhosts database
-    try:
-        from database.localhosts import get_localhosts_all
-        hosts = get_localhosts_all()
-        # Build MAC -> IP mapping (lowercase MAC)
-        registered_devices = {
-            str(h.get("mac_address")).upper(): h.get("ip_address")
-            for h in hosts
-            if h.get("mac_address") and h.get("ip_address")
-        }
-        log_info(logging.getLogger(__name__), f"[INFO] Loaded {len(registered_devices)} registered devices from localhosts database")
-    except Exception as e:
-        log_error(logging.getLogger(__name__), f"[ERROR] Could not load registered devices from localhosts database: {e}")
-        registered_devices = {}
+        if not config_dict.get('DhcpServer', 0):
+            log_info(logging, "[INFO] Sinkhole DNS is disabled in configuration. Exiting.")
+        else:
+            try:
+                hosts = get_localhosts_all()
+                # Build MAC -> IP mapping (lowercase MAC)
+                registered_devices = {
+                    str(h.get("mac_address")).upper(): h.get("ip_address")
+                    for h in hosts
+                    if h.get("mac_address") and h.get("ip_address")
+                }
+                log_info(logging.getLogger(__name__), f"[INFO] Loaded {len(registered_devices)} registered devices from localhosts database")
+            except Exception as e:
+                log_error(logging.getLogger(__name__), f"[ERROR] Could not load registered devices from localhosts database: {e}")
+                registered_devices = {}
 
-    server = DHCPServer(
-        server_ip='10.2.50.2',
-        registered_devices={},  # Not used, but required by constructor
-        lease_time=86400,
-        listen_ip='0.0.0.0',
-        listen_port=67,
-        scopes=None
-    )
+            server = DHCPServer(
+                server_ip='10.2.50.2',
+                registered_devices={},  # Not used, but required by constructor
+                lease_time=86400,
+                listen_ip='0.0.0.0',
+                listen_port=67,
+                scopes=None
+            )
 
-    try:
-        server.start()
-        server.serve_forever()
-    except KeyboardInterrupt:
-        log_info(logging.getLogger(__name__), "[INFO] KeyboardInterrupt received, shutting down DHCP server.")
-        server.stop()
+            try:
+                server.start()
+                server.serve_forever()
+            except KeyboardInterrupt:
+                log_info(logging.getLogger(__name__), "[INFO] KeyboardInterrupt received, shutting down DHCP server.")
+                server.stop()
+                
+        time.sleep(STARTUP_DELAY) 
