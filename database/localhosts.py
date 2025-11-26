@@ -40,11 +40,11 @@ def get_localhost_by_ip(ip_address):
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
                    lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link
             FROM localhosts
-            WHERE ip_address = ?
+            WHERE ip_address = ? OR mac_address = ?
         """
         
         # Execute the query directly
-        cursor.execute(query, (ip_address,))
+        cursor.execute(query, (ip_address,ip_address))
         
         # Fetch the result
         row = cursor.fetchone()
@@ -178,8 +178,8 @@ def update_localhosts(ip_address, mac_vendor=None, dhcp_hostname=None, dns_hostn
                 lease_hwaddr = COALESCE(?, lease_hwaddr),
                 lease_clientid = COALESCE(?, lease_clientid),
                 lease_hostname = COALESCE(?, lease_hostname)
-            WHERE ip_address = ?
-        """, (mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint, lease_hwaddr, lease_clientid, lease_hostname, ip_address))
+            WHERE ip_address = ? or mac_address = ?
+        """, (mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint, lease_hwaddr, lease_clientid, lease_hostname, ip_address, ip_address))
         log_info(logger, f"[INFO] Discovery updated record for IP: {ip_address}")
 
         conn.commit()
@@ -244,7 +244,7 @@ def insert_localhost_basic(ip_address, original_flow=None):
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
 
-def classify_localhost(ip_address, description, icon, management_link, mac_address=None):
+def classify_localhost(ip_address, description, icon, management_link, mac_address):
     """
     Classify a localhost by setting its description, icon, acknowledged status, management link, and optionally mac_address.
 
@@ -268,18 +268,13 @@ def classify_localhost(ip_address, description, icon, management_link, mac_addre
 
         cursor = conn.cursor()
 
-        if mac_address:
-            cursor.execute("""
-                UPDATE localhosts
-                SET local_description = ?, icon = ?, acknowledged = 1, management_link = ?, mac_address = ?
-                WHERE ip_address = ?
-            """, (description, icon, management_link, mac_address, ip_address))
-        else:
-            cursor.execute("""
-                UPDATE localhosts
-                SET local_description = ?, icon = ?, acknowledged = 1, management_link = ?
-                WHERE ip_address = ?
-            """, (description, icon, management_link, ip_address))
+        log_info(logger,f"[INFO] Classifying localhost {ip_address} as '{description}' with icon '{icon}'" +
+                        (f" and MAC '{mac_address}'" if mac_address else ""))
+        cursor.execute("""
+            UPDATE localhosts
+            SET local_description = ?, icon = ?, acknowledged = 1, management_link = ?, mac_address = ?, ip_address = ?
+            WHERE ip_address = ? or mac_address = ?
+        """, (description, icon, management_link, mac_address, ip_address, ip_address, mac_address))
 
         if cursor.rowcount > 0:
             conn.commit()
@@ -322,7 +317,7 @@ def delete_localhost_database(ip_address):
         cursor = conn.cursor()
         
         # Delete the localhost record
-        cursor.execute("DELETE FROM localhosts WHERE ip_address = ?", (ip_address,))
+        cursor.execute("DELETE FROM localhosts WHERE ip_address = ? or mac_address = ?", (ip_address,ip_address))
         localhost_deleted = cursor.rowcount > 0
         if localhost_deleted:
             conn.commit()
@@ -368,102 +363,79 @@ def delete_localhost_database(ip_address):
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
 
-def update_localhost_threat_score(ip_address, threat_score):
+def update_localhost_threat_score(identifier, threat_score):
     """
-    Update the threat score for a localhost in the database.
-    
-    Args:
-        ip_address (str): The IP address of the localhost to update
-        threat_score (float): The threat score value to set (higher values indicate higher risk)
-        
-    Returns:
-        bool: True if the update was successful, False otherwise
+    Update the threat score for a localhost in the database by IP address or MAC address.
     """
     logger = logging.getLogger(__name__)
-    
     try:
-        # Connect to the localhosts database
         conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return False
 
         cursor = conn.cursor()
-        
         # First check if the localhost exists
-        cursor.execute("SELECT 1 FROM localhosts WHERE ip_address = ?", (ip_address,))
+        cursor.execute("SELECT 1 FROM localhosts WHERE ip_address = ? OR mac_address = ?", (identifier, identifier))
         if not cursor.fetchone():
-            log_warn(logger, f"[WARN] No localhost found with IP {ip_address} to update threat score")
+            log_warn(logger, f"[WARN] No localhost found with IP or MAC {identifier} to update threat score")
             return False
-        
-        # Update the threat_score for the specified localhost
+
         cursor.execute("""
             UPDATE localhosts
             SET threat_score = ?
-            WHERE ip_address = ?
-        """, (threat_score, ip_address))
-        
+            WHERE ip_address = ? OR mac_address = ?
+        """, (threat_score, identifier, identifier))
+
         conn.commit()
-        log_info(logger, f"[INFO] Successfully updated threat score for {ip_address} to {threat_score}")
+        log_info(logger, f"[INFO] Successfully updated threat score for {identifier} to {threat_score}")
         return True
-        
+
     except sqlite3.Error as e:
-        log_error(logger, f"[ERROR] Database error while updating threat score for {ip_address}: {e}")
+        log_error(logger, f"[ERROR] Database error while updating threat score for {identifier}: {e}")
         return False
     except Exception as e:
-        log_error(logger, f"[ERROR] Unexpected error while updating threat score for {ip_address}: {e}")
+        log_error(logger, f"[ERROR] Unexpected error while updating threat score for {identifier}: {e}")
         return False
     finally:
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
 
-def update_localhost_alerts_enabled(ip_address, alerts_enabled):
+def update_localhost_alerts_enabled(identifier, alerts_enabled):
     """
-    Update the alerts_enabled flag for a localhost in the database.
-    
-    Args:
-        ip_address (str): The IP address of the localhost to update
-        alerts_enabled (bool): Whether alerts should be enabled for this localhost
-        
-    Returns:
-        bool: True if the update was successful, False otherwise
+    Update the alerts_enabled flag for a localhost in the database by IP address or MAC address.
     """
     logger = logging.getLogger(__name__)
-    
     try:
-        # Connect to the localhosts database
         conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return False
 
         cursor = conn.cursor()
-        
         # First check if the localhost exists
-        cursor.execute("SELECT 1 FROM localhosts WHERE ip_address = ?", (ip_address,))
+        cursor.execute("SELECT 1 FROM localhosts WHERE ip_address = ? OR mac_address = ?", (identifier, identifier))
         if not cursor.fetchone():
-            log_warn(logger, f"[WARN] No localhost found with IP {ip_address} to update alerts_enabled flag")
+            log_warn(logger, f"[WARN] No localhost found with IP or MAC {identifier} to update alerts_enabled flag")
             return False
-        
-        # Convert boolean to integer (SQLite doesn't have a boolean type)
+
         alerts_enabled_int = 1 if alerts_enabled else 0
-        
-        # Update the alerts_enabled flag for the specified localhost
+
         cursor.execute("""
             UPDATE localhosts
             SET alerts_enabled = ?
-            WHERE ip_address = ?
-        """, (alerts_enabled_int, ip_address))
-        
+            WHERE ip_address = ? OR mac_address = ?
+        """, (alerts_enabled_int, identifier, identifier))
+
         conn.commit()
-        log_info(logger, f"[INFO] Successfully updated alerts_enabled for {ip_address} to {alerts_enabled}")
+        log_info(logger, f"[INFO] Successfully updated alerts_enabled for {identifier} to {alerts_enabled}")
         return True
-        
+
     except sqlite3.Error as e:
-        log_error(logger, f"[ERROR] Database error while updating alerts_enabled for {ip_address}: {e}")
+        log_error(logger, f"[ERROR] Database error while updating alerts_enabled for {identifier}: {e}")
         return False
     except Exception as e:
-        log_error(logger, f"[ERROR] Unexpected error while updating alerts_enabled for {ip_address}: {e}")
+        log_error(logger, f"[ERROR] Unexpected error while updating alerts_enabled for {identifier}: {e}")
         return False
     finally:
         if 'conn' in locals() and conn:
@@ -543,48 +515,148 @@ def get_average_threat_score():
     finally:
         disconnect_from_db(conn)
 
-def insert_localhost_basic_by_mac(mac_address, original_flow=None):
+def insert_localhost_basic_by_mac(mac_address):
     """
-    Insert a new basic localhost record into the database using MAC address.
-
-    Args:
-        mac_address (str): The MAC address of the localhost (required)
-        original_flow (str/dict): The original flow information as a JSON string or dict (optional)
-
-    Returns:
-        bool: True if the insertion was successful, False otherwise
+    Insert a new basic localhost record into the database using MAC address only,
+    but only if it does not already exist.
     """
     logger = logging.getLogger(__name__)
-
     try:
-        # Connect to the localhosts database
         conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return False
 
         cursor = conn.cursor()
+        # Check if MAC already exists
+        cursor.execute("SELECT 1 FROM localhosts WHERE mac_address = ?", (mac_address,))
+        if cursor.fetchone():
+            log_info(logger, f"[INFO] MAC address {mac_address} already exists in localhosts database. No insert performed.")
+            return False
 
-        # Insert the localhost record
         cursor.execute(
             "INSERT INTO localhosts (mac_address, first_seen) VALUES (?, datetime('now', 'localtime'))",
-            (mac_address, original_flow)
+            (mac_address,)
         )
-
         conn.commit()
         log_info(logger, f"[INFO] Successfully inserted basic localhost record for MAC: {mac_address}")
         return True
 
-    except sqlite3.IntegrityError:
-        # Handle case where MAC already exists
-        #log_warn(logger, f"[WARN] Localhost with MAC: {mac_address} already exists in database")
-        return False
-    except sqlite3.Error as e:
-        log_error(logger, f"[ERROR] Database error while inserting localhost {mac_address}: {e}")
-        return False
     except Exception as e:
-        log_error(logger, f"[ERROR] Unexpected error while inserting localhost {mac_address}: {e}")
+        log_error(logger, f"[ERROR] Database error while inserting localhost {mac_address}: {e}")
         return False
     finally:
         if 'conn' in locals() and conn:
             disconnect_from_db(conn)
+
+def get_localhost(identifier):
+    """
+    Retrieve complete details for a specific localhost record by IP address or MAC address.
+    Args:
+        identifier (str): The IP address or MAC address of the localhost to retrieve.
+    Returns:
+        dict: A dictionary containing all columns for the specified localhost,
+              or None if the localhost is not found or an error occurs.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to localhosts database.")
+            return None
+
+        cursor = conn.cursor()
+        query = """
+            SELECT ip_address, first_seen, original_flow, 
+                   mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
+                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link
+            FROM localhosts
+            WHERE ip_address = ? OR mac_address = ?
+        """
+        cursor.execute(query, (identifier, identifier))
+        row = cursor.fetchone()
+        if not row:
+            log_info(logger, f"[INFO] No localhost found with IP or MAC: {identifier}")
+            return None
+
+        columns = [column[0] for column in cursor.description]
+        return dict(zip(columns, row))
+    except Exception as e:
+        log_error(logger, f"[ERROR] Error retrieving localhost: {e}")
+        return None
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)
+
+def delete_localhost(identifier):
+    """
+    Delete a localhost record from the database using IP address or MAC address.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to localhosts database.")
+            return False
+
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM localhosts WHERE ip_address = ? OR mac_address = ?", (identifier, identifier))
+        localhost_deleted = cursor.rowcount > 0
+        if localhost_deleted:
+            conn.commit()
+            log_info(logger, f"[INFO] Successfully deleted localhost with IP or MAC: {identifier}")
+        else:
+            log_warn(logger, f"[WARN] No localhost found with IP or MAC: {identifier} to delete")
+        return localhost_deleted
+
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while deleting localhost {identifier}: {e}")
+        return False
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while deleting localhost {identifier}: {e}")
+        return False
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)
+
+def update_localhosts(identifier, mac_vendor=None, dhcp_hostname=None, dns_hostname=None, os_fingerprint=None, lease_hostname=None, lease_hwaddr=None, lease_clientid=None):
+    """
+    Update a record in the localhosts database for a given IP address or MAC address.
+
+    Args:
+        identifier (str): The IP address or MAC address to update.
+        Other fields: Optional fields to update.
+
+    Returns:
+        bool: True if the operation was successful, False otherwise.
+    """
+    logger = logging.getLogger(__name__)
+    conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
+
+    if not conn:
+        log_error(logger, "[ERROR] Unable to connect to localhosts database")
+        return False
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE localhosts
+            SET 
+                mac_vendor = COALESCE(?, mac_vendor),
+                dhcp_hostname = COALESCE(?, dhcp_hostname),
+                dns_hostname = COALESCE(?, dns_hostname),
+                os_fingerprint = COALESCE(?, os_fingerprint),
+                lease_hwaddr = COALESCE(?, lease_hwaddr),
+                lease_clientid = COALESCE(?, lease_clientid),
+                lease_hostname = COALESCE(?, lease_hostname)
+            WHERE ip_address = ? OR mac_address = ?
+        """, (mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint, lease_hwaddr, lease_clientid, lease_hostname, identifier, identifier))
+        log_info(logger, f"[INFO] Discovery updated record for IP or MAC: {identifier}")
+
+        conn.commit()
+        return True
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Failed to update localhosts database: {e}")
+        return False
+    finally:
+        disconnect_from_db(conn)

@@ -59,6 +59,7 @@ def setup_localhosts_routes(app):
             icon = data.get('icon')
             management_link = data.get('management_link')
             mac_address = data.get('mac_address')  # <-- Accept mac_address
+            ip_address = data.get('ip_address')  # Allow updating IP address if provided
 
             try:
                 # Update the localhost classification in the database
