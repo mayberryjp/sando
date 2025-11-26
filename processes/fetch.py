@@ -132,14 +132,6 @@ def main():
             log_error(logger, f"[ERROR] Error during data fetch: {e}")
 
         try: 
-            if config_dict.get('GeolocationFlowsDetection',0) > 0:
-                log_info(logger, "[INFO] Fetching and updating geolocation data..")
-                create_geolocation_db()
-                log_info(logger, "[INFO] Geolocation update finished.")
-        except Exception as e:
-            log_error(logger, f"[ERROR] Error during data fetch: {e}")
-
-        try: 
             if config_dict.get('ReputationListDetection', 0) > 0:
                 log_info(logger, "[INFO] Fetching and updating reputation list...")
                 import_reputation_list(config_dict)
@@ -155,6 +147,10 @@ def main():
         except Exception as e:
             log_error(logger, f"[ERROR] Error during data fetch: {e}")
 
+        log_info(logger, "[INFO] Fetching and updating geolocation data..")
+        create_geolocation_db()
+        log_info(logger, "[INFO] Geolocation update finished.")
+            
         log_info(logger,"[INFO] Creating DNS Key Value Pairs..")
         create_dns_key_value()
         log_info(logger, "[INFO] DNS Key Value Pairs creation finished.")
