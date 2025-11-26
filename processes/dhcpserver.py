@@ -567,8 +567,16 @@ class DHCPServer:
 
 
 if __name__ == "__main__":
+    STARTUP_DELAY = 30
+    time.sleep(STARTUP_DELAY)  # Wait a bit for startup
+    logger = logging.getLogger(__name__)
+    config_dict = get_config_settings()
+    if not config_dict:
+        log_error(logging(__name__), "[ERROR] Failed to load configuration settings")
+
+    if not config_dict.get('SinkHoleDns', 0):
+        log_info(logging, "[INFO] Sinkhole DNS is disabled in configuration. Exiting.")
     try:
-        from database.configuration import get_config_settings
         cfg = get_config_settings() or {}
     except Exception as e:
         log_error(logging.getLogger(__name__), f"[ERROR] Could not load configuration: {e}")

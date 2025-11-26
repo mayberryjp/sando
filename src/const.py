@@ -1,4 +1,4 @@
-VERSION="v0.3.914"
+VERSION="v0.3.922"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -280,7 +280,6 @@ CONST_INSTALL_CONFIGS = [
     ('ApprovedNtpStratumServersList',''),
     ('BannedCountryList','North Korea,Iran,Russia,Ukraine,Georgia,Armenia,Azerbaijan,Belarus,Syria,Venezuela,Cuba,Myanmar,Afghanistan'),
     ('LocalNetworks',''),
-    ('RouterIpAddresses',''),
     ('ProcessingInterval','60'),
     ('TelegramBotToken',''),
     ('TelegramChatId',''),
@@ -336,6 +335,7 @@ CONST_INSTALL_CONFIGS = [
     ('PiHoleDnsFetchInterval', '3600'),
     ('TrafficStatsPurgeIntervalDays','31'),
     ('SinkHoleDns', '0'),
+    ('DhcpServer', '0'),
     ('DnsResponseLookupResolver',''),
     ('PerformDnsResponseLookupsForInvestigations','0'),
     ('ProcessRunInterval','60'),

@@ -268,18 +268,21 @@ def classify_localhost(ip_address, description, icon, management_link, mac_addre
 
         cursor = conn.cursor()
 
+        # Ensure MAC address is saved as uppercase
+        mac_address_upper = mac_address.upper() if mac_address else None
+
         log_info(logger,f"[INFO] Classifying localhost {ip_address} as '{description}' with icon '{icon}'" +
-                        (f" and MAC '{mac_address}'" if mac_address else ""))
+                        (f" and MAC '{mac_address_upper}'" if mac_address_upper else ""))
         cursor.execute("""
             UPDATE localhosts
             SET local_description = ?, icon = ?, acknowledged = 1, management_link = ?, mac_address = ?, ip_address = ?
             WHERE ip_address = ? or mac_address = ?
-        """, (description, icon, management_link, mac_address, ip_address, ip_address, mac_address))
+        """, (description, icon, management_link, mac_address_upper, ip_address, ip_address, mac_address_upper))
 
         if cursor.rowcount > 0:
             conn.commit()
             log_info(logger, f"[INFO] Successfully classified localhost {ip_address} as '{description}' with icon '{icon}'" +
-                              (f" and MAC '{mac_address}'" if mac_address else ""))
+                              (f" and MAC '{mac_address_upper}'" if mac_address_upper else ""))
             return True
         else:
             log_warn(logger, f"[WARN] No localhost found with IP {ip_address} to classify")

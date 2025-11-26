@@ -15,7 +15,6 @@ CONST_DEFAULT_CONFIGS = [
     ('ApprovedNtpStratumServersList',''),
     ('BannedCountryList','China,North Korea,Iran,Russia,Ukraine,Georgia,Armenia,Azerbaijan,Belarus,Syria,Venezuela,Cuba,Myanmar,Afghanistan'),
     ('LocalNetworks',''),
-    ('RouterIpAddresses',''),
     ('ProcessingInterval','60'),
     ('TelegramBotToken',''),
     ('TelegramChatId',''),
@@ -69,6 +68,7 @@ CONST_DEFAULT_CONFIGS = [
     ('PiHoleDnsFetchInterval', '3600'),
     ('TrafficStatsPurgeIntervalDays','31'),
     ('SinkHoleDns', '0'),
+    ('DhcpServer', '1'),
     ('DnsResponseLookupResolver',''),
     ('PerformDnsResponseLookupsForInvestigations','0')
 ]
