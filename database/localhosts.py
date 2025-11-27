@@ -683,17 +683,18 @@ def update_localhost_last_dhcp_discover(mac_address):
             return False
 
         cursor = conn.cursor()
+        mac_address_upper = mac_address.upper()
         cursor.execute("""
             UPDATE localhosts
             SET last_dhcp_discover = datetime('now', 'localtime')
             WHERE mac_address = ?
-        """, (mac_address,))
+        """, (mac_address_upper,))
         if cursor.rowcount > 0:
             conn.commit()
-            log_info(logger, f"[INFO] Updated last_dhcp_discover for MAC: {mac_address}")
+            log_info(logger, f"[INFO] Updated last_dhcp_discover for MAC: {mac_address_upper}")
             return True
         else:
-            log_warn(logger, f"[WARN] No localhost found with MAC: {mac_address} to update last_dhcp_discover")
+            log_warn(logger, f"[WARN] No localhost found with MAC: {mac_address_upper} to update last_dhcp_discover")
             return False
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while updating last_dhcp_discover for MAC {mac_address}: {e}")
