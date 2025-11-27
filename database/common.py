@@ -214,7 +214,7 @@ def migrate_configurations_schema14_to_schema15():
 
     try:
         # Step 1: Get all rows from localhosts in CONSOLIDATED_DB
-        conn_consolidated = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn_consolidated = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
         if not conn_consolidated:
             log_error(logger, "[ERROR] Failed to connect to CONSOLIDATED_DB")
             return False
