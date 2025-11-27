@@ -141,6 +141,7 @@ def setup_localhosts_routes(app):
                     "icon": host_record[13],
                     "local_description": host_record[12],
                     "first_seen": host_record[1],
+                    "last_dhcp_discover": host_record[18]
                 }
                 
                 response.content_type = 'application/json'
