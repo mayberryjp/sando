@@ -128,6 +128,11 @@ def update_database_schema(current_version, target_version):
             migrate_configurations_schema13_to_schema14()
            # delete_all_records(CONST_PERFORMANCE_DB, "dbperformance")
 
+        if current_version_int < 15:  #RESUME HERE #TODO: Implement migration logic
+            log_info(logger, "[INFO] Version is less than 15, migrating localhosts to dedicated configuration database")
+            migrate_configurations_schema14_to_schema15()
+           # delete_all_records(CONST_PERFORMANCE_DB, "dbperformance")
+
         return True
         
     except ValueError as e:
@@ -192,6 +197,64 @@ def migrate_configurations_schema13_to_schema14():
             disconnect_from_db(conn_consolidated)
         if 'conn_config' in locals() and conn_config:
             disconnect_from_db(conn_config)
+
+
+
+
+def migrate_configurations_schema14_to_schema15():
+    """
+    Migrates all rows from the localhosts table in CONSOLIDATED_DB to LOCALHOSTS_DB.
+    1. Gets all rows from localhosts in CONSOLIDATED_DB
+    2. Deletes the localhosts table in CONSOLIDATED_DB
+    3. Creates a new localhosts table in LOCALHOSTS_DB
+    4. Inserts all rows into the new table in LOCALHOSTS_DB
+    """
+    logger = logging.getLogger(__name__)
+    log_info(logger, "[INFO] Starting localhost migration from CONSOLIDATED_DB to LOCALHOSTS_DB" )
+
+    try:
+        # Step 1: Get all rows from localhosts in CONSOLIDATED_DB
+        conn_consolidated = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        if not conn_consolidated:
+            log_error(logger, "[ERROR] Failed to connect to CONSOLIDATED_DB")
+            return False
+
+        cursor = conn_consolidated.cursor()
+        cursor.execute("SELECT * FROM localhosts")
+        rows = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+
+        # Step 2: Delete the localhosts table in CONSOLIDATED_DB
+        delete_table(CONST_CONSOLIDATED_DB, "localhosts")
+
+        # Step 3: Create new localhosts table in LOCALHOSTS_DB
+        conn_localhosts = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        if not conn_localhosts:
+            log_error(logger, "[ERROR] Failed to connect to LOCALHOSTS_DB")
+            return False
+
+        # Step 4: Insert all rows into the new table in LOCALHOSTS_DB
+        cursor_localhosts = conn_localhosts.cursor()
+        placeholders = ", ".join(["?"] * len(columns))
+        insert_sql = f"INSERT INTO localhosts ({', '.join(columns)}) VALUES ({placeholders})"
+        cursor_localhosts.executemany(insert_sql, rows)
+        conn_localhosts.commit()
+
+        log_info(logger, f"[INFO] Migrated {len(rows)} localhost entries into LOCALHOSTS_DB")
+        disconnect_from_db(conn_localhosts)
+        return True
+
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error during localhost migration: {e}")
+        return False
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error during localhost migration: {e}")
+        return False
+    finally:
+        if 'conn_consolidated' in locals() and conn_consolidated:
+            disconnect_from_db(conn_consolidated)
+        if 'conn_localhosts' in locals() and conn_localhosts:
+            disconnect_from_db(conn_localhosts)
 
 
 def store_site_name(site_name):
@@ -406,7 +469,7 @@ def collect_database_counts():
             log_error(logger, "[ERROR] Unable to connect to alerts database")
 
         # Connect to the localhosts database
-        conn_localhosts = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
+        conn_localhosts = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
         if conn_localhosts:
             cursor = conn_localhosts.cursor()
             # Count entries in localhosts

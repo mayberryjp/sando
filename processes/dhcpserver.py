@@ -385,6 +385,10 @@ class DHCPServer:
     def _handle_discover(self, packet, addr):
         """Handle DHCP DISCOVER message."""
         mac = packet['mac']
+        try:
+            update_localhost_last_dhcp_discover(mac)
+        except Exception as e:
+            log_error(self.logger, f"[ERROR] Failed to update last_dhcp_discover for {mac}: {e}")
         log_info(self.logger, f"[INFO] DHCP DISCOVER from {mac} via {addr}")
 
         assigned_ip = self._get_registered_ip(mac)
@@ -416,6 +420,12 @@ class DHCPServer:
     def _handle_request(self, packet, addr):
         """Handle DHCP REQUEST message."""
         mac = packet['mac']
+
+        try:
+            update_localhost_last_dhcp_discover(mac)
+        except Exception as e:
+            log_error(self.logger, f"[ERROR] Failed to update last_dhcp_discover for {mac}: {e}")
+
         requested_ip = None
         if DHCP_OPTION_REQUESTED_IP in packet['options']:
             requested_ip = self._bytes_to_ip(packet['options'][DHCP_OPTION_REQUESTED_IP])
@@ -608,4 +618,4 @@ if __name__ == "__main__":
                 log_info(logging.getLogger(__name__), "[INFO] KeyboardInterrupt received, shutting down DHCP server.")
                 server.stop()
 
-        time.sleep(STARTUP_DELAY) 
+        time.sleep(STARTUP_DELAY)

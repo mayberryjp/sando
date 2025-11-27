@@ -49,7 +49,8 @@ from src.const import (
     CONST_API_LISTEN_ADDRESS,
     CONST_API_LISTEN_PORT,
     CONST_DATABASE_SCHEMA_VERSION,
-    CONST_CONFIGURATION_DB
+    CONST_CONFIGURATION_DB,
+    CONST_LOCALHOSTS_DB
 )
 
 from src.network import (
@@ -157,7 +158,8 @@ from database.localhosts import (
     update_localhost_threat_score,
     update_localhost_alerts_enabled,
     get_average_threat_score,
-    insert_localhost_basic_by_mac
+    insert_localhost_basic_by_mac,
+    update_localhost_last_dhcp_discover
 )
 
 from database.allflows import (

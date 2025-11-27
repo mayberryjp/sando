@@ -1,4 +1,4 @@
-VERSION="v0.3.941"
+VERSION="v0.3.967"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -9,12 +9,13 @@ CONST_CONSOLIDATED_DB = "/database/consolidated.db"
 CONST_CONFIGURATION_DB = "/database/configuration.db"
 CONST_PERFORMANCE_DB= "/database/performance.db"
 CONST_EXPLORE_DB= "/database/explore.db"
+CONST_LOCALHOSTS_DB="/database/localhosts.db"
 #CONST_TEST_SOURCE_DB = ['/database/test_source_1.db','/database/test_source_2.db']
 CONST_TEST_SOURCE_DB = ['/database/test_source_1.db']
 CONST_SITE= 'TESTPPE'
 CONST_LINK_LOCAL_RANGE = ["169.254.0.0/16"]
 CONST_REINITIALIZE_DB = 0
-CONST_DATABASE_SCHEMA_VERSION=14
+CONST_DATABASE_SCHEMA_VERSION=15
 CONST_CREATE_DBPERFORMANCE_SQL='''
             CREATE TABLE IF NOT EXISTS dbperformance (
                 id INTEGER PRIMARY KEY,
@@ -185,7 +186,8 @@ CONST_CREATE_LOCALHOSTS_SQL = """
         threat_score INTEGER DEFAULT 1, -- New column for threat score
         alerts_enabled INTEGER DEFAULT 1,
         management_link TEXT,
-        last_seen TEXT -- New column for management link
+        last_seen TEXT,
+        last_dhcp_discover TEXT
     )
 """
 

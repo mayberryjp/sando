@@ -22,7 +22,7 @@ def summarize_alerts_by_ip_last_seen():
             of alerts for each one-hour interval, sorted from oldest to most recent.
     """
     logger = logging.getLogger(__name__)
-    db_name = CONST_CONSOLIDATED_DB
+    db_name = CONST_LOCALHOSTS_DB
     conn = connect_to_db(db_name, "alerts")
     if not conn:
         log_error(logger, f"Unable to connect to the database: {db_name}")
@@ -114,7 +114,7 @@ def summarize_alerts_by_ip():
             of alerts for each one-hour interval, sorted from oldest to most recent.
     """
     logger = logging.getLogger(__name__)
-    db_name = CONST_CONSOLIDATED_DB
+    db_name = CONST_LOCALHOSTS_DB
     conn = connect_to_db(db_name, "alerts")
     if not conn:
         log_error(logger, f"Unable to connect to the database: {db_name}")

@@ -53,6 +53,7 @@ if __name__ == "__main__":
         log_info(logger, f"[INFO] No site-specific configuration found at {site_config_path}. This is OK. ")
 
     create_table(CONST_CONFIGURATION_DB, CONST_CREATE_CONFIG_SQL, "configuration")
+    create_table(CONST_LOCALHOSTS_DB, CONST_CREATE_LOCALHOSTS_SQL, "localhosts")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_SERVICES_SQL, "services")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
     create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_CONFIG_SQL, "configuration")

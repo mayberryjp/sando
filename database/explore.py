@@ -87,7 +87,7 @@ def bulk_populate_master_flow_view():
         total_flows = len(allflows_rows)
         progress_step = max(1, total_flows // 20)  # Log progress every 2%
         # Load localhosts DNS hostnames
-        tgt_conn = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
+        tgt_conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
         tgt_cursor = tgt_conn.cursor()
         tgt_cursor.execute("SELECT ip_address, dns_hostname FROM localhosts")
         localhosts_dns = {row[0]: row[1] for row in tgt_cursor.fetchall()}
