@@ -114,35 +114,32 @@ def summarize_alerts_by_ip():
             of alerts for each one-hour interval, sorted from oldest to most recent.
     """
     logger = logging.getLogger(__name__)
-    db_name = CONST_LOCALHOSTS_DB
-    conn = connect_to_db(db_name, "alerts")
-    if not conn:
-        log_error(logger, f"Unable to connect to the database: {db_name}")
-        return {"error": "Unable to connect to the database"}
-
-    cursor = conn.cursor()
     intervals = 12
 
+    # Step 1: Get all IPs from localhosts database
     try:
-        # Get the current time and calculate the start time (12 hours ago)
+        conn_localhosts = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        if not conn_localhosts:
+            log_error(logger, "[ERROR] Unable to connect to localhosts database.")
+            return {"error": "Unable to connect to localhosts database"}
+        cursor_localhosts = conn_localhosts.cursor()
+        cursor_localhosts.execute("SELECT DISTINCT ip_address FROM localhosts")
+        all_ips_rows = cursor_localhosts.fetchall()
+        all_ips = [row[0] for row in all_ips_rows]
+        disconnect_from_db(conn_localhosts)
+    except Exception as e:
+        log_error(logger, f"[ERROR] Error getting IPs from localhosts: {e}")
+        return {"error": str(e)}
+
+    # Step 2: Get alerts from alerts database
+    try:
+        conn_alerts = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        if not conn_alerts:
+            log_error(logger, "[ERROR] Unable to connect to alerts database.")
+            return {"error": "Unable to connect to alerts database"}
+        cursor_alerts = conn_alerts.cursor()
         now = datetime.now()
         start_time = now - timedelta(hours=intervals)
-
-        # First, get all unique IP addresses with alerts in the time period
-        ip_query = """
-            SELECT DISTINCT ip_address 
-            FROM localhosts
-        """
-        
-        all_ips_rows, ip_query_time = run_timed_query(
-            cursor, 
-            ip_query,
-            description="summarize_alerts_by_ip_select_distinct_ips"
-        )
-        
-        all_ips = [row[0] for row in all_ips_rows]
-        
-        # Query to fetch alerts within the last 12 hours
         alerts_query = """
             SELECT ip_address, strftime('%Y-%m-%d %H:00:00', first_seen) as hour, COUNT(*)
             FROM alerts
@@ -150,55 +147,38 @@ def summarize_alerts_by_ip():
             GROUP BY ip_address, hour
             ORDER BY ip_address, hour
         """
-        
-        alerts_by_hour_rows, alerts_query_time = run_timed_query(
-            cursor, 
-            alerts_query,
-            (start_time.strftime('%Y-%m-%d %H:%M:%S'),),
-            description="summarize_alerts_by_ip"
-        )
-        
-        disconnect_from_db(conn)
-
-        # Generate all hour intervals for the past 12 hours
-        hour_intervals = []
-        for i in range(intervals):
-            interval_time = now - timedelta(hours=intervals-i-1)
-            hour_intervals.append(interval_time.strftime('%Y-%m-%d %H:00:00'))
-
-        # Initialize the result dictionary with all IPs and all hours
-        result = {}
-        for ip in all_ips:
-            result[ip] = {"alert_intervals": [0] * intervals}
-            
-        # Fill in the actual alert counts where they exist
-        for row in alerts_by_hour_rows:
-            ip_address = row[0]
-            hour = row[1]
-            count = row[2]
-            
-            # Only process IPs that are in our all_ips list (from localhosts)
-            if ip_address in all_ips:
-                # Find which interval this hour belongs to
-                try:
-                    hour_index = hour_intervals.index(hour)
-                    result[ip_address]["alert_intervals"][hour_index] = count
-                except ValueError:
-                    # This shouldn't happen if our hour generation is correct
-                    log_warn(logger, f"Hour {hour} not found in generated intervals")
-
-        total_time = ip_query_time + alerts_query_time
-        log_info(logger, f"[INFO] Generated alert summary for {len(all_ips)} IPs in {total_time:.2f} ms " +
-                         f"(IP query: {ip_query_time:.2f} ms, Alerts query: {alerts_query_time:.2f} ms)")
-        return result
-
-    except sqlite3.Error as e:
-        disconnect_from_db(conn)
-        log_error(logger, f"Error summarizing alerts: {e}")
-        return {"error": str(e)}
+        cursor_alerts.execute(alerts_query, (start_time.strftime('%Y-%m-%d %H:%M:%S'),))
+        alerts_by_hour_rows = cursor_alerts.fetchall()
+        disconnect_from_db(conn_alerts)
     except Exception as e:
-        log_error(logger, f"Unexpected error: {e}")
+        log_error(logger, f"[ERROR] Error getting alerts from alerts database: {e}")
         return {"error": str(e)}
+
+    # Step 3: Generate all hour intervals for the past 12 hours
+    hour_intervals = []
+    for i in range(intervals):
+        interval_time = now - timedelta(hours=intervals-i-1)
+        hour_intervals.append(interval_time.strftime('%Y-%m-%d %H:00:00'))
+
+    # Step 4: Initialize the result dictionary with all IPs and all hours
+    result = {}
+    for ip in all_ips:
+        result[ip] = {"alert_intervals": [0] * intervals}
+
+    # Step 5: Fill in the actual alert counts where they exist
+    for row in alerts_by_hour_rows:
+        ip_address = row[0]
+        hour = row[1]
+        count = row[2]
+        if ip_address in all_ips:
+            try:
+                hour_index = hour_intervals.index(hour)
+                result[ip_address]["alert_intervals"][hour_index] = count
+            except ValueError:
+                log_warn(logger, f"Hour {hour} not found in generated intervals")
+
+    log_info(logger, f"[INFO] Generated alert summary for {len(all_ips)} IPs")
+    return result
 
 def get_hourly_alerts_summary(ip_address, start_time=None):
     """
