@@ -229,7 +229,7 @@ class DHCPServer:
         broadcast_int = ip_int | (~mask_int & 0xFFFFFFFF)
         return socket.inet_ntoa(struct.pack('!I', broadcast_int))
     
-    def _get_registered_ip(self, mac):
+    def _get_registered_ip(self, mac, packet):
         """Get the registered IP address for a MAC address by querying the database in real time.
         If not found, insert it using insert_localhost_basic_by_mac.
         """
@@ -243,6 +243,27 @@ class DHCPServer:
             # Not found: insert new MAC
             insert_localhost_basic_by_mac(mac)
             log_info(self.logger, f"[INFO] Inserted new MAC address into localhosts database: {mac}")
+
+            insert_action(f"New host detected: Assign a description and category for {mac}")
+
+            message = f"New Host Detected: {mac}"
+
+            from  notifications.core import handle_alert 
+            if packet is not None:
+                packet_json = json.dumps(packet)
+
+            handle_alert(
+                config_dict,
+                "NewHostsDetection",
+                message,
+                mac,
+                packet_json,
+                "New Host Detected",
+                "",
+                "",
+                f"{mac}_NewHostsDetection"
+            )  
+            
         except Exception as e:
             log_error(self.logger, f"[ERROR] Could not query or insert registered devices: {e}")
         log_warn(self.logger, f"[WARN] Unregistered device attempted DHCP request: {mac}")
@@ -391,7 +412,7 @@ class DHCPServer:
             log_error(self.logger, f"[ERROR] Failed to update last_dhcp_discover for {mac}: {e}")
         log_info(self.logger, f"[INFO] DHCP DISCOVER from {mac} via {addr}")
 
-        assigned_ip = self._get_registered_ip(mac)
+        assigned_ip = self._get_registered_ip(mac, packet)
         if not assigned_ip:
             log_warn(self.logger, f"[WARN] Ignoring DISCOVER from unregistered MAC: {mac}")
             return
@@ -434,7 +455,7 @@ class DHCPServer:
 
         log_info(self.logger, f"[INFO] DHCP REQUEST from {mac} for {requested_ip}")
 
-        assigned_ip = self._get_registered_ip(mac)
+        assigned_ip = self._get_registered_ip(mac, packet)
         if not assigned_ip:
             log_warn(self.logger, f"[WARN] Unregistered device {mac} requested IP, sending NAK")
             nak = self._build_dhcp_packet(DHCP_NAK, packet, '0.0.0.0', None)
@@ -494,7 +515,7 @@ class DHCPServer:
         log_info(self.logger, f"[INFO] DHCP INFORM from {mac} at {client_ip}")
         
         # Verify this is a registered device
-        assigned_ip = self._get_registered_ip(mac)
+        assigned_ip = self._get_registered_ip(mac, packet)
         if not assigned_ip:
             log_warn(self.logger, f"[WARN] Ignoring INFORM from unregistered MAC: {mac}")
             return
