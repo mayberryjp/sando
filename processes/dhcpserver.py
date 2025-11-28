@@ -99,7 +99,17 @@ class DHCPServer:
         self.running = False
         
         log_info(self.logger, f"[INFO] Initialized DHCP server with {len(self.registered_devices)} registered devices")
-    
+
+    def make_json_serializable(obj):
+        if isinstance(obj, bytes):
+            return obj.hex()  # or obj.decode(errors='ignore') if ASCII
+        elif isinstance(obj, dict):
+            return {k: DHCPServer.make_json_serializable(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [DHCPServer.make_json_serializable(v) for v in obj]
+        else:
+            return obj
+          
     def _ip_to_bytes(self, ip):
         """Convert IP address string to bytes."""
         return socket.inet_aton(ip)
@@ -229,6 +239,8 @@ class DHCPServer:
         broadcast_int = ip_int | (~mask_int & 0xFFFFFFFF)
         return socket.inet_ntoa(struct.pack('!I', broadcast_int))
     
+
+    
     def _get_registered_ip(self, mac, packet):
         """Get the registered IP address for a MAC address by querying the database in real time.
         If not found, insert it using insert_localhost_basic_by_mac.
@@ -248,9 +260,10 @@ class DHCPServer:
 
             message = f"New Host Detected: {mac}"
 
+            log_info(self.logger, f"[INFO] Sending NewHostsDetection alert for {packet}")
             from  notifications.core import handle_alert 
             if packet is not None:
-                packet_json = json.dumps(packet)
+                packet_json = json.dumps(DHCPServer.make_json_serializable(packet))
 
             handle_alert(
                 config_dict,
