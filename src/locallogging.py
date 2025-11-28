@@ -16,7 +16,7 @@ from src.detached import get_config_settings_detached, insert_action_detached
 if (IS_CONTAINER):
     SITE = os.getenv("SITE", CONST_SITE)
 
-def write_daily_log(message, config_dict):
+def write_daily_log(logger,message, config_dict):
     """Write a log message to a daily log file in /database/ if enabled in config."""
     try:
         if config_dict != None:
@@ -31,6 +31,7 @@ def write_daily_log(message, config_dict):
     except Exception as e:
         # Fallback: print error if logging fails
         print(f"[WARN] Failed to write to daily log file: {e}")
+        logger.warning(f"[WARN] Failed to write to daily log file: {e}")
 
 def log_info(logger, message):
     """Log a message and print it to the console with timestamp."""
@@ -40,7 +41,7 @@ def log_info(logger, message):
     print(formatted_message)
     logger.info(formatted_message)
     config_dict = get_config_settings_detached()
-    write_daily_log(formatted_message, config_dict)
+    write_daily_log(logger,formatted_message, config_dict)
 
 def log_warn(logger, message):
     """Log a warning message and print it to the console with timestamp."""
@@ -50,7 +51,7 @@ def log_warn(logger, message):
     print(formatted_message)
     logger.warning(formatted_message)
     config_dict = get_config_settings_detached()
-    write_daily_log(formatted_message, config_dict)
+    write_daily_log(logger,formatted_message, config_dict)
 
 def log_error(logger, message):
     """
@@ -71,7 +72,7 @@ def log_error(logger, message):
     print(formatted_message)
     logger.error(formatted_message)
     config_dict = get_config_settings_detached()
-    write_daily_log(formatted_message, config_dict)
+    write_daily_log(logger,formatted_message, config_dict)
 
     excluded_messages = [
         "[ERROR] Failed to download country blocks CSV: 429",
