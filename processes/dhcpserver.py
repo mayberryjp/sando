@@ -260,7 +260,7 @@ class DHCPServer:
 
             message = f"New Host Detected: {mac}"
 
-            log_info(self.logger, f"[INFO] Sending NewHostsDetection alert for {packet}")
+            log_info(self.logger, f"[INFO] Sending NewHostsDetection alert for {DHCPServer.make_json_serializable(packet)}")
             from  notifications.core import handle_alert 
             if packet is not None:
                 packet_json = json.dumps(DHCPServer.make_json_serializable(packet))
