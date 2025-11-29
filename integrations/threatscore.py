@@ -69,6 +69,7 @@ def calculate_update_threat_scores():
     traffic_status = get_all_ips_traffic_status()  # Returns {ip: True/False}
 
     for ip_address in localhosts:
+        if not ip_address: continue
         try:
             # Set threat_score to -1 if no traffic
             if not traffic_status.get(ip_address, False):
