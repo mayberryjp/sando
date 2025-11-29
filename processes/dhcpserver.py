@@ -636,8 +636,9 @@ if __name__ == "__main__":
                 log_error(logging.getLogger(__name__), f"[ERROR] Could not load registered devices from localhosts database: {e}")
                 registered_devices = {}
 
+            DHCP_UNICAST_IP = os.getenv("DHCP_UNICAST_IP", "127.0.0.1")
             server = DHCPServer(
-                server_ip='10.2.50.2',
+                server_ip=DHCP_UNICAST_IP,
                 registered_devices={},  # Not used, but required by constructor
                 lease_time=86400,
                 listen_ip='0.0.0.0',
