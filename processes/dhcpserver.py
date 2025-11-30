@@ -249,33 +249,35 @@ class DHCPServer:
         try:
             from database.localhosts import get_localhosts_all, insert_localhost_basic_by_mac
             hosts = get_localhosts_all()
+            mac_found = False
             for h in hosts:
-                if str(h.get("mac_address")).upper() == mac and h.get("ip_address"):
-                    return h.get("ip_address")
-            # Not found: insert new MAC
-            insert_localhost_basic_by_mac(mac)
-            log_info(self.logger, f"[INFO] Inserted new MAC address into localhosts database: {mac}")
-
-            insert_action(f"New host detected: Assign a description and category for {mac}")
-
-            message = f"New Host Detected: {mac}"
-
-            log_info(self.logger, f"[INFO] Sending NewHostsDetection alert for {DHCPServer.make_json_serializable(packet)}")
-            from  notifications.core import handle_alert 
-            if packet is not None:
-                packet_json = json.dumps(DHCPServer.make_json_serializable(packet))
-
-            handle_alert(
-                config_dict,
-                "NewHostsDetection",
-                message,
-                mac,
-                packet_json,
-                "New Host Detected",
-                "",
-                "",
-                f"{mac}_NewHostsDetection"
-            )  
+                if str(h.get("mac_address")).upper() == mac:
+                    mac_found = True
+                    if h.get("ip_address"):
+                        return h.get("ip_address")
+                    else:
+                        # MAC is known but no IP assigned; do not notify again
+                        return None
+            if not mac_found:
+                insert_localhost_basic_by_mac(mac)
+                log_info(self.logger, f"[INFO] Inserted new MAC address into localhosts database: {mac}")
+                insert_action(f"New host detected: Assign a description and category for {mac}")
+                message = f"New Host Detected: {mac}"
+                log_info(self.logger, f"[INFO] Sending NewHostsDetection alert for {DHCPServer.make_json_serializable(packet)}")
+                from notifications.core import handle_alert
+                if packet is not None:
+                    packet_json = json.dumps(DHCPServer.make_json_serializable(packet))
+                handle_alert(
+                    config_dict,
+                    "NewHostsDetection",
+                    message,
+                    mac,
+                    packet_json,
+                    "New Host Detected",
+                    "",
+                    "",
+                    f"{mac}_NewHostsDetection"
+                )
             
         except Exception as e:
             log_error(self.logger, f"[ERROR] Could not query or insert registered devices: {e}")
