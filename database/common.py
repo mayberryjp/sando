@@ -226,7 +226,7 @@ def migrate_configurations_schema14_to_schema15():
 
         # Step 2: Delete the localhosts table in CONSOLIDATED_DB
         delete_table( "localhosts")
-        delete_all_records(CONST_LOCALHOSTS_DB, "localhosts")
+        delete_all_records("localhosts")
 
         # Step 3: Create new localhosts table in LOCALHOSTS_DB
         conn_localhosts = connect_to_db( "localhosts")

@@ -119,7 +119,7 @@ def bulk_populate_master_flow_view():
            # if idx % progress_step == 0 or idx == total_flows:
                # log_info(logger, f"[PROGRESS] Joined {idx}/{total_flows} flows in memory...")
 
-        delete_all_records(CONST_EXPLORE_DB, "explore")
+        delete_all_records("explore")
         log_info(logger, f"[INFO] Inserting {len(master_rows)} rows into master_flow_view in {CONST_EXPLORE_DB}...")
 
         # Batch insert with progress counter
@@ -161,7 +161,7 @@ def create_dns_key_value():
             return
 
         log_info(logger, f"[INFO] Connecting to target database: {CONST_EXPLORE_DB}")
-        delete_all_records(CONST_EXPLORE_DB, "dnskeyvalue")
+        delete_all_records("dnskeyvalue")
         conn = connect_to_db( "dnskeyvalue")
         cursor = conn.cursor()
         # Prepare data for insertion

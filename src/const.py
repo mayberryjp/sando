@@ -1,4 +1,4 @@
-VERSION="v0.3.1068"
+VERSION="v0.3.1073"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -6,7 +6,7 @@ CONST_API_LISTEN_PORT=8044
 CONST_API_LISTEN_ADDRESS="0.0.0.0"
 IS_CONTAINER=1
 
-CONST_CONSOLIDATED_DB = "/database/consolidated.db"
+#CONST_CONSOLIDATED_DB = "/database/consolidated.db"
 CONST_CONFIGURATION_DB = "/database/configuration.db"
 CONST_PERFORMANCE_DB= "/database/performance.db"
 CONST_EXPLORE_DB= "/database/explore.db"
@@ -44,8 +44,7 @@ TABLE_DB_MAP = {
     "services": CONST_SERVICES_DB,
     "tornodes": CONST_TORNODES_DB,
     "dbperformance": CONST_PERFORMANCE_DB,
-    "explore": CONST_EXPLORE_DB,
-    "dnskeyvalue": CONST_CONSOLIDATED_DB,
+    "dnskeyvalue": CONST_EXPLORE_DB,
     # Add other mappings as needed
 }
 CONST_TEST_SOURCE_DB = ['/database/test_source_1.db']
