@@ -1,4 +1,4 @@
-VERSION="v0.3.1066"
+VERSION="v0.3.1067"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -38,6 +38,7 @@ TABLE_DB_MAP = {
     "geolocation": CONST_GEOLOCATION_DB,
     "ignorelist": CONST_IGNORELIST_DB,
     "asn": CONST_IPASN_DB,
+    "ipasn": CONST_IPASN_DB,
     "newflows": CONST_NEWFLOWS_DB,
     "reputationlist": CONST_REPUTATIONLIST_DB,
     "services": CONST_SERVICES_DB,
