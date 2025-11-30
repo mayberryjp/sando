@@ -119,7 +119,6 @@ def setup_alerts_routes(app):
             response.status = 500
             return {"error": str(e)}
 
-    # API for CONST_CONSOLIDATED_DB
     @app.route('/api/alerts', method=['GET'])
     def alerts():
         """

@@ -15,7 +15,7 @@ from init import *
 app = Bottle()
 
 def setup_localhosts_routes(app):
-    # API for CONST_CONSOLIDATED_DB
+
     @app.route('/api/localhosts', method=['GET'])
     def localhosts():
         """

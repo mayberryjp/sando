@@ -16,7 +16,6 @@ app = Bottle()
 
 def setup_ignorelist_routes(app):
 
-    # API for CONST_CONSOLIDATED_DB
     @app.route('/api/ignorelist', method=['GET', 'POST'])
     def ignorelist():
         """

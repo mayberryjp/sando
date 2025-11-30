@@ -24,7 +24,7 @@ def bulk_populate_master_flow_view():
     """
     logger = logging.getLogger(__name__)
     try:
-        log_info(logger, f"[INFO] Loading allflows from {CONST_CONSOLIDATED_DB}...")
+        log_info(logger, f"[INFO] Loading allflows...")
         src_conn= connect_to_db( "allflows")
         src_cursor = src_conn.cursor()
         src_cursor.execute("SELECT rowid, src_ip, dst_ip, src_port, dst_port, protocol, tags, flow_start, last_seen, packets, bytes, times_seen FROM allflows")
@@ -32,14 +32,14 @@ def bulk_populate_master_flow_view():
         disconnect_from_db(src_conn)
         log_info(logger, f"[INFO] Loaded {len(allflows_rows)} flows.")
 
-        log_info(logger, f"[INFO] Loading dnskeyvalue from {CONST_EXPLORE_DB}...")
+        log_info(logger, f"[INFO] Loading dnskeyvalue...")
         tgt_conn = connect_to_db( "dnskeyvalue")
         tgt_cursor = tgt_conn.cursor()
         tgt_cursor.execute("SELECT ip, domain FROM dnskeyvalue")
         dnskeyvalue = dict(tgt_cursor.fetchall())
         disconnect_from_db(tgt_conn)
 
-        log_info(logger, f"[INFO] Loading geolocation from {CONST_CONSOLIDATED_DB}...")
+        log_info(logger, f"[INFO] Loading geolocation...")
         src_conn = connect_to_db( "geolocation")
         src_cursor = src_conn.cursor()
         src_cursor.execute("SELECT start_ip, end_ip, country_name FROM geolocation")
@@ -53,7 +53,7 @@ def bulk_populate_master_flow_view():
         geolocations_sorted = sorted(geolocations, key=lambda x: x[0])
         geo_starts = [start for start, end, country in geolocations_sorted]
 
-        log_info(logger, f"[INFO] Loading ipasn from {CONST_CONSOLIDATED_DB}...")
+        log_info(logger, f"[INFO] Loading ipasn...")
         src_conn = connect_to_db( "ipasn")
         src_cursor = src_conn.cursor()
         src_cursor.execute("SELECT start_ip, end_ip, asn, isp_name FROM ipasn")

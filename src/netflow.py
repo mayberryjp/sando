@@ -1,6 +1,6 @@
 import socket
 import struct
-from src.const import CONST_LINK_LOCAL_RANGE, CONST_COLLECTOR_LISTEN_ADDRESS, CONST_COLLECTOR_LISTEN_PORT, IS_CONTAINER, CONST_CONSOLIDATED_DB
+from src.const import CONST_LINK_LOCAL_RANGE, CONST_COLLECTOR_LISTEN_ADDRESS, CONST_COLLECTOR_LISTEN_PORT, IS_CONTAINER
 import os
 import logging
 from datetime import datetime, timezone

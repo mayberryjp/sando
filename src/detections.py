@@ -1,5 +1,4 @@
 import logging
-from src.const import CONST_CONSOLIDATED_DB
 import os
 import sys
 from datetime import datetime, timedelta

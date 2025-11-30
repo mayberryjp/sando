@@ -11,7 +11,6 @@ if str(src_dir) not in sys.path:
 import logging
 import requests
 import zipfile
-from src.const import CONST_CONSOLIDATED_DB
 import json
 import sqlite3
 from init import *

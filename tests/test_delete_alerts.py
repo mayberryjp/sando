@@ -19,7 +19,6 @@ sys.path.append(parent_dir)
 # Import the function to test and database utilities
 from database.alerts import delete_ignorelisted_alerts
 from database.core import connect_to_db, disconnect_from_db
-from init import CONST_CONSOLIDATED_DB
 from locallogging import log_info, log_error
 
 def setup_test_data(conn):

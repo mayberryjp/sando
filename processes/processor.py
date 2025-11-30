@@ -14,7 +14,7 @@ from init import *
 
 from notifications.telegram import send_test_telegram_message  # Import send_test_telegram_message from notifications.py
 
-from src.const import CONST_REINITIALIZE_DB, IS_CONTAINER, CONST_CONSOLIDATED_DB
+from src.const import CONST_REINITIALIZE_DB, IS_CONTAINER
 import schedule
 import time
 import logging

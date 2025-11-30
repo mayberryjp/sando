@@ -193,7 +193,7 @@ def create_geolocation_db():
             success_count, _ = insert_geolocation(local_networks_batch)
             log_info(logger, f"[INFO] Added {success_count} local and other network records to geolocation database")
 
-        log_info(logger, f"[INFO] Geolocation database {CONST_CONSOLIDATED_DB} created successfully.")
+        log_info(logger, f"[INFO] Geolocation database created successfully.")
 
     except Exception as e:
         log_error(logger, f"[ERROR] Error creating geolocation database: {e}")

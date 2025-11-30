@@ -61,7 +61,7 @@ def api_online_db(db_name):
     Returns JSON: {"online": true/false}
     """
     db_map = {
-        'consolidated': CONST_CONSOLIDATED_DB,
+        'consolidated': CONST_CONFIGURATION_DB,
         'explore': CONST_EXPLORE_DB
     }
     
@@ -86,7 +86,7 @@ def api_online():
     Returns JSON: {"online": true/false}
     """
     try:
-        result = test_database_online(CONST_CONSOLIDATED_DB)
+        result = test_database_online(CONST_CONFIGURATION_DB)
         response.content_type = 'application/json'
         return {"online": bool(result)}
     except Exception as e:

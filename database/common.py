@@ -307,7 +307,7 @@ def store_site_name(site_name):
 
 def init_configurations_from_sitepy():
     """
-    Inserts default configurations from file in /database into the CONST_CONSOLIDATED_DB database and returns a configuration dictionary.
+    Inserts default configurations from file in /database into the database and returns a configuration dictionary.
 
     Returns:
         dict: A dictionary containing the configuration settings.
@@ -358,7 +358,7 @@ def init_configurations_from_sitepy():
 
 def init_configurations_from_variable():
     """
-    Inserts default configurations into the CONST_CONSOLIDATED_DB database and returns a configuration dictionary.
+    Inserts default configurations into the database and returns a configuration dictionary.
 
     Returns:
         dict: A dictionary containing the configuration settings.
@@ -488,7 +488,7 @@ def collect_database_counts():
             log_error(logger, "[ERROR] Unable to connect to localhosts database")
 
         counts["average_threat_score"] = get_average_threat_score()
-        counts["ignorelist_count"] = get_row_count(CONST_CONSOLIDATED_DB, "ignorelist")
+        counts["ignorelist_count"] = get_row_count("ignorelist")
         
         # Get flow statistics from configuration
         from database.configuration import get_config_settings

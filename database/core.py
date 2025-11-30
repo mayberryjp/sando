@@ -14,7 +14,7 @@ sys.path.insert(0, "/database")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import logging
 from locallogging import log_info, log_error
-from const import CONST_PERFORMANCE_DB, CONST_CONSOLIDATED_DB, TABLE_DB_MAP
+from const import CONST_PERFORMANCE_DB, TABLE_DB_MAP
 
 def delete_database(db_path):
     """Deletes the specified SQLite database file if it exists."""
@@ -149,7 +149,7 @@ def get_row_count(table_name):
         if 'conn' in locals():
             disconnect_from_db(conn)
 
-def insert_dbperformance(db_name, query, description, execution_time, rows_returned):
+def insert_dbperformance(table_name, query, description, execution_time, rows_returned):
     """
     Insert a performance record into the dbperformance table.
 
@@ -171,7 +171,7 @@ def insert_dbperformance(db_name, query, description, execution_time, rows_retur
         cursor.execute("""
             INSERT INTO dbperformance (db_name, query, function, execution_time, rows_returned, run_timestamp)
             VALUES (?, ?, ?, ?, ?, datetime('now', 'localtime'))
-        """, (db_name, query, description, execution_time, rows_returned))
+        """, (table_name, query, description, execution_time, rows_returned))
         conn.commit()
        # log_info(logger, f"[INFO] Inserted dbperformance record for query: {query[:50]}...")
         return True
@@ -209,13 +209,13 @@ def run_timed_query(cursor, query, params=None, description=None, fetch_all=True
         results = cursor.fetchall()
         execution_time = (time.time() - start_time)
         log_info(logger, f"[PERFORMANCE] Query '{desc}' returned {len(results)} rows in {execution_time:.2f} ms")
-        insert_dbperformance(CONST_CONSOLIDATED_DB, query, desc, execution_time, len(results))
+        insert_dbperformance("", query, desc, execution_time, len(results))
         return results, execution_time
     else:
         rowcount = cursor.rowcount
         execution_time = (time.time() - start_time)
         log_info(logger, f"[PERFORMANCE] Query '{desc}' affected {rowcount} rows in {execution_time:.2f} ms")
-        insert_dbperformance(CONST_CONSOLIDATED_DB, query, desc, execution_time, rowcount)
+        insert_dbperformance("", query, desc, execution_time, rowcount)
         return rowcount, execution_time
     
 def delete_table(table_name):

@@ -16,7 +16,6 @@ app = Bottle()
 
 def setup_configurations_routes(app):
         
-    # API for CONST_CONSOLIDATED_DB
     @app.route('/api/configurations', method=['GET', 'POST'])
     def configurations():
         """

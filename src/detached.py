@@ -1,5 +1,5 @@
 import sqlite3
-from src.const import CONST_CONSOLIDATED_DB, CONST_CONFIGURATION_DB
+from src.const import CONST_ACTIONS_DB, CONST_CONFIGURATION_DB
 
 def get_config_settings_detached():
     """Read configuration settings from the configuration database into a dictionary."""
@@ -36,7 +36,7 @@ def insert_action_detached(action_text):
         bool: True if the operation was successful, False otherwise.
     """
     try:
-        conn = connect_to_db_detached(CONST_CONSOLIDATED_DB)
+        conn = connect_to_db_detached(CONST_ACTIONS_DB)
 
         cursor = conn.cursor()
         cursor.execute("""

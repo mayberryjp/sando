@@ -3,7 +3,6 @@ import sqlite3
 import logging
 from ipaddress import ip_network
 import sys
-from src.const import CONST_CONSOLIDATED_DB
 from pathlib import Path
 
 import os

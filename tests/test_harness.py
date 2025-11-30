@@ -190,7 +190,7 @@ def copy_flows_to_newflows():
             newflows_conn = connect_to_db( "newflows")
             newflows_cursor = newflows_conn.cursor()
 
-            log_info(logger, f"[INFO] Preparing to insert flows into {CONST_CONSOLIDATED_DB}")
+            log_info(logger, f"[INFO] Preparing to insert flows into newflows table")
             # Insert flows into newflows
             for row in rows:
                 newflows_cursor.execute('''
@@ -253,23 +253,23 @@ def log_test_results(start_time, end_time, duration, total_rows, filtered_rows, 
             "total_rows": total_rows,
             "filtered_rows": filtered_rows,
             "database_counts": {
-                "actions": get_row_count(CONST_CONSOLIDATED_DB, "actions"),
-                "alerts": get_row_count(CONST_CONSOLIDATED_DB, 'alerts'),
-                "allflows": get_row_count(CONST_CONSOLIDATED_DB, 'allflows'),
-                "configuration": get_row_count(CONST_CONSOLIDATED_DB, 'configuration'),
-                "customtags": get_row_count(CONST_CONSOLIDATED_DB, "customtags"),           
-                "geolocation": get_row_count(CONST_CONSOLIDATED_DB, 'geolocation'),  
-                "ignorelist": get_row_count(CONST_CONSOLIDATED_DB, 'ignorelist'),                                             
-                "localhosts": get_row_count(CONST_CONSOLIDATED_DB, 'localhosts'),
-                "newflows": get_row_count(CONST_CONSOLIDATED_DB, 'newflows'),
-                "dnsqueries": get_row_count(CONST_CONSOLIDATED_DB, "dnsqueries"),  
-                "reputationlist": get_row_count(CONST_CONSOLIDATED_DB, "reputationlist"),
-                "services": get_row_count(CONST_CONSOLIDATED_DB, "services"),
-                "tornodes": get_row_count(CONST_CONSOLIDATED_DB, "tornodes"),
-                "trafficstats": get_row_count(CONST_CONSOLIDATED_DB, "trafficstats"),
-                "ipasn": get_row_count(CONST_CONSOLIDATED_DB, "ipasn"),
-                "explore": get_row_count(CONST_EXPLORE_DB, "explore"),
-                "dnskeyvalue": get_row_count(CONST_EXPLORE_DB, "dnskeyvalue")
+                "actions": get_row_count("actions"),
+                "alerts": get_row_count('alerts'),
+                "allflows": get_row_count('allflows'),
+                "configuration": get_row_count('configuration'),
+                "customtags": get_row_count("customtags"),           
+                "geolocation": get_row_count('geolocation'),  
+                "ignorelist": get_row_count('ignorelist'),                                             
+                "localhosts": get_row_count('localhosts'),
+                "newflows": get_row_count('newflows'),
+                "dnsqueries": get_row_count("dnsqueries"),  
+                "reputationlist": get_row_count("reputationlist"),
+                "services": get_row_count("services"),
+                "tornodes": get_row_count("tornodes"),
+                "trafficstats": get_row_count("trafficstats"),
+                "ipasn": get_row_count("ipasn"),
+                "explore": get_row_count("explore"),
+                "dnskeyvalue": get_row_count("dnskeyvalue")
             },
             "tag_distribution": tag_distribution,
             "alert_categories": categories,
@@ -303,18 +303,14 @@ def main():
 
     site_config_path = os.path.join("/database/", f"{SITE}.py")
 
-    if os.path.exists(CONST_CONSOLIDATED_DB):
-        os.remove(CONST_CONSOLIDATED_DB)
-        log_info(logger, f"[INFO] Deleted existing consolidated database: {CONST_CONSOLIDATED_DB}")
-  
     
-    if not os.path.exists(CONST_CONSOLIDATED_DB):
-        log_info(logger, f"[INFO] Consolidated database not found, creating at {CONST_CONSOLIDATED_DB}. We assume this is a first time install. ")
+    if not os.path.exists(CONST_CONFIGURATION_DB):
+        log_info(logger, f"[INFO] Configuration database not found, creating at {CONST_CONFIGURATION_DB}. We assume this is a first time install. ")
         create_table(CONST_CREATE_CONFIG_SQL, "configuration")
         log_info(logger, f"[INFO] No site-specific configuration found at {site_config_path}. This is OK. ")
         config_dict = init_configurations_from_variable()
     else:
-        log_info(logger, f"[INFO] Consolidated database found at {CONST_CONSOLIDATED_DB}.")
+        log_info(logger, f"[INFO] Configuration database found at {CONST_CONFIGURATION_DB}.")
 
     if os.path.exists(site_config_path):
         log_info(logger, f"[INFO] Loading site-specific configuration from {site_config_path}. Leaving this file will overwrite the config database every time, so be careful. It's usually only meant for a one time bootstrapping of a new site with a full config.")
@@ -386,7 +382,7 @@ def main():
     rows = cursor.fetchall()
     rows = [list(row) for row in rows]
 
-    log_info(logger, f"[INFO] Fetched {len(rows)} rows from {CONST_CONSOLIDATED_DB}")
+    log_info(logger, f"[INFO] Fetched {len(rows)} rows from newflows")
 
     ignorelist_entries = get_ignorelist()
     customtag_entries = get_custom_tags()

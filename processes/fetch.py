@@ -20,7 +20,7 @@ from integrations.piholedns import get_pihole_ftl_logs
 from integrations.services import create_services_db
 from integrations.ipasn import create_asn_database
 from integrations.dns import resolve_empty_dns_responses
-from src.const import CONST_REINITIALIZE_DB, CONST_CONSOLIDATED_DB, IS_CONTAINER
+from src.const import CONST_REINITIALIZE_DB, IS_CONTAINER
 from init import *
 
 if (IS_CONTAINER):

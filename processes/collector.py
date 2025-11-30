@@ -25,7 +25,7 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__) 
  
     site_config_path = os.path.join("/database/", f"{SITE}.py")
-    database_path = os.path.join("/database/", CONST_CONSOLIDATED_DB)
+    database_path = os.path.join("/database/", CONST_CONFIGURATION_DB)
     schema_file_path = os.path.join(parent_dir, '/database', 'database.schema')
 
     if not os.path.exists(CONST_CONFIGURATION_DB):
@@ -33,8 +33,8 @@ if __name__ == "__main__":
         create_table(CONST_CREATE_CONFIG_SQL, "configuration")
         config_dict = init_configurations_from_variable()
 
-    if not os.path.exists(CONST_CONSOLIDATED_DB):
-        log_info(logger, f"[INFO] Consolidated database not found, creating at {CONST_CONSOLIDATED_DB}. We assume this is a first time install. ")
+    if not os.path.exists(CONST_ACTIONS_DB):
+        log_info(logger, f"[INFO] Consolidated database not found, creating at {CONST_ACTIONS_DB}. We assume this is a first time install. ")
         create_table(CONST_CREATE_ACTIONS_SQL, "actions")
         os.makedirs(os.path.dirname(schema_file_path), exist_ok=True)
         with open(schema_file_path, 'w') as f:
@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     if os.path.exists(site_config_path):
         log_info(logger, f"[INFO] Loading site-specific configuration from {site_config_path}. Leaving this file will overwrite the config database every time, so be careful. It's usually only meant for a one time bootstrapping of a new site with a full config.")
-        delete_all_records( "configuration")
+        delete_all_records("configuration")
         config_dict = init_configurations_from_sitepy()
         create_table(CONST_CREATE_IGNORELIST_SQL, "ignorelist")
         create_table(CONST_CREATE_CUSTOMTAGS_SQL, "customtags")
