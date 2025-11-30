@@ -187,7 +187,7 @@ def copy_flows_to_newflows():
             
             log_info(logger, f"[INFO] Fetched {len(rows)} rows from {source_db}")
             # Connect to newflows database
-            newflows_conn = connect_to_db(CONST_CONSOLIDATED_DB, "newflows")
+            newflows_conn = connect_to_db( "newflows")
             newflows_cursor = newflows_conn.cursor()
 
             log_info(logger, f"[INFO] Preparing to insert flows into {CONST_CONSOLIDATED_DB}")
@@ -232,7 +232,7 @@ def log_test_results(start_time, end_time, duration, total_rows, filtered_rows, 
     logger = logging.getLogger(__name__)
     try:
         # Get alert categories and counts
-        alerts_conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        alerts_conn = connect_to_db( "alerts")
         alerts_cursor = alerts_conn.cursor()
         alerts_cursor.execute("""
             SELECT category, COUNT(*) as count 
@@ -310,7 +310,7 @@ def main():
     
     if not os.path.exists(CONST_CONSOLIDATED_DB):
         log_info(logger, f"[INFO] Consolidated database not found, creating at {CONST_CONSOLIDATED_DB}. We assume this is a first time install. ")
-        create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_CONFIG_SQL, "configuration")
+        create_table(CONST_CREATE_CONFIG_SQL, "configuration")
         log_info(logger, f"[INFO] No site-specific configuration found at {site_config_path}. This is OK. ")
         config_dict = init_configurations_from_variable()
     else:
@@ -318,34 +318,34 @@ def main():
 
     if os.path.exists(site_config_path):
         log_info(logger, f"[INFO] Loading site-specific configuration from {site_config_path}. Leaving this file will overwrite the config database every time, so be careful. It's usually only meant for a one time bootstrapping of a new site with a full config.")
-        delete_all_records(CONST_CONSOLIDATED_DB, "configuration")
+        delete_all_records( "configuration")
         config_dict = init_configurations_from_sitepy()
-        create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_IGNORELIST_SQL, "ignorelist")
-        create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_CUSTOMTAGS_SQL, "customtags")
+        create_table(CONST_CREATE_IGNORELIST_SQL, "ignorelist")
+        create_table(CONST_CREATE_CUSTOMTAGS_SQL, "customtags")
         import_ignorelists(config_dict)
         import_custom_tags(config_dict)
 
 
 
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_SERVICES_SQL, "services")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_CONFIG_SQL, "configuration")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_IGNORELIST_SQL, "ignorelist")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_CUSTOMTAGS_SQL, "customtags")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_TRAFFICSTATS_SQL, "trafficstats")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ALERTS_SQL, "alerts")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ALLFLOWS_SQL,"allflows")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_NEWFLOWS_SQL, "newflows")
-    delete_all_records(CONST_CONSOLIDATED_DB,"newflows")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_LOCALHOSTS_SQL, "localhosts")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_GEOLOCATION_SQL, "geolocation")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_REPUTATIONLIST_SQL, "reputationlist")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_TORNODES_SQL, "tornodes")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_DNSQUERIES_SQL, "dnsqueries")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
-    create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_IPASN_SQL, "ipasn")
-    create_table(CONST_EXPLORE_DB, CONST_CREATE_EXPLORE_SQL, "explore")
-    create_table(CONST_EXPLORE_DB, CONST_CREATE_DNSKEYVALUE_SQL,"dnskeyvalue")
-    create_table(CONST_PERFORMANCE_DB, CONST_CREATE_DBPERFORMANCE_SQL, "dbperformance")
+    create_table(CONST_CREATE_SERVICES_SQL, "services")
+    create_table(CONST_CREATE_CONFIG_SQL, "configuration")
+    create_table(CONST_CREATE_IGNORELIST_SQL, "ignorelist")
+    create_table(CONST_CREATE_CUSTOMTAGS_SQL, "customtags")
+    create_table(CONST_CREATE_TRAFFICSTATS_SQL, "trafficstats")
+    create_table(CONST_CREATE_ALERTS_SQL, "alerts")
+    create_table(CONST_CREATE_ALLFLOWS_SQL,"allflows")
+    create_table(CONST_CREATE_NEWFLOWS_SQL, "newflows")
+    delete_all_records("newflows")
+    create_table(CONST_CREATE_LOCALHOSTS_SQL, "localhosts")
+    create_table(CONST_CREATE_GEOLOCATION_SQL, "geolocation")
+    create_table(CONST_CREATE_REPUTATIONLIST_SQL, "reputationlist")
+    create_table(CONST_CREATE_TORNODES_SQL, "tornodes")
+    create_table(CONST_CREATE_DNSQUERIES_SQL, "dnsqueries")
+    create_table(CONST_CREATE_ACTIONS_SQL, "actions")
+    create_table(CONST_CREATE_IPASN_SQL, "ipasn")
+    create_table( CONST_CREATE_EXPLORE_SQL, "explore")
+    create_table( CONST_CREATE_DNSKEYVALUE_SQL,"dnskeyvalue")
+    create_table(CONST_CREATE_DBPERFORMANCE_SQL, "dbperformance")
 
 
     store_machine_unique_identifier()
@@ -379,7 +379,7 @@ def main():
 
     copy_flows_to_newflows()
 
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, "newflows")
+    conn = connect_to_db( "newflows")
 
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM newflows")
@@ -621,7 +621,7 @@ def main():
 
     # Query to count rows grouped by tags
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
+        conn = connect_to_db( "allflows")
         cursor = conn.cursor()
 
         cursor.execute("""

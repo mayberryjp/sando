@@ -15,7 +15,7 @@ from database.core import run_timed_query
 def update_all_flows(rows, config_dict):
     """Update allflows.db with the rows from newflows.db."""
     logger = logging.getLogger(__name__)
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
+    conn = connect_to_db( "allflows")
     total_packets = 0
     total_bytes = 0
 
@@ -66,7 +66,7 @@ def update_tag_to_allflows(table_name, tag, src_ip, dst_ip, dst_port):
         bool: True if the update was successful, False otherwise.
     """
     logger = logging.getLogger(__name__)
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, table_name)
+    conn = connect_to_db( table_name)
     if not conn:
         log_error(logger, f"[ERROR] Unable to connect to database: {CONST_CONSOLIDATED_DB}")
         return False
@@ -126,7 +126,7 @@ def get_flows_by_source_ip(src_ip):
 
     try:
         # Connect to the allflows database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
+        conn = connect_to_db( "allflows")
         if not conn:
             log_error(logger, f"[ERROR] Unable to connect to allflows database.")
             return []
@@ -182,7 +182,7 @@ def get_dead_connections_from_database():
 
     try:
         # Connect to the allflows database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
+        conn = connect_to_db( "allflows")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to allflows database.")
             return []
@@ -314,7 +314,7 @@ def get_tag_statistics(local_ip):
     
     try:
         # Connect to the database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
+        conn = connect_to_db( "allflows")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to database for tag statistics.")
             return {}
@@ -416,7 +416,7 @@ def apply_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol):
     
     try:
         # 1. Update matching flows in allflows table
-        conn_flows = connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
+        conn_flows = connect_to_db( "allflows")
         if not conn_flows:
             log_error(logger, "[ERROR] Unable to connect to allflows database.")
             return 0

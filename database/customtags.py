@@ -34,7 +34,7 @@ def insert_custom_tag(tag_id, src_ip, dst_ip, dst_port, protocol, tag_name="", e
     
     try:
         # Connect to the customtags database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "customtags")
+        conn = connect_to_db( "customtags")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to customtags database.")
             return False, None
@@ -89,7 +89,7 @@ def get_custom_tags():
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "customtags")
+        conn = connect_to_db( "customtags")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to ignorelist database")
             return None
@@ -130,7 +130,7 @@ def import_custom_tags(config_dict):
         log_info(logger, "[INFO] No custom tag entries found in config_dict.")
         return
 
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, "customtags")
+    conn = connect_to_db( "customtags")
     if not conn:
         log_error(logger, "[ERROR] Unable to connect to ignorelist database.")
         return

@@ -1,16 +1,52 @@
-VERSION="v0.3.1001"
+VERSION="v0.3.1065"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
 CONST_API_LISTEN_PORT=8044
 CONST_API_LISTEN_ADDRESS="0.0.0.0"
 IS_CONTAINER=1
+
 CONST_CONSOLIDATED_DB = "/database/consolidated.db"
 CONST_CONFIGURATION_DB = "/database/configuration.db"
 CONST_PERFORMANCE_DB= "/database/performance.db"
 CONST_EXPLORE_DB= "/database/explore.db"
 CONST_LOCALHOSTS_DB="/database/localhosts.db"
+CONST_ACTIONS_DB="/database/actions.db"
+CONST_ALERTS_DB="/database/alerts.db"
+CONST_ALLFLOWS_DB="/database/allflows.db"
+CONST_CUSTOMTAGS_DB="/database/customtags.db"
+CONST_DNSQUERIES_DB="/database/dnsqueries.db"
+CONST_GEOLOCATION_DB="/database/geolocation.db"
+CONST_IGNORELIST_DB="/database/ignorelist.db"
+CONST_IPASN_DB="/database/ipasn.db"
+CONST_NEWFLOWS_DB="/database/newflows.db"
+CONST_REPUTATIONLIST_DB="/database/reputationlist.db"
+CONST_SERVICES_DB="/database/services.db"
+CONST_TORNODES_DB="/database/tornodes.db"
+CONST_TRAFFICSTATS_DB="/database/trafficstats.db"
 #CONST_TEST_SOURCE_DB = ['/database/test_source_1.db','/database/test_source_2.db']
+TABLE_DB_MAP = {
+    "localhosts": CONST_LOCALHOSTS_DB,
+    "alerts": CONST_ALERTS_DB,
+    "actions": CONST_ACTIONS_DB,
+    "trafficstats": CONST_TRAFFICSTATS_DB,
+    "configuration": CONST_CONFIGURATION_DB,
+    "allflows": CONST_ALLFLOWS_DB,
+    "customtags": CONST_CUSTOMTAGS_DB,
+    "dnsqueries": CONST_DNSQUERIES_DB,
+    "explore": CONST_EXPLORE_DB,
+    "geolocation": CONST_GEOLOCATION_DB,
+    "ignorelist": CONST_IGNORELIST_DB,
+    "ipasn": CONST_IPASN_DB,
+    "newflows": CONST_NEWFLOWS_DB,
+    "reputationlist": CONST_REPUTATIONLIST_DB,
+    "services": CONST_SERVICES_DB,
+    "tornodes": CONST_TORNODES_DB,
+    "dbperformance": CONST_PERFORMANCE_DB,
+    "explore": CONST_EXPLORE_DB,
+    "dnskeyvalue": CONST_CONSOLIDATED_DB,
+    # Add other mappings as needed
+}
 CONST_TEST_SOURCE_DB = ['/database/test_source_1.db']
 CONST_SITE= 'TESTPPE'
 CONST_LINK_LOCAL_RANGE = ["169.254.0.0/16"]

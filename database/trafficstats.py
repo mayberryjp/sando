@@ -22,7 +22,7 @@ def delete_old_traffic_stats():
     logger = logging.getLogger(__name__)
     try:
         # Connect to the consolidated database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "trafficstats")
+        conn = connect_to_db( "trafficstats")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to trafficstats database.")
             return False
@@ -64,7 +64,7 @@ def update_traffic_stats(rows, config_dict):
                      (src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes_, flow_start, flow_end, last_seen, times_seen, tags)
     """
     logger = logging.getLogger(__name__)
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, "trafficstats")
+    conn = connect_to_db( "trafficstats")
 
     if not conn:
         log_error(logger, "[ERROR] Unable to connect to allflows database.")
@@ -115,7 +115,7 @@ def get_all_ips_traffic_status():
 
     try:
         # Connect to localhosts database to get all IPs
-        conn_localhosts = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn_localhosts = connect_to_db( "localhosts")
         if not conn_localhosts:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return ip_traffic_status
@@ -126,7 +126,7 @@ def get_all_ips_traffic_status():
         disconnect_from_db(conn_localhosts)
 
         # Connect to consolidated database to get active IPs from trafficstats
-        conn_trafficstats = connect_to_db(CONST_CONSOLIDATED_DB, "trafficstats")
+        conn_trafficstats = connect_to_db( "trafficstats")
         if not conn_trafficstats:
             log_error(logger, "[ERROR] Unable to connect to trafficstats database.")
             return ip_traffic_status
@@ -170,7 +170,7 @@ def get_traffic_stats_for_ip(ip_address):
     logger = logging.getLogger(__name__)
     try:
         # Connect to the consolidated database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "trafficstats")
+        conn = connect_to_db( "trafficstats")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to trafficstats database.")
             return []

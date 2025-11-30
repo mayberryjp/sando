@@ -50,7 +50,8 @@ from src.const import (
     CONST_API_LISTEN_PORT,
     CONST_DATABASE_SCHEMA_VERSION,
     CONST_CONFIGURATION_DB,
-    CONST_LOCALHOSTS_DB
+    CONST_LOCALHOSTS_DB,
+    TABLE_DB_MAP
 )
 
 from src.network import (

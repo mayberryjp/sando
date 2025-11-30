@@ -29,7 +29,7 @@ def insert_reputation(network, start_ip, end_ip, netmask):
     table_name = "reputationlist"
     
     # Connect to database
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, table_name)
+    conn = connect_to_db( table_name)
     if not conn:
         return False
     
@@ -64,7 +64,7 @@ def get_all_reputation_records():
     table_name = "reputationlist"
     
     # Connect to database
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, table_name)
+    conn = connect_to_db( table_name)
     if not conn:
         return None
     

@@ -33,7 +33,7 @@ def get_asn_for_ip(ip_address):
             return None
             
         # Connect to the database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "asn")
+        conn = connect_to_db( "asn")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to ASN database")
             return None
@@ -116,7 +116,7 @@ def get_all_asn_records():
     
     try:
         # Connect to the database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "asn")
+        conn = connect_to_db( "asn")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to ASN database.")
             return []
@@ -181,7 +181,7 @@ def insert_asn_records_batch(records, batch_size=1000):
     
     try:
         # Connect to the database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "asn")
+        conn = connect_to_db( "asn")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to ASN database.")
             return False, 0

@@ -94,44 +94,44 @@ def update_database_schema(current_version, target_version):
         
         if current_version_int < 7:
             log_info(logger, "[INFO] Version is less than 7, deleting all flows")
-            delete_all_records(CONST_CONSOLIDATED_DB, "allflows")
+            delete_all_records( "allflows")
 
         if current_version_int < 8:
             log_info(logger, "[INFO] Version is less than 8, deleting all flows")
-            delete_all_records(CONST_CONSOLIDATED_DB, "allflows")
+            delete_all_records( "allflows")
         
         if current_version_int < 9:
             log_info(logger, "[INFO] Version is less than 9, deleting all actions")
-            delete_all_records(CONST_CONSOLIDATED_DB, "actions")
+            delete_all_records( "actions")
 
         if current_version_int < 10:
             log_info(logger, "[INFO] Version is less than 10, alerting actions table")
-            delete_table(CONST_CONSOLIDATED_DB, "actions")
-            create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
+            delete_table( "actions")
+            create_table(CONST_CREATE_ACTIONS_SQL, "actions")
 
         if current_version_int < 11:
             log_info(logger, "[INFO] Version is less than 11, alerting actions table")
-            delete_table(CONST_CONSOLIDATED_DB, "actions")
-            create_table(CONST_CONSOLIDATED_DB, CONST_CREATE_ACTIONS_SQL, "actions")
+            delete_table( "actions")
+            create_table(CONST_CREATE_ACTIONS_SQL, "actions")
 
         if current_version_int < 12:
             log_info(logger, "[INFO] Version is less than 12, recreating explore view table")
-            delete_table(CONST_EXPLORE_DB, "explore")
-            create_table(CONST_EXPLORE_DB, CONST_CREATE_EXPLORE_SQL, "explore")
+            delete_table( "explore")
+            create_table( CONST_CREATE_EXPLORE_SQL, "explore")
             
         if current_version_int < 13:
             log_info(logger, "[INFO] Version is less than 13, recreating explore view table")
-            delete_all_records(CONST_PERFORMANCE_DB, "dbperformance")
+            delete_all_records( "dbperformance")
 
         if current_version_int < 14:  #RESUME HERE #TODO: Implement migration logic
             log_info(logger, "[INFO] Version is less than 14, migrating configuration to dedicated configuration database")
             migrate_configurations_schema13_to_schema14()
-           # delete_all_records(CONST_PERFORMANCE_DB, "dbperformance")
+           # delete_all_records( "dbperformance")
 
         if current_version_int < 15:  #RESUME HERE #TODO: Implement migration logic
             log_info(logger, "[INFO] Version is less than 15, migrating localhosts to dedicated configuration database")
             migrate_configurations_schema14_to_schema15()
-           # delete_all_records(CONST_PERFORMANCE_DB, "dbperformance")
+           # delete_all_records( "dbperformance")
 
         return True
         
@@ -158,7 +158,7 @@ def migrate_configurations_schema13_to_schema14():
     
     try:
         # Step 1: Get all configurations from CONSOLIDATED_DB
-        conn_consolidated = connect_to_db(CONST_CONSOLIDATED_DB, "configuration")
+        conn_consolidated = connect_to_db( "configuration")
         if not conn_consolidated:
             log_error(logger, "[ERROR] Failed to connect to CONSOLIDATED_DB")
             return False
@@ -168,10 +168,10 @@ def migrate_configurations_schema13_to_schema14():
         rows = cursor.fetchall()
 
         
-        delete_table(CONST_CONSOLIDATED_DB, "configuration")
+        delete_table( "configuration")
         
         # Step 3: Create new configurations table in CONFIGURATION_DB
-        conn_config = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
+        conn_config = connect_to_db( "configuration")
         if not conn_config:
             log_error(logger, "[ERROR] Failed to connect to CONFIGURATION_DB")
             return False
@@ -214,7 +214,7 @@ def migrate_configurations_schema14_to_schema15():
 
     try:
         # Step 1: Get all rows from localhosts in CONSOLIDATED_DB
-        conn_consolidated = connect_to_db(CONST_CONSOLIDATED_DB, "localhosts")
+        conn_consolidated = connect_to_db( "localhosts")
         if not conn_consolidated:
             log_error(logger, "[ERROR] Failed to connect to CONSOLIDATED_DB")
             return False
@@ -225,11 +225,11 @@ def migrate_configurations_schema14_to_schema15():
         columns = [desc[0] for desc in cursor.description]
 
         # Step 2: Delete the localhosts table in CONSOLIDATED_DB
-        delete_table(CONST_CONSOLIDATED_DB, "localhosts")
+        delete_table( "localhosts")
         delete_all_records(CONST_LOCALHOSTS_DB, "localhosts")
 
         # Step 3: Create new localhosts table in LOCALHOSTS_DB
-        conn_localhosts = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn_localhosts = connect_to_db( "localhosts")
         if not conn_localhosts:
             log_error(logger, "[ERROR] Failed to connect to LOCALHOSTS_DB")
             return False
@@ -276,7 +276,7 @@ def store_site_name(site_name):
             return False
             
         # Connect to the configuration database
-        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
+        conn = connect_to_db( "configuration")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to configuration database")
             return False
@@ -316,7 +316,7 @@ def init_configurations_from_sitepy():
     config_dict = {}
 
     try:
-        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
+        conn = connect_to_db( "configuration")
         if not conn:
             log_error(logger,"[ERROR] Unable to connect to configuration database")
             return config_dict
@@ -367,7 +367,7 @@ def init_configurations_from_variable():
     config_dict = {}
 
     try:
-        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
+        conn = connect_to_db( "configuration")
         if not conn:
             log_error(logger,"[ERROR] Unable to connect to configuration database")
             return config_dict
@@ -431,7 +431,7 @@ def collect_database_counts():
 
     try:
         # Connect to the alerts database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if conn:
             cursor = conn.cursor()
             # Count acknowledged alerts
@@ -450,7 +450,7 @@ def collect_database_counts():
         else:
             log_error(logger, "[ERROR] Unable to connect to alerts database")
 
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "actions")
+        conn = connect_to_db( "actions")
         if conn:
             cursor = conn.cursor()
             # Count acknowledged alerts
@@ -470,7 +470,7 @@ def collect_database_counts():
             log_error(logger, "[ERROR] Unable to connect to alerts database")
 
         # Connect to the localhosts database
-        conn_localhosts = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn_localhosts = connect_to_db( "localhosts")
         if conn_localhosts:
             cursor = conn_localhosts.cursor()
             # Count entries in localhosts
@@ -555,7 +555,7 @@ def store_version():
         from src.const import VERSION
         
         # Connect to the configuration database
-        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
+        conn = connect_to_db( "configuration")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to configuration database.")
             return False
@@ -606,7 +606,7 @@ def store_machine_unique_identifier():
             return False
 
         # Connect to the configuration database
-        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
+        conn = connect_to_db( "configuration")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to configuration database.")
             return False
@@ -644,7 +644,7 @@ def get_machine_unique_identifier_from_db():
     logger = logging.getLogger(__name__)
     try:
         # Connect to the configuration database
-        conn = connect_to_db(CONST_CONFIGURATION_DB, "configuration")
+        conn = connect_to_db( "configuration")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to configuration database.")
             return None
@@ -712,7 +712,7 @@ def get_p95_execution_times():
     logger = logging.getLogger(__name__)
     result = {}
     try:
-        conn = connect_to_db(CONST_PERFORMANCE_DB, "dbperformance")
+        conn = connect_to_db("dbperformance")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to performance database.")
             return {}

@@ -26,7 +26,7 @@ def insert_geolocation(rows):
     table_name = "geolocation"
     
     # Connect to database
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, table_name)
+    conn = connect_to_db( table_name)
     if not conn:
         return (0, len(rows))
     
@@ -71,7 +71,7 @@ def get_all_geolocations():
     table_name = "geolocation"
     
     # Connect to database
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, table_name)
+    conn = connect_to_db( table_name)
     if not conn:
         return None
     
@@ -101,7 +101,7 @@ def get_country_by_ip_int(ip_int):
     table_name = "geolocation"
 
     # Connect to database
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, table_name)
+    conn = connect_to_db( table_name)
     if not conn:
         logger.error(f"[ERROR] Failed to connect to the geolocation database")
         return None

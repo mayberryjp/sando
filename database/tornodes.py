@@ -25,7 +25,7 @@ def get_all_tor_nodes():
     
     try:
         # Connect to database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, table_name)
+        conn = connect_to_db( table_name)
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to tornodes database.")
             return []
@@ -70,7 +70,7 @@ def insert_tor_node(ip_address):
     table_name = "tornodes"
     
     # Connect to database
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, table_name)
+    conn = connect_to_db( table_name)
     if not conn:
         return False
     

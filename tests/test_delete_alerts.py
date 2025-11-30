@@ -124,7 +124,7 @@ def run_test():
     
     try:
         # Connect to the database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             print("ERROR: Unable to connect to the database")
             return

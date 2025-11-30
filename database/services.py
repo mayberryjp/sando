@@ -31,7 +31,7 @@ def get_services_by_port(port_number):
     
     try:
         # Connect to the services database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "services")
+        conn = connect_to_db( "services")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to services database.")
             return {}
@@ -82,7 +82,7 @@ def get_all_services_database():
     
     try:
         # Connect to the services database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "services")
+        conn = connect_to_db( "services")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to services database.")
             return []
@@ -128,7 +128,7 @@ def insert_service(port_number, protocol, service_name, description):
     
     try:
         # Connect to the services database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "services")
+        conn = connect_to_db( "services")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to services database.")
             return False
@@ -179,7 +179,7 @@ def insert_services_bulk(service_records):
     
     try:
         # Connect to the services database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "services")
+        conn = connect_to_db( "services")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to services database.")
             return False, 0
@@ -244,7 +244,7 @@ def create_services_db():
         # Step 2: Parse and insert the CSV data
         log_info(logger, "[INFO] Parsing and preparing IANA services data...")
         
-        delete_all_records(CONST_CONSOLIDATED_DB, "services")
+        delete_all_records( "services")
         
         # Parse CSV
         csv_data = io.StringIO(response.text)

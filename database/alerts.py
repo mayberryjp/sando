@@ -26,7 +26,7 @@ def summarize_alerts_by_ip_last_seen():
 
     # Step 1: Get all IPs from localhosts database
     try:
-        conn_localhosts = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn_localhosts = connect_to_db( "localhosts")
         if not conn_localhosts:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return {"error": "Unable to connect to localhosts database"}
@@ -41,7 +41,7 @@ def summarize_alerts_by_ip_last_seen():
 
     # Step 2: Get alerts from alerts database
     try:
-        conn_alerts = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn_alerts = connect_to_db( "alerts")
         if not conn_alerts:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return {"error": "Unable to connect to alerts database"}
@@ -103,7 +103,7 @@ def summarize_alerts_by_ip():
 
     # Step 1: Get all IPs from localhosts database
     try:
-        conn_localhosts = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn_localhosts = connect_to_db( "localhosts")
         if not conn_localhosts:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return {"error": "Unable to connect to localhosts database"}
@@ -118,7 +118,7 @@ def summarize_alerts_by_ip():
 
     # Step 2: Get alerts from alerts database
     try:
-        conn_alerts = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn_alerts = connect_to_db( "alerts")
         if not conn_alerts:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return {"error": "Unable to connect to alerts database"}
@@ -184,7 +184,7 @@ def get_hourly_alerts_summary(ip_address, start_time=None):
     
     try:
         # Connect to the alerts database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return []
@@ -240,7 +240,7 @@ def get_all_alerts_by_ip(ip_address):
     
     try:
         # Connect to the alerts database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return []
@@ -306,7 +306,7 @@ def get_alert_count_by_id(alert_id):
     
     try:
         # Connect to the alerts database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return 0
@@ -345,7 +345,7 @@ def get_recent_alerts_database():
     
     try:
         # Connect to the alerts database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return []
@@ -395,7 +395,7 @@ def delete_alert_database(alert_id):
     
     try:
         # Connect to the alerts database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return False
@@ -442,7 +442,7 @@ def log_alert_to_db(ip_address, flow, category, alert_enrichment_1, alert_enrich
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return "error"
@@ -484,7 +484,7 @@ def get_alerts_summary():
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to alerts database")
             return
@@ -542,7 +542,7 @@ def get_recent_alerts_by_ip(ip_address):
     
     try:
         # Connect to the alerts database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return []
@@ -605,7 +605,7 @@ def get_all_alerts():
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return []
@@ -662,7 +662,7 @@ def get_alerts_by_category(category_name):
     
     try:
         # Connect to the alerts database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return []
@@ -713,7 +713,7 @@ def update_alert_acknowledgment(alert_id, acknowledged):
     
     try:
         # Connect to the alerts database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return False
@@ -745,7 +745,7 @@ def update_alert_acknowledgment(alert_id, acknowledged):
 def get_all_alerts_by_category(category):
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to alerts database")
             return []
@@ -796,7 +796,7 @@ def delete_ignorelisted_alerts(ignorelist_id, src_ip, dst_ip, dst_port, protocol
     alerts_deleted = 0
     try:
         # Connect to alerts database
-        conn_alerts = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn_alerts = connect_to_db( "alerts")
         if not conn_alerts:
             log_error(logger, "[ERROR] Unable to connect to alerts database.")
             return alerts_deleted

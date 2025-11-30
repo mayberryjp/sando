@@ -14,7 +14,7 @@ sys.path.insert(0, "/database")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import logging
 from locallogging import log_info, log_error
-from const import CONST_PERFORMANCE_DB, CONST_CONSOLIDATED_DB
+from const import CONST_PERFORMANCE_DB, CONST_CONSOLIDATED_DB, TABLE_DB_MAP
 
 def delete_database(db_path):
     """Deletes the specified SQLite database file if it exists."""
@@ -29,10 +29,19 @@ def delete_database(db_path):
         log_error(logger,f"[ERROR] Error deleting {db_path}: {e}")
 
 
-def connect_to_db(DB_NAME,table):
-    """Establish a connection to the specified database."""
+def connect_to_db(table):
+    """
+    Connect to the appropriate database based on the table name.
+    Args:
+        table_name (str): The name of the table to determine which database to connect to.
+    Returns:
+        sqlite3.Connection: The database connection object.
+    """
     logger = logging.getLogger(__name__)
-
+    DB_NAME = TABLE_DB_MAP.get(table)
+    if not DB_NAME:
+        raise ValueError(f"No database mapping found for table: {table}")
+    
     try:
         conn = sqlite3.connect(DB_NAME)
         conn.execute("PRAGMA busy_timeout = 10000")
@@ -41,6 +50,7 @@ def connect_to_db(DB_NAME,table):
     except sqlite3.Error as e:
         log_error(logger,f"[ERROR] Error connecting to database {DB_NAME} table {table}: {e}")
         return None
+
 
 def disconnect_from_db(conn):
     """
@@ -59,11 +69,18 @@ def disconnect_from_db(conn):
     except Exception as e:
         log_error(logger, f"[ERROR] Unexpected error while closing database connection: {e}")
 
-def create_table(db_name, create_table_sql, table):
+
+
+def create_table(create_table_sql, table):
     """Initializes a SQLite database with the specified schema."""
     logger = logging.getLogger(__name__)
+
+    db_name = TABLE_DB_MAP.get(table)
+    if not db_name:
+        raise ValueError(f"No database mapping found for table: {table}")
+    
     try:
-        conn = connect_to_db(db_name, table)
+        conn = connect_to_db(table)
         if not conn:
             log_error(logger,f"[ERROR] Unable to connect to {db_name}")
             return
@@ -77,10 +94,14 @@ def create_table(db_name, create_table_sql, table):
     except sqlite3.Error as e:
         log_error(logger,f"[ERROR] Error initializing {db_name}: {e}")
 
-def delete_all_records(db_name, table_name):
+def delete_all_records(table_name):
     """Delete all records from the specified database and table."""
     logger = logging.getLogger(__name__)
-    conn = connect_to_db(db_name, table_name)
+    db_name = TABLE_DB_MAP.get(table_name)
+    if not db_name:
+        raise ValueError(f"No database mapping found for table: {table_name}")
+    
+    conn = connect_to_db(table_name)
     if conn:
         try:
             cursor = conn.cursor()
@@ -93,7 +114,7 @@ def delete_all_records(db_name, table_name):
             disconnect_from_db(conn)
     disconnect_from_db(conn)
 
-def get_row_count(db_name, table_name):
+def get_row_count(table_name):
     """
     Get the total number of rows in a specified database table.
     
@@ -105,8 +126,12 @@ def get_row_count(db_name, table_name):
         int: Number of rows in the table, or -1 if there's an error
     """
     logger = logging.getLogger(__name__)
+    db_name = TABLE_DB_MAP.get(table_name)
+    if not db_name:
+        raise ValueError(f"No database mapping found for table: {table_name}")
+    
     try:
-        conn = connect_to_db(db_name, table_name)
+        conn = connect_to_db(table_name)
         if not conn:
             log_error(logger, f"[ERROR] Unable to connect to database {db_name}")
             return -1
@@ -138,7 +163,7 @@ def insert_dbperformance(db_name, query, description, execution_time, rows_retur
     logger = logging.getLogger(__name__)
 
     try:
-        conn = connect_to_db(CONST_PERFORMANCE_DB, "dbperformance")
+        conn = connect_to_db("dbperformance")
         if not conn:
             log_error(logger, f"[ERROR] Unable to connect to {CONST_PERFORMANCE_DB} for dbperformance insert.")
             return False
@@ -193,7 +218,7 @@ def run_timed_query(cursor, query, params=None, description=None, fetch_all=True
         insert_dbperformance(CONST_CONSOLIDATED_DB, query, desc, execution_time, rowcount)
         return rowcount, execution_time
     
-def delete_table(db_name, table_name):
+def delete_table(table_name):
     """
     Delete (drop) a table from the specified SQLite database.
 
@@ -205,8 +230,12 @@ def delete_table(db_name, table_name):
         bool: True if the table was deleted successfully, False otherwise.
     """
     logger = logging.getLogger(__name__)
+    db_name = TABLE_DB_MAP.get(table_name)
+    if not db_name:
+        raise ValueError(f"No database mapping found for table: {table_name}")
+    
     try:
-        conn = connect_to_db(db_name, table_name)
+        conn = connect_to_db(table_name)
         if not conn:
             log_error(logger, f"[ERROR] Unable to connect to database {db_name}")
             return False

@@ -28,7 +28,7 @@ def insert_dns_query(client_ip, domain, times_seen, datasource):
     
     try:
         # Connect to the dnsqueries database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
+        conn = connect_to_db( "dnsqueries")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to dnsqueries database.")
             return False
@@ -77,7 +77,7 @@ def get_client_dns_queries(client_ip):
 
     try:
         # Connect to the dnsqueries database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
+        conn = connect_to_db( "dnsqueries")
         if not conn:
             log_error(logger, f"[ERROR] Unable to connect to Pi-hole database.")
             return []
@@ -134,7 +134,7 @@ def insert_dns_queries_batch(queries, datasource):
     
     try:
         # Connect to the dnsqueries database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
+        conn = connect_to_db( "dnsqueries")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to dnsqueries database for batch insert.")
             return False, 0
@@ -202,7 +202,7 @@ def update_dns_query_response(response, id):
     
     try:
         # Connect to the dnsqueries database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
+        conn = connect_to_db( "dnsqueries")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to dnsqueries database.")
             return False
@@ -244,7 +244,7 @@ def get_dnsqueries_without_responses():
 
     try:
         # Connect to the dnsqueries database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
+        conn = connect_to_db( "dnsqueries")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to dnsqueries database.")
             return []
@@ -294,7 +294,7 @@ def get_ip_to_domain_mapping():
 
     try:
         # Connect to the database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
+        conn = connect_to_db( "dnsqueries")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to database for IP-domain mapping.")
             return {}

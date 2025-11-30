@@ -16,7 +16,7 @@ def add_tag_to_localhost(ip_address, tag):
     Add a tag to the 'tags' column of a localhost entry.
     If the tag already exists, do nothing.
     """
-    conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+    conn = connect_to_db( "localhosts")
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT tags FROM localhosts WHERE ip_address = ?", (ip_address,))
@@ -39,7 +39,7 @@ def delete_tag_from_localhost(ip_address, tag):
     """
     Remove a tag from the 'tags' column of a localhost entry.
     """
-    conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+    conn = connect_to_db( "localhosts")
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT tags FROM localhosts WHERE ip_address = ?", (ip_address,))

@@ -24,7 +24,7 @@ def insert_action(action_text):
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "actions")
+        conn = connect_to_db( "actions")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to actions database.")
             return False
@@ -56,7 +56,7 @@ def get_all_actions():
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "actions")
+        conn = connect_to_db( "actions")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to actions database.")
             return []
@@ -95,7 +95,7 @@ def update_action_acknowledged(action_id):
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "actions")
+        conn = connect_to_db( "actions")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to actions database.")
             return False
@@ -128,7 +128,7 @@ def update_action_acknowledged_all():
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "actions")
+        conn = connect_to_db( "actions")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to actions database.")
             return False

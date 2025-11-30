@@ -27,7 +27,7 @@ def get_localhost_by_ip(ip_address):
     
     try:
         # Connect to the localhosts database
-        conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn = connect_to_db( "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return None
@@ -76,7 +76,7 @@ def get_localhosts_all():
               or an empty list if an error occurs.
     """
     logger = logging.getLogger(__name__)
-    conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+    conn = connect_to_db( "localhosts")
 
     if not conn:
         log_error(logger, "[ERROR] Unable to connect to localhosts database")
@@ -119,7 +119,7 @@ def get_localhosts():
         set: A set of IP addresses from the localhosts database, or an empty set if an error occurs.
     """
     logger = logging.getLogger(__name__)
-    conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+    conn = connect_to_db( "localhosts")
 
     if not conn:
         log_error(logger, "[ERROR] Unable to connect to localhosts database")
@@ -159,7 +159,7 @@ def update_localhosts(ip_address, mac_vendor=None, dhcp_hostname=None, dns_hostn
         bool: True if the operation was successful, False otherwise.
     """
     logger = logging.getLogger(__name__)
-    conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+    conn = connect_to_db( "localhosts")
 
     if not conn:
         log_error(logger, "[ERROR] Unable to connect to localhosts database")
@@ -209,7 +209,7 @@ def insert_localhost_basic(ip_address, original_flow=None):
     
     try:
         # Connect to the localhosts database
-        conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn = connect_to_db( "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return False
@@ -261,7 +261,7 @@ def classify_localhost(ip_address, description, icon, management_link, mac_addre
     logger = logging.getLogger(__name__)
 
     try:
-        conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn = connect_to_db( "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return False
@@ -312,7 +312,7 @@ def delete_localhost_database(ip_address):
     
     try:
         # Connect to the localhosts database
-        conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn = connect_to_db( "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return False
@@ -329,7 +329,7 @@ def delete_localhost_database(ip_address):
             log_warn(logger, f"[WARN] No localhost found with IP {ip_address} to delete")
         
         # Delete related alerts
-        conn_alerts = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn_alerts = connect_to_db( "alerts")
         if conn_alerts:
             cursor_alerts = conn_alerts.cursor()
             cursor_alerts.execute("DELETE FROM alerts WHERE ip_address = ?", (ip_address,))
@@ -338,7 +338,7 @@ def delete_localhost_database(ip_address):
             disconnect_from_db(conn_alerts)
         
         # Delete related flows from allflows where src_ip or dst_ip matches
-        conn_flows = connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
+        conn_flows = connect_to_db( "allflows")
         if conn_flows:
             cursor_flows = conn_flows.cursor()
             cursor_flows.execute("DELETE FROM allflows WHERE src_ip = ? OR dst_ip = ?", (ip_address, ip_address))
@@ -346,7 +346,7 @@ def delete_localhost_database(ip_address):
             log_info(logger, f"[INFO] Deleted flows from allflows for IP: {ip_address}")
             disconnect_from_db(conn_flows)
 
-        conn_flows = connect_to_db(CONST_CONSOLIDATED_DB, "dnsqueries")
+        conn_flows = connect_to_db( "dnsqueries")
         if conn_flows:
             cursor_flows = conn_flows.cursor()
             cursor_flows.execute("DELETE FROM dnsqueries WHERE client_ip = ?", (ip_address,))
@@ -372,7 +372,7 @@ def update_localhost_threat_score(identifier, threat_score):
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn = connect_to_db( "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return False
@@ -410,7 +410,7 @@ def update_localhost_alerts_enabled(identifier, alerts_enabled):
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn = connect_to_db( "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return False
@@ -460,7 +460,7 @@ def delete_alerts_by_ip(ip_address):
     
     try:
         # Connect to the alerts database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "alerts")
+        conn = connect_to_db( "alerts")
         if not conn:
             log_error(logger, f"[ERROR] Unable to connect to alerts database.")
             return False, 0
@@ -500,7 +500,7 @@ def get_average_threat_score():
         int: The average threat score rounded up to the nearest integer, or None if there are no records or an error occurs.
     """
     logger = logging.getLogger(__name__)
-    conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+    conn = connect_to_db( "localhosts")
     if not conn:
         log_error(logger, "[ERROR] Unable to connect to localhosts database")
         return None
@@ -525,7 +525,7 @@ def insert_localhost_basic_by_mac(mac_address):
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn = connect_to_db( "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return False
@@ -563,7 +563,7 @@ def get_localhost(identifier):
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn = connect_to_db( "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return None
@@ -597,7 +597,7 @@ def delete_localhost(identifier):
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn = connect_to_db( "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return False
@@ -634,7 +634,7 @@ def update_localhosts(identifier, mac_vendor=None, dhcp_hostname=None, dns_hostn
         bool: True if the operation was successful, False otherwise.
     """
     logger = logging.getLogger(__name__)
-    conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+    conn = connect_to_db( "localhosts")
 
     if not conn:
         log_error(logger, "[ERROR] Unable to connect to localhosts database")
@@ -677,7 +677,7 @@ def update_localhost_last_dhcp_discover(mac_address):
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        conn = connect_to_db( "localhosts")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to localhosts database.")
             return False

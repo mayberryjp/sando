@@ -25,7 +25,7 @@ def bulk_populate_master_flow_view():
     logger = logging.getLogger(__name__)
     try:
         log_info(logger, f"[INFO] Loading allflows from {CONST_CONSOLIDATED_DB}...")
-        src_conn= connect_to_db(CONST_CONSOLIDATED_DB, "allflows")
+        src_conn= connect_to_db( "allflows")
         src_cursor = src_conn.cursor()
         src_cursor.execute("SELECT rowid, src_ip, dst_ip, src_port, dst_port, protocol, tags, flow_start, last_seen, packets, bytes, times_seen FROM allflows")
         allflows_rows = src_cursor.fetchall()
@@ -33,14 +33,14 @@ def bulk_populate_master_flow_view():
         log_info(logger, f"[INFO] Loaded {len(allflows_rows)} flows.")
 
         log_info(logger, f"[INFO] Loading dnskeyvalue from {CONST_EXPLORE_DB}...")
-        tgt_conn = connect_to_db(CONST_EXPLORE_DB, "dnskeyvalue")
+        tgt_conn = connect_to_db( "dnskeyvalue")
         tgt_cursor = tgt_conn.cursor()
         tgt_cursor.execute("SELECT ip, domain FROM dnskeyvalue")
         dnskeyvalue = dict(tgt_cursor.fetchall())
         disconnect_from_db(tgt_conn)
 
         log_info(logger, f"[INFO] Loading geolocation from {CONST_CONSOLIDATED_DB}...")
-        src_conn = connect_to_db(CONST_CONSOLIDATED_DB, "geolocation")
+        src_conn = connect_to_db( "geolocation")
         src_cursor = src_conn.cursor()
         src_cursor.execute("SELECT start_ip, end_ip, country_name FROM geolocation")
         geolocation_rows = src_cursor.fetchall()
@@ -54,7 +54,7 @@ def bulk_populate_master_flow_view():
         geo_starts = [start for start, end, country in geolocations_sorted]
 
         log_info(logger, f"[INFO] Loading ipasn from {CONST_CONSOLIDATED_DB}...")
-        src_conn = connect_to_db(CONST_CONSOLIDATED_DB, "ipasn")
+        src_conn = connect_to_db( "ipasn")
         src_cursor = src_conn.cursor()
         src_cursor.execute("SELECT start_ip, end_ip, asn, isp_name FROM ipasn")
         ipasn_rows = src_cursor.fetchall()
@@ -87,7 +87,7 @@ def bulk_populate_master_flow_view():
         total_flows = len(allflows_rows)
         progress_step = max(1, total_flows // 20)  # Log progress every 2%
         # Load localhosts DNS hostnames
-        tgt_conn = connect_to_db(CONST_LOCALHOSTS_DB, "localhosts")
+        tgt_conn = connect_to_db( "localhosts")
         tgt_cursor = tgt_conn.cursor()
         tgt_cursor.execute("SELECT ip_address, dns_hostname FROM localhosts")
         localhosts_dns = {row[0]: row[1] for row in tgt_cursor.fetchall()}
@@ -126,7 +126,7 @@ def bulk_populate_master_flow_view():
         batch_size = 1000
         total = len(master_rows)
 
-        tgt_conn = connect_to_db(CONST_EXPLORE_DB, "explore")
+        tgt_conn = connect_to_db( "explore")
         tgt_cursor= tgt_conn.cursor()
 
         for i in range(0, total, batch_size):
@@ -162,7 +162,7 @@ def create_dns_key_value():
 
         log_info(logger, f"[INFO] Connecting to target database: {CONST_EXPLORE_DB}")
         delete_all_records(CONST_EXPLORE_DB, "dnskeyvalue")
-        conn = connect_to_db(CONST_EXPLORE_DB, "dnskeyvalue")
+        conn = connect_to_db( "dnskeyvalue")
         cursor = conn.cursor()
         # Prepare data for insertion
         rows = [(ip, domain) for ip, domain in mapping.items()]
@@ -185,7 +185,7 @@ def get_latest_master_flows(limit=100, page=0):
     """
     try:
         offset = page * limit
-        conn = connect_to_db(CONST_EXPLORE_DB, "explore")
+        conn = connect_to_db( "explore")
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -228,7 +228,7 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
     """
     try:
         offset = page * page_size
-        conn = connect_to_db(CONST_EXPLORE_DB, "explore")
+        conn = connect_to_db( "explore")
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 

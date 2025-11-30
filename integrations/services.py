@@ -46,7 +46,7 @@ def create_services_db():
         # Step 2: Parse and insert the CSV data
         log_info(logger, "[INFO] Parsing and preparing IANA services data...")
         
-        delete_all_records(CONST_CONSOLIDATED_DB, "services")
+        delete_all_records( "services")
         
         # Parse CSV
         csv_data = io.StringIO(response.text)

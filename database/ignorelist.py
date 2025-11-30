@@ -21,7 +21,7 @@ def get_ignorelist():
     """
     logger = logging.getLogger(__name__)
     try:
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "ignorelist")
+        conn = connect_to_db( "ignorelist")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to ignorelist database")
             return None
@@ -66,7 +66,7 @@ def import_ignorelists(config_dict):
         log_info(logger, "[INFO] No ignorelist entries found in config_dict.")
         return
 
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, "ignorelist")
+    conn = connect_to_db( "ignorelist")
     if not conn:
         log_error(logger, "[ERROR] Unable to connect to ignorelist database.")
         return
@@ -118,7 +118,7 @@ def delete_ignorelist_entry(ignorelist_id):
     
     try:
         # Connect to the ignorelist database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "ignorelist")
+        conn = connect_to_db( "ignorelist")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to ignorelist database.")
             return False
@@ -167,7 +167,7 @@ def insert_ignorelist_entry(ignorelist_id, src_ip, dst_ip, dst_port, protocol, s
     
     try:
         # Connect to the ignorelist database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "ignorelist")
+        conn = connect_to_db( "ignorelist")
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to ignorelist database.")
             return False
@@ -263,7 +263,7 @@ def get_ignorelist_for_ip(local_ip):
     
     try:
         # Connect to the ignorelist database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "ignorelist")
+        conn = connect_to_db( "ignorelist")
         if not conn:
             log_error(logger, f"[ERROR] Unable to connect to ignorelist database for IP {local_ip}")
             return result

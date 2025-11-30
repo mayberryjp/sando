@@ -28,7 +28,7 @@ def update_tor_nodes(config_dict):
     try:
 
         # Use delete_all_records to clear the tornodes table
-        delete_all_records(CONST_CONSOLIDATED_DB, "tornodes")
+        delete_all_records( "tornodes")
 
         log_info(logger,"[INFO] About to request tor node list from dan.me.uk")
         # Download new list with timeout

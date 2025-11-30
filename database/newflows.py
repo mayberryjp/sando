@@ -29,7 +29,7 @@ def get_new_flows():
     
     try:
         # Connect to the newflows database
-        conn = connect_to_db(CONST_CONSOLIDATED_DB, "newflows")
+        conn = connect_to_db( "newflows")
         if not conn:
             log_error(logger, "[ERROR] Failed to connect to newflows database")
             return []
@@ -55,7 +55,7 @@ def get_new_flows():
             disconnect_from_db(conn)
 
 def update_new_flow(record):
-    conn = connect_to_db(CONST_CONSOLIDATED_DB, "newflows")
+    conn = connect_to_db( "newflows")
     c = conn.cursor()
 
     c.execute('''

@@ -426,7 +426,7 @@ def setup_alerts_routes(app):
             # Import or use the database function
             from database.core import delete_all_records            
             # Delete all alerts
-            count = delete_all_records(CONST_CONSOLIDATED_DB, "alerts")
+            count = delete_all_records( "alerts")
             
             response.content_type = 'application/json'
 
