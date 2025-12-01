@@ -186,6 +186,7 @@ def create_geolocation_db():
                 continue
             local_networks_batch.append((network, start_ip, end_ip, netmask, SITE))
 
+        local_networks_batch.append(("224.0.0.0/4", "3758096384", "4026531839", "4", "Multicast"))
         log_info(logger, f"[INFO] Adding Other Networks to geolocation database...")
 
         # Process the local networks batch
