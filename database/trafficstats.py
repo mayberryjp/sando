@@ -169,13 +169,13 @@ def get_traffic_stats_for_ip(ip_address):
     """
     logger = logging.getLogger(__name__)
     try:
-        # Connect to the consolidated database
-        conn = connect_to_db( "trafficstats")
-        if not conn:
+        # Connect to the trafficstats database
+        conn_traffic = connect_to_db("trafficstats")
+        if not conn_traffic:
             log_error(logger, "[ERROR] Unable to connect to trafficstats database.")
             return []
 
-        cursor = conn.cursor()
+        cursor_traffic = conn_traffic.cursor()
 
         # Query to retrieve traffic data for the specified IP address within last 100 hours
         traffic_query = """
@@ -186,15 +186,21 @@ def get_traffic_stats_for_ip(ip_address):
             ORDER BY timestamp DESC
         """
         
-        # Use run_timed_query for performance tracking
         traffic_rows, traffic_query_time = run_timed_query(
-            cursor,
+            cursor_traffic,
             traffic_query,
             (ip_address,),
             description=f"get_traffic_stats_for_ip_get_traffic_stats"
         )
-        
-        # Query to retrieve alert counts for the same IP address
+        disconnect_from_db(conn_traffic)
+
+        # Connect to the alerts database
+        conn_alerts = connect_to_db("alerts")
+        if not conn_alerts:
+            log_error(logger, "[ERROR] Unable to connect to alerts database.")
+            return []
+
+        cursor_alerts = conn_alerts.cursor()
         alerts_query = """
             SELECT 
                 strftime('%Y-%m-%d:%H', last_seen) AS hour,
@@ -209,15 +215,13 @@ def get_traffic_stats_for_ip(ip_address):
                 hour ASC
         """
         
-        # Use run_timed_query for performance tracking
         alert_rows, alerts_query_time = run_timed_query(
-            cursor,
+            cursor_alerts,
             alerts_query,
             (ip_address,),
             description=f"get_traffic_stats_for_ip_get_alert_counts"
         )
-        
-        disconnect_from_db(conn)
+        disconnect_from_db(conn_alerts)
 
         # Create a mapping of timestamps to traffic data
         traffic_data = {}
