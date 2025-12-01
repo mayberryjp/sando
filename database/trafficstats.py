@@ -279,6 +279,8 @@ def get_traffic_stats_for_ip(ip_address):
         log_error(logger, f"[ERROR] Unexpected error while retrieving traffic stats for IP {ip_address}: {e}")
         return []
     finally:
-        if 'conn' in locals() and conn:
-            disconnect_from_db(conn)
+        if 'conn_traffic' in locals() and conn_traffic:
+            disconnect_from_db(conn_traffic)
+        if 'conn_alerts' in locals() and conn_alerts:
+            disconnect_from_db(conn_alerts)
 
