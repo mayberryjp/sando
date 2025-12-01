@@ -34,7 +34,7 @@ if __name__ == "__main__":
         config_dict = init_configurations_from_variable()
 
     if not os.path.exists(CONST_ACTIONS_DB):
-        log_info(logger, f"[INFO] Consolidated database not found, creating at {CONST_ACTIONS_DB}. We assume this is a first time install. ")
+        log_info(logger, f"[INFO] Actions database not found, creating at {CONST_ACTIONS_DB}. We assume this is a first time install. ")
         create_table(CONST_CREATE_ACTIONS_SQL, "actions")
         os.makedirs(os.path.dirname(schema_file_path), exist_ok=True)
         with open(schema_file_path, 'w') as f:
@@ -53,7 +53,7 @@ if __name__ == "__main__":
         log_info(logger, f"[INFO] No site-specific configuration found at {site_config_path}. This is OK. ")
 
     create_table(CONST_CREATE_CONFIG_SQL, "configuration")
-    create_table( CONST_CREATE_LOCALHOSTS_SQL, "localhosts")
+    create_table(CONST_CREATE_LOCALHOSTS_SQL, "localhosts")
     create_table(CONST_CREATE_SERVICES_SQL, "services")
     create_table(CONST_CREATE_ACTIONS_SQL,"actions")
     create_table(CONST_CREATE_CONFIG_SQL, "configuration")
@@ -70,8 +70,8 @@ if __name__ == "__main__":
     create_table(CONST_CREATE_TORNODES_SQL, "tornodes")
     create_table(CONST_CREATE_DNSQUERIES_SQL, "dnsqueries")
     create_table(CONST_CREATE_IPASN_SQL, "ipasn")
-    create_table( CONST_CREATE_EXPLORE_SQL, "explore")
-    create_table( CONST_CREATE_DNSKEYVALUE_SQL, "dnskeyvalue")
+    create_table(CONST_CREATE_EXPLORE_SQL, "explore")
+    create_table(CONST_CREATE_DNSKEYVALUE_SQL, "dnskeyvalue")
     create_table(CONST_CREATE_DBPERFORMANCE_SQL, "dbperformance")
 
     store_machine_unique_identifier()

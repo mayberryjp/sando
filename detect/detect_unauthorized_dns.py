@@ -30,6 +30,17 @@ def detect_unauthorized_dns(rows, config_dict):
     log_info(logger,"[INFO] Starting detecting unauthorized NTP destinations")
     # Get the list of approved DNS servers
     approved_dns_servers = set(config_dict.get("ApprovedLocalDnsServersList", "").split(","))
+
+    try:
+        scopes_raw = config_dict.get("LocalNetworks", "[]")
+        scopes = json.loads(scopes_raw)
+        for scope in scopes:
+            dns_list = scope.get("dns_servers", [])
+            approved_dns_servers.update(dns_list)
+    except Exception as e:
+        log_warn(logger, f"[WARN] Could not parse scope DNS servers: {e}")
+
+
     if not approved_dns_servers:
         log_warn(logger, "[WARN] No approved DNS servers configured")
         return

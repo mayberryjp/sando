@@ -32,6 +32,15 @@ def detect_unauthorized_ntp(rows, config_dict):
     # Get the list of approved NTP servers
     approved_ntp_servers = set(config_dict.get("ApprovedLocalNtpServersList", "").split(","))
 
+    try:
+        scopes_raw = config_dict.get("LocalNetworks", "[]")
+        scopes = json.loads(scopes_raw)
+        for scope in scopes:
+            ntp_list = scope.get("ntp_servers", [])
+            approved_ntp_servers.update(ntp_list)
+    except Exception as e:
+        log_warn(logger, f"[WARN] Could not parse scope NTP servers: {e}")
+
     if not approved_ntp_servers:
         log_warn(logger, "[WARN] No approved NTP servers configured")
         return

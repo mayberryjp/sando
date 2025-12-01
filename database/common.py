@@ -527,6 +527,15 @@ def collect_database_counts():
             except Exception as e:
                 log_error(logger, f"[ERROR] Error checking system health: {e}")
             
+            if counts["last_flow_seen"]:
+                try:
+                    tz_name = os.getenv("TZ", "UTC")
+                    local_tz = pytz.timezone(tz_name)
+                    dt = datetime.strptime(counts["last_flow_seen"], '%Y-%m-%d %H:%M:%S')
+                    counts["last_flow_seen"] = local_tz.localize(dt).isoformat()
+                except Exception:
+                    pass
+
             log_info(logger, f"[INFO] Retrieved flow statistics from configuration: "
                      f"Packets: {counts['total_packets']}, Flows: {counts['total_flows']}, "
                      f"Bytes: {counts['total_bytes']}, Last seen: {counts['last_flow_seen']}")

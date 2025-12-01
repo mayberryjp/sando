@@ -1,11 +1,10 @@
-VERSION="v0.3.1077"
+VERSION="v0.3.1096"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
 CONST_API_LISTEN_PORT=8044
 CONST_API_LISTEN_ADDRESS="0.0.0.0"
 IS_CONTAINER=1
-
 CONST_CONFIGURATION_DB = "/database/configuration.db"
 CONST_PERFORMANCE_DB= "/database/performance.db"
 CONST_EXPLORE_DB= "/database/explore.db"
@@ -327,7 +326,7 @@ CONST_INSTALL_CONFIGS = [
     ('IgnoreListEntries', ''),
     ('DnsResolverTimeout', 3),
     ('DnsResolverRetries', 1),
-    ('PiholeUrl', 'http://192.168.49.80/api'),
+    ('PiholeUrl', 'example: http://192.168.49.80/api'),
     ('PiholeApiKey',''),
     ('DiscoveryReverseDns', '0'),
     ('DiscoveryPiholeDhcp', '0'),
@@ -350,8 +349,8 @@ CONST_INSTALL_CONFIGS = [
     ('TorFlowDetection','0'),
     ('TorNodesUrl','https://www.dan.me.uk/torlist/?full'),
     ('HighBandwidthFlowDetection','0'),
-    ('MaxPackets',30000),
-    ('MaxBytes',3000000),
+    ('MaxPackets',100000),
+    ('MaxBytes',100000000),
     ('StorePiHoleDnsQueryHistory','0'),
     ('SendDeviceClassificationsToHomelabApi','0'),
     ('CollectorProcessingInterval','60'),
@@ -377,5 +376,5 @@ CONST_INSTALL_CONFIGS = [
     ('PerformDnsResponseLookupsForInvestigations','0'),
     ('ProcessRunInterval','60'),
     ('IntegrationFetchInterval','86400'),
-    ('DatabaseSchemaVersion', '13'),
+    ('DatabaseSchemaVersion', str(CONST_DATABASE_SCHEMA_VERSION)),
 ]
