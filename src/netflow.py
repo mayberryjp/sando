@@ -198,7 +198,7 @@ def handle_netflow_v5():
     # Run processor in main thread
     process_netflow_packets()
 
-def write_new_flow_to_csv(record, filename="newflows.csv"):
+def write_new_flow_to_csv(record, filename="/database/newflows.csv"):
     """
     Write a new flow record to a CSV file as a comma-separated string (no CSV module).
     Args:
