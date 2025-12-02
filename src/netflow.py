@@ -156,10 +156,15 @@ def process_netflow_packets():
 
                         # Apply tags and update flow database
                         record = apply_tags(record, ignorelist, broadcast_addresses, tag_entries, config_dict, CONST_LINK_LOCAL_RANGE)
+                        if config_dict.get("WriteNewFlowsToCsv", 0) == 1:
+                            write_new_flow_to_csv(record)
                         update_new_flow(record)
                         total_flows += 1
                         total_bytes += record.get('bytes', 0)
                         total_packets += record.get('packets', 0)
+
+                        if config_dict.get("WriteNewFlowsToCsv", 0) == 1:
+                            write_new_flow_to_csv(record)
 
                 log_info(logger, f"[INFO] Processed {total_flows} flows from {len(packets)} packets")
 
@@ -192,3 +197,28 @@ def handle_netflow_v5():
     
     # Run processor in main thread
     process_netflow_packets()
+
+def write_new_flow_to_csv(record, filename="newflows.csv"):
+    """
+    Write a new flow record to a CSV file as a comma-separated string (no CSV module).
+    Args:
+        record (dict): The flow record to write.
+        filename (str): The CSV file name.
+    """
+    fieldnames = [
+        'src_ip', 'dst_ip', 'nexthop', 'input_iface', 'output_iface', 'packets', 'bytes',
+        'start_time', 'end_time', 'src_port', 'dst_port', 'tcp_flags', 'protocol', 'tos',
+        'src_as', 'dst_as', 'src_mask', 'dst_mask', 'tags', 'last_seen', 'times_seen'
+    ]
+    try:
+        line = ",".join([str(record.get(k, "")) for k in fieldnames]) + "\n"
+        # Write header if file does not exist or is empty
+        if not os.path.isfile(filename) or os.path.getsize(filename) == 0:
+            header = ",".join(fieldnames) + "\n"
+            with open(filename, "a") as f:
+                f.write(header)
+        with open(filename, "a") as f:
+            f.write(line)
+    except Exception as e:
+        logging.getLogger(__name__).error(f"[ERROR] Failed to write flow to CSV: {e}")
+
