@@ -108,10 +108,10 @@ def process_data():
                 if config_dict.get("LocalFlowsDetection", 0) > 0:
                     local_flows_detection(filtered_rows, config_dict)
 
-                if config_dict.get("UnauthorizedDNSDetection", 0) > 0:
+                if config_dict.get("BypassLocalDnsDetection", 0) > 0:
                     detect_unauthorized_dns(filtered_rows, config_dict)
                 
-                if config_dict.get("UnauthorizedNTPDetection", 0) > 0:
+                if config_dict.get("BypassLocalNtpDetection", 0) > 0:
                     detect_unauthorized_ntp(filtered_rows, config_dict)
 
                 if config_dict.get("IncorrectAuthoritativeDnsDetection", 0) > 0:

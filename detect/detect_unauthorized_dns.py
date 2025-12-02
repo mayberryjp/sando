@@ -27,7 +27,7 @@ def detect_unauthorized_dns(rows, config_dict):
         config_dict: Dictionary containing configuration settings
     """
     logger = logging.getLogger(__name__)
-    log_info(logger,"[INFO] Starting detecting unauthorized NTP destinations")
+    log_info(logger,"[INFO] Starting detecting unauthorized DNS destinations")
     # Get the list of approved DNS servers
     approved_dns_servers = set(config_dict.get("ApprovedLocalDnsServersList", "").split(","))
 
