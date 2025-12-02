@@ -52,7 +52,7 @@ def detect_unauthorized_dns(rows, config_dict):
         src_ip, dst_ip, src_port, dst_port, protocol = row[0:5]
 
         # Check if either IP is not in the approved DNS servers list
-        if src_ip not in approved_dns_servers:
+        if dst_ip not in approved_dns_servers:
             if is_ip_in_range(src_ip, LOCAL_NETWORKS):
             # Create a unique identifier for this alert
                 alert_id = f"{src_ip}_{dst_ip}__UnauthorizedDNS"
