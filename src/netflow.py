@@ -156,15 +156,14 @@ def process_netflow_packets():
 
                         # Apply tags and update flow database
                         record = apply_tags(record, ignorelist, broadcast_addresses, tag_entries, config_dict, CONST_LINK_LOCAL_RANGE)
+
                         if config_dict.get("WriteNewFlowsToCsv", 0) == 1:
                             write_new_flow_to_csv(record)
+                        
                         update_new_flow(record)
                         total_flows += 1
                         total_bytes += record.get('bytes', 0)
                         total_packets += record.get('packets', 0)
-
-                        if config_dict.get("WriteNewFlowsToCsv", 0) == 1:
-                            write_new_flow_to_csv(record)
 
                 log_info(logger, f"[INFO] Processed {total_flows} flows from {len(packets)} packets")
 
