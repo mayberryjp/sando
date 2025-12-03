@@ -11,10 +11,10 @@ RUN apk update && apk add --no-cache \
     ca-certificates
 
 # Clone the repository
-RUN git clone https://github.com/mayberryjp/homelabids.git /homelabids
+RUN git clone https://github.com/mayberryjp/sando.git /sando
 
 # Set the working directory
-WORKDIR /homelabids
+WORKDIR /sando
 
 # Install Python dependencies
 RUN pip install --no-cache-dir schedule requests bottle dnspython python-nmap psutil dnslib waitress pytz
@@ -28,5 +28,5 @@ EXPOSE 53
 ENV PYTHONUNBUFFERED=1
 
 # Run supervisord
-ENTRYPOINT ["/usr/bin/supervisord", "-c", "/homelabids/super.conf"]
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/sando/super.conf"]
 CMD ["-n"]

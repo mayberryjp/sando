@@ -1,12 +1,12 @@
 version: "3"
 services:
-  homelabids:
+  sando:
     network_mode: host
-    container_name: homelabids
+    container_name: sando
     restart: "unless-stopped"
-    image: homelabids:latest
+    image: sando:latest
     volumes:
-      - /docker/homelabids:/database
+      - /docker/sando:/database
     environment: 
       - TZ=Asia/Tokyo
       - SITE=MYSITE
