@@ -420,6 +420,7 @@ class DHCPServer:
     
     def _handle_discover(self, packet, addr):
         """Handle DHCP DISCOVER message."""
+        self.reload_scopes()  # <-- Reload scopes on every DISCOVER
         mac = packet['mac']
         try:
             update_localhost_last_dhcp_discover(mac)
@@ -455,6 +456,7 @@ class DHCPServer:
 
     def _handle_request(self, packet, addr):
         """Handle DHCP REQUEST message."""
+        self.reload_scopes()  # <-- Reload scopes on every REQUEST
         mac = packet['mac']
 
         try:
@@ -610,6 +612,13 @@ class DHCPServer:
         if self.sock:
             self.sock.close()
         log_info(self.logger, "[INFO] DHCP server stopped")
+
+    def reload_scopes(self):
+        """
+        Reload DHCP scopes from configuration.
+        """
+        self.scopes = self._load_scopes_from_configuration()
+        log_info(self.logger, f"[INFO] DHCP scopes reloaded: {len(self.scopes)}")
 
 
 if __name__ == "__main__":
