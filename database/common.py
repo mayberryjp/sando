@@ -133,6 +133,11 @@ def update_database_schema(current_version, target_version):
             migrate_configurations_schema14_to_schema15()
            # delete_all_records( "dbperformance")
 
+        if current_version_int < 16:  #RESUME HERE #TODO: Implement migration logic
+            log_info(logger, "[INFO] Version is less than 16, adding column to localhosts table")
+            migrate_configurations_schema15_to_schema16()
+           # delete_all_records( "dbperformance")
+
         return True
         
     except ValueError as e:
@@ -256,6 +261,43 @@ def migrate_configurations_schema14_to_schema15():
             disconnect_from_db(conn_consolidated)
         if 'conn_localhosts' in locals() and conn_localhosts:
             disconnect_from_db(conn_localhosts)
+
+
+
+def migrate_configurations_schema15_to_schema16():
+    """
+    Adds a 'whitelisted' column (int, default 0) to the localhosts table if it does not exist.
+    """
+    logger = logging.getLogger(__name__)
+    log_info(logger, "[INFO] Adding 'whitelisted' column to localhosts table (default 0)")
+
+    try:
+        conn = connect_to_db("localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Failed to connect to LOCALHOSTS_DB")
+            return False
+
+        cursor = conn.cursor()
+        # Check if 'whitelisted' column exists
+        cursor.execute("PRAGMA table_info(localhosts)")
+        columns = [row[1] for row in cursor.fetchall()]
+        if "whitelisted" not in columns:
+            cursor.execute("ALTER TABLE localhosts ADD COLUMN whitelisted INTEGER DEFAULT 0")
+            conn.commit()
+            log_info(logger, "[INFO] 'whitelisted' column added to localhosts table")
+        else:
+            log_info(logger, "[INFO] 'whitelisted' column already exists in localhosts table")
+
+        disconnect_from_db(conn)
+        return True
+
+    except Exception as e:
+        log_error(logger, f"[ERROR] Failed to add 'whitelisted' column: {e}")
+        return False
+    finally:
+        if 'conn' in locals() and conn:
+            disconnect_from_db(conn)
+
 
 
 def store_site_name(site_name):

@@ -31,6 +31,10 @@ def handle_alert(config_dict, detection_key, telegram_message, local_ip, origina
     # Get the detection level from the configuration
     detection_level = config_dict.get(detection_key, 0)
     
+    if localhost_info and len(localhost_info) > 19 and localhost_info[19] == 1:
+        log_info(logger, f"[INFO] Alert logic skipped for {local_ip} host is excluded from alerting")
+        return None
+    
     # Only proceed if detection is enabled
     if detection_level >= 1:
         # Check if alerts are enabled for this IP address

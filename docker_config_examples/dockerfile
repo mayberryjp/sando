@@ -23,6 +23,7 @@ RUN pip install --no-cache-dir schedule requests bottle dnspython python-nmap ps
 EXPOSE 2055
 EXPOSE 8044
 EXPOSE 53
+EXPOSE 67
 
 # Ensure Python output is not buffered
 ENV PYTHONUNBUFFERED=1

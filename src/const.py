@@ -1,4 +1,4 @@
-VERSION="v0.3.1122"
+VERSION="v0.3.1135"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT=2055
 CONST_COLLECTOR_LISTEN_ADDRESS="0.0.0.0"
@@ -49,7 +49,7 @@ CONST_TEST_SOURCE_DB = ['/database/test_source_1.db']
 CONST_SITE= 'TESTPPE'
 CONST_LINK_LOCAL_RANGE = ["169.254.0.0/16"]
 CONST_REINITIALIZE_DB = 0
-CONST_DATABASE_SCHEMA_VERSION=15
+CONST_DATABASE_SCHEMA_VERSION=16
 CONST_CREATE_DBPERFORMANCE_SQL='''
             CREATE TABLE IF NOT EXISTS dbperformance (
                 id INTEGER PRIMARY KEY,
@@ -221,7 +221,8 @@ CONST_CREATE_LOCALHOSTS_SQL = """
         alerts_enabled INTEGER DEFAULT 1,
         management_link TEXT,
         last_seen TEXT,
-        last_dhcp_discover TEXT
+        last_dhcp_discover TEXT, 
+        whitelisted INTEGER DEFAULT 0
     )
 """
 
