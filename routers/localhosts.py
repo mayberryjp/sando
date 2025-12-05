@@ -203,3 +203,45 @@ def setup_localhosts_routes(app):
             log_error(logger, f"[ERROR] Failed to update alerts_enabled for IP address {ip_address}: {e}")
             response.status = 500
             return {"success": False, "error": str(e)}
+        
+
+    @app.route('/api/localhosts/csv', method=['GET'])
+    def dump_localhosts_csv():
+        """
+        API endpoint to dump the entire localhosts table as a CSV string with header columns.
+        Does not send a file, just returns the CSV as plain text.
+        """
+        logger = logging.getLogger(__name__)
+        try:
+            from database.localhosts import get_localhosts_all
+            localhosts_data = get_localhosts_all()
+
+            if not localhosts_data or len(localhosts_data) == 0:
+                response.content_type = 'text/plain'
+                return "No data found"
+
+            # Use keys from the first dictionary as column headers
+            columns = list(localhosts_data[0].keys())
+            csv_lines = []
+            csv_lines.append(",".join(columns))
+            for row in localhosts_data:
+                csv_row = []
+                for col in columns:
+                    value = row.get(col, "")
+                    if value is None:
+                        csv_row.append("")
+                    else:
+                        s = str(value)
+                        if ',' in s or '"' in s:
+                            s = '"' + s.replace('"', '""') + '"'
+                        csv_row.append(s)
+                csv_lines.append(",".join(csv_row))
+            csv_content = "\n".join(csv_lines)
+
+            response.content_type = 'text/plain'
+            return csv_content
+
+        except Exception as e:
+            log_error(logger, f"[ERROR] Failed to dump localhosts table to CSV: {e}")
+            response.status = 500
+            return "Error generating CSV: " + str(e)
