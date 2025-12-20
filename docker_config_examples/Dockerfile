@@ -29,5 +29,5 @@ EXPOSE 67
 ENV PYTHONUNBUFFERED=1
 
 # Run supervisord
-ENTRYPOINT ["/usr/bin/supervisord", "-c", "/sando/super.conf"]
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/sando/src/super.conf"]
 CMD ["-n"]
