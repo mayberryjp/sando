@@ -1,0 +1,107 @@
+rest:
+  - resource: http://192.168.230.236:8044/api/homeassistant
+    scan_interval: 300
+    method: GET
+    sensor:
+      - name: Sando Acknowledged Alerts
+        value_template: "{{ value_json.acknowledged_alerts }}"
+        icon: mdi:check-circle-outline
+        unit_of_measurement: alerts
+        state_class: measurement
+
+      - name: Sando Unacknowledged Alerts
+        value_template: "{{ value_json.unacknowledged_alerts }}"
+        icon: mdi:alert-circle-outline
+        unit_of_measurement: alerts
+        state_class: measurement
+
+      - name: Sando Total Alerts
+        value_template: "{{ value_json.total_alerts }}"
+        icon: mdi:counter
+        unit_of_measurement: alerts
+        state_class: measurement
+
+      - name: Sando Localhosts Count
+        value_template: "{{ value_json.total_localhosts_count }}"
+        icon: mdi:server
+        unit_of_measurement: hosts
+        state_class: measurement
+
+      - name: Sando IgnoreList Count
+        value_template: "{{ value_json.ignorelist_count }}"
+        icon: mdi:shield-check-outline
+        unit_of_measurement: entries
+        state_class: measurement
+
+      - name: Sando Acknowledged Localhosts Count
+        value_template: "{{ value_json.acknowledged_localhosts_count }}"
+        icon: mdi:shield-check-outline
+        unit_of_measurement: hosts
+        state_class: measurement
+
+      - name: Sando Unacknowledged Localhosts Count
+        value_template: "{{ value_json.unacknowledged_localhosts_count }}"
+        icon: mdi:shield-check-outline
+        unit_of_measurement: hosts
+        state_class: measurement
+
+      - name: Sando Average Threat Score
+        value_template: "{{ value_json.average_threat_score }}"
+        icon: mdi:shield-star
+        unit_of_measurement: score
+        state_class: measurement
+
+      - name: Sando Total Packets Processed
+        value_template: "{{ value_json.total_packets }}"
+        icon: mdi:shield-star
+        unit_of_measurement: packets
+        state_class: total_increasing
+
+      - name: Sando Total Flow Count Processed
+        value_template: "{{ value_json.total_flows }}"
+        icon: mdi:shield-star
+        unit_of_measurement: flows
+        state_class: total_increasing
+
+      - name: Sando Total Bytes Processed
+        value_template: "{{ value_json.total_bytes }}"
+        icon: mdi:shield-star
+        unit_of_measurement: B
+        state_class: total_increasing
+
+      - name: Sando Last Packet Count Processed
+        value_template: "{{ value_json.last_packets }}"
+        icon: mdi:shield-star
+        unit_of_measurement: packets
+        state_class: measurement
+
+      - name: Sando Last Flow Count Processed
+        value_template: "{{ value_json.last_flows }}"
+        icon: mdi:shield-star
+        unit_of_measurement: flows
+        state_class: measurement
+
+      - name: Sando Last Bytes Processed
+        value_template: "{{ value_json.last_bytes }}"
+        icon: mdi:shield-star
+        unit_of_measurement: B
+        state_class: measurement
+
+      - name: Sando Last Flow Seen
+        value_template: "{{ value_json.last_flow_seen }}"
+        icon: mdi:clock-outline
+        device_class: timestamp
+
+      - name: Sando Is Healthy
+        value_template: "{{ value_json.is_healthy }}"
+        icon: mdi:shield-star
+
+      - name: Sando Actions Acknowledged
+        value_template: "{{ value_json.acknowledged_actions}}"
+        icon: mdi:shield-star
+      - name: Sando Actions Unacknowledged
+        value_template: "{{ value_json.unacknowledged_actions }}"
+        icon: mdi:shield-star
+      - name: Sando Actions Total
+        value_template: "{{ value_json.total_actions }}"
+        icon: mdi:shield-star

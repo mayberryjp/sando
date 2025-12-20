@@ -1,0 +1,21 @@
+{
+    "execution_date": "2025-04-21",
+    "start_time": "2025-04-21T18:52:15.615443",
+    "end_time": "2025-04-21T18:55:35.403632",
+    "duration_seconds": 199.79,
+    "total_rows": 235661,
+    "filtered_rows": 235661,
+    "database_counts": {
+        "newflows": 235661,
+        "allflows": 235661,
+        "alerts": 102,
+        "ignorelist": 0,
+        "localhosts": 0,
+        "configuration": 23,
+        "geolocation": 577472
+    },
+    "alert_categories": {
+        "Unauthorized NTP Traffic Detected": 69,
+        "Unauthorized DNS Traffic Detected": 33
+    }
+}

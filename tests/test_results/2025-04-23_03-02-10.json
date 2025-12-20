@@ -1,0 +1,42 @@
+{
+    "execution_date": "2025-04-23",
+    "start_time": "2025-04-23T03:02:10.314866",
+    "end_time": "2025-04-23T03:17:50.502925",
+    "duration_seconds": 940.19,
+    "total_rows": 464948,
+    "filtered_rows": 406997,
+    "database_counts": {
+        "newflows": 464948,
+        "allflows": 464948,
+        "alerts": 14198,
+        "ignorelist": 1,
+        "localhosts": 55,
+        "configuration": 25,
+        "geolocation": 577472
+    },
+    "alert_categories": {
+        "New outbound connection detected": 7514,
+        "Flow involves two local hosts": 6248,
+        "Dead Connection Detected": 153,
+        "Unauthorized NTP Traffic Detected": 96,
+        "Flow involves an IP in a banned country": 78,
+        "New Host Detected": 55,
+        "Unauthorized DNS Traffic Detected": 35,
+        "Flow involves two foreign hosts": 16,
+        "Incorrect NTP Stratum Detected": 2,
+        "Incorrect Authoritative DNS Detected": 1
+    },
+    "detection_durations": {
+        "update_local_hosts": 5.762755,
+        "detect_new_outbound_connections": 65.653374,
+        "router_flows_detection": 2.552539,
+        "foreign_flows_detection": 5.718991,
+        "local_flows_detection": 51.417878,
+        "detect_dead_connections": 5.338035,
+        "detect_unauthorized_dns": 186.161619,
+        "detect_unauthorized_ntp": 4.247919,
+        "detect_incorrect_ntp_stratum": 1.563192,
+        "detect_incorrect_authoritative_dns": 17.986162,
+        "detect_geolocation_flows": 580.717521
+    }
+}

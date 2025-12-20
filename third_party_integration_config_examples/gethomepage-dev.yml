@@ -1,0 +1,47 @@
+ #pick the ones you prefer and remove the rest
+ - Site Network Security:
+      icon: homelabids
+      widget:
+        type: customapi
+        url: http://192.168.230.236:8044/api/homepage
+        refreshInterval: 60000
+        method: GET
+        mappings:
+          - field: unacknowledged_alerts
+            label: Alerts Unacked
+          - field: total_alerts
+            label: Total Alerts
+          - field: unacknowledged_localhosts_count
+            label: Localhosts Unacked
+          - field: total_localhosts_count
+            label: Localhosts Detected
+          - field: average_threat_score
+            label: Average Threat Score
+          - field: acknowledged_alerts
+            label: Alerts Acked
+          - field: ignorelist_count
+            label: Ignorelist Count
+          - field: acknowledged_localhosts_count
+            label: Localhosts Acked
+          - field: total_packets
+            label: Total Packet Count Processed
+          - field: total_flows
+            label: Total Flow Count Processed
+          - field: total_bytes
+            label: Total Bytes Processed
+          - field: last_packets
+            label: Last Packet Count Processed
+          - field: last_flows
+            label: Last Flow Count Processed
+          - field: last_bytes
+            label: Last Bytes Seen
+          - field: last_flow_seen
+            label: Last Flow Seen
+          - field: is_healthy
+            label: Site Healthy?
+          - field: acknowledged_actions
+            label: Actions Acked
+          - field: unacknowledged_actions
+            label: Actions Unacked
+          - field: total_actions
+            label: Total Actions

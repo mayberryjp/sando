@@ -1,0 +1,12 @@
+*.db
+*City*
+__pycache__
+*.pyc
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.vscode
+.vscode/
+.ruff_cache
+.ruff_cache/

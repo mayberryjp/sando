@@ -1,0 +1,34 @@
+{
+    "execution_date": "2025-04-21",
+    "start_time": "2025-04-21T20:00:55.708812",
+    "end_time": "2025-04-21T20:06:00.122979",
+    "duration_seconds": 304.41,
+    "total_rows": 235661,
+    "filtered_rows": 235661,
+    "database_counts": {
+        "newflows": 235661,
+        "allflows": 235661,
+        "alerts": 37,
+        "ignorelist": 0,
+        "localhosts": 0,
+        "configuration": 23,
+        "geolocation": 577472
+    },
+    "alert_categories": {
+        "Unauthorized DNS Traffic Detected": 33,
+        "Incorrect Authoritative DNS Detected": 2,
+        "Flow involves two foreign hosts": 2
+    },
+    "detection_durations": {
+        "update_local_hosts": 0.0,
+        "detect_new_outbound_connections": 0.0,
+        "router_flows_detection": 0.0,
+        "foreign_flows_detection": 2.989954,
+        "local_flows_detection": 0.0,
+        "detect_unauthorized_dns": 186.646574,
+        "detect_unauthorized_ntp": 0.0,
+        "detect_incorrect_ntp_stratum": 0.0,
+        "detect_incorrect_authoritative_dns": 106.507023,
+        "detect_geolocation_flows": 0.0
+    }
+}

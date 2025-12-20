@@ -1,0 +1,12 @@
+version: "3"
+services:
+  sando:
+    network_mode: host
+    container_name: sando
+    restart: "unless-stopped"
+    image: sando:latest
+    volumes:
+      - /docker/sando:/database
+    environment: 
+      - TZ=Asia/Tokyo
+      - SITE=MYSITE

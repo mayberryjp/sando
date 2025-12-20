@@ -1,0 +1,37 @@
+{
+    "version": "v0.1.1",
+    "execution_date": "2025-04-23",
+    "start_time": "2025-04-23T18:27:10.348906",
+    "end_time": "2025-04-23T18:29:35.893422",
+    "duration_seconds": 145.54,
+    "total_rows": 337097,
+    "filtered_rows": 337097,
+    "database_counts": {
+        "newflows": 337097,
+        "allflows": 337097,
+        "alerts": 43,
+        "ignorelist": 1,
+        "localhosts": 43,
+        "configuration": 34,
+        "geolocation": 577472
+    },
+    "alert_categories": {
+        "New Host Detected": 43
+    },
+    "detection_durations": {
+        "update_local_hosts": 3.881079,
+        "detect_new_outbound_connections": 0.0,
+        "router_flows_detection": 0.0,
+        "foreign_flows_detection": 0.0,
+        "local_flows_detection": 0.0,
+        "detect_dead_connections": 0.0,
+        "detect_unauthorized_dns": 0.0,
+        "detect_unauthorized_ntp": 0.0,
+        "detect_incorrect_ntp_stratum": 0.0,
+        "detect_incorrect_authoritative_dns": 0.0,
+        "detect_geolocation_flows": 0.0,
+        "discovery_dns": 0.250773,
+        "discovery_pihole": 0.258328,
+        "discovery_nmap_os_fingerprint": 130.216719
+    }
+}

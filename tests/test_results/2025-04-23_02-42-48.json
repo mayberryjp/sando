@@ -1,0 +1,33 @@
+{
+    "execution_date": "2025-04-23",
+    "start_time": "2025-04-23T02:42:48.807505",
+    "end_time": "2025-04-23T02:43:05.751658",
+    "duration_seconds": 16.94,
+    "total_rows": 464948,
+    "filtered_rows": 406997,
+    "database_counts": {
+        "newflows": 464948,
+        "allflows": 464948,
+        "alerts": 153,
+        "ignorelist": 1,
+        "localhosts": 0,
+        "configuration": 25,
+        "geolocation": 577472
+    },
+    "alert_categories": {
+        "Dead Connection Detected": 153
+    },
+    "detection_durations": {
+        "update_local_hosts": 0.0,
+        "detect_new_outbound_connections": 0.0,
+        "router_flows_detection": 0.0,
+        "foreign_flows_detection": 0.0,
+        "local_flows_detection": 0.0,
+        "detect_dead_connections": 4.291562,
+        "detect_unauthorized_dns": 0.0,
+        "detect_unauthorized_ntp": 0.0,
+        "detect_incorrect_ntp_stratum": 0.0,
+        "detect_incorrect_authoritative_dns": 0.0,
+        "detect_geolocation_flows": 0.0
+    }
+}

@@ -1,0 +1,48 @@
+{
+    "version": "v0.1.2",
+    "execution_date": "2025-04-24",
+    "start_time": "2025-04-24T17:25:38.809115",
+    "end_time": "2025-04-24T17:47:39.052765",
+    "duration_seconds": 1320.24,
+    "total_rows": 337097,
+    "filtered_rows": 337097,
+    "database_counts": {
+        "newflows": 337097,
+        "allflows": 337097,
+        "alerts": 13245,
+        "ignorelist": 1,
+        "localhosts": 43,
+        "configuration": 37,
+        "geolocation": 577472
+    },
+    "alert_categories": {
+        "New outbound connection detected": 6589,
+        "Flow involves two local hosts": 6246,
+        "Dead Connection Detected": 165,
+        "Unauthorized NTP Traffic Detected": 79,
+        "Flow involves an IP in a banned country": 66,
+        "New Host Detected": 43,
+        "Unauthorized DNS Traffic Detected": 30,
+        "Flow involves two foreign hosts": 15,
+        "Flow involves an IP on the reputation list": 11,
+        "Incorrect Authoritative DNS Detected": 1
+    },
+    "detection_durations": {
+        "update_local_hosts": 3.810897,
+        "detect_new_outbound_connections": 56.328344,
+        "router_flows_detection": 1.151315,
+        "foreign_flows_detection": 3.656884,
+        "local_flows_detection": 44.322263,
+        "detect_dead_connections": 3.669201,
+        "detect_unauthorized_dns": 185.016954,
+        "detect_unauthorized_ntp": 2.886677,
+        "detect_incorrect_ntp_stratum": 0.004994,
+        "detect_incorrect_authoritative_dns": 17.744684,
+        "detect_geolocation_flows": 482.499906,
+        "detect_reputationlist_flows": 14.769133,
+        "discovery_dns": 7.618196,
+        "discovery_pihole_dhcp_leases": 0.232399,
+        "discovery_pihole_network_devices": 0.277533,
+        "discovery_nmap_os_fingerprint": 484.361389
+    }
+}
