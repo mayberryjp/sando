@@ -10,3 +10,4 @@ __pycache__/
 .vscode/
 .ruff_cache
 .ruff_cache/
+tests/
