@@ -1,6 +1,0 @@
-#!/bin/sh
-
-REPO_ROOT=$(git rev-parse --show-toplevel)
-HOOK_DIR="$REPO_ROOT/.git/hooks"
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$HOOK_DIR/pre-commit.ps1"
-exit $?

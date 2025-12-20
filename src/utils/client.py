@@ -1,9 +1,9 @@
 import json
 import logging
 import os
+import time
 from datetime import datetime
 from enum import Enum
-import time
 
 import requests
 
