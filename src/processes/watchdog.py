@@ -115,7 +115,10 @@ def check_api_health_and_restart():
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     SLEEP_INITIAL = 180
-    log_info(logger, f"[INFO] Watchdog process started. Waiting {SLEEP_INITIAL} before doing anything. Initializing...")
+    log_info(
+        logger,
+        f"[INFO] Watchdog process started. Waiting {SLEEP_INITIAL} before doing anything. Initializing...",
+    )
     time.sleep(SLEEP_INITIAL)
     log_info(logger, "[INFO] Running process monitor... (checks every 60 seconds)")
     while True:
