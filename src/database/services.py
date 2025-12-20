@@ -2,7 +2,7 @@ import csv
 import io
 import logging
 import sqlite3
-from time import time
+import time
 
 import requests
 

@@ -1,7 +1,7 @@
 import json
 import logging
 import sqlite3
-from time import time
+import time
 
 from src.database.core import connect_to_db, disconnect_from_db
 from src.utils.locallogging import log_error, log_info

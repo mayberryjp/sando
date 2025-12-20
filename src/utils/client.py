@@ -3,7 +3,7 @@ import logging
 import os
 from datetime import datetime
 from enum import Enum
-from time import time
+import time
 
 import requests
 
