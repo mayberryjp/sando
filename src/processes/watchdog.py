@@ -8,34 +8,37 @@ from src.database.actions import insert_action
 from src.detached import insert_action_detached
 from src.utils.locallogging import log_error, log_info
 
-# List of required Python script names
-required_scripts = [
-    "processor.py",
-    "discovery.py",
-    "api.py",
-    "collector.py",
-    "fetch.py",
-    "sinkholedns.py",
-    "dhcpserver.py",
+# List of required Python process module names
+required_processes = [
+    "processor",
+    "discovery",
+    "api",
+    "collector",
+    "fetch",
+    "sinkholedns",
+    "dhcpserver",
 ]
 
 
-def is_script_running(script_name):
+
+# Check for process running as 'python -m src.processes.<name>'
+def is_process_running(process_name):
+    target = f"python -m src.processes.{process_name}"
     for proc in psutil.process_iter(["pid", "name", "cmdline"]):
         try:
             cmdline = proc.info.get("cmdline")
             if cmdline and isinstance(cmdline, list):
                 cmdline_str = " ".join(cmdline)
-                if script_name in cmdline_str:
+                if target in cmdline_str:
                     return True
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             continue
     return False
 
 
-def check_scripts():
+def check_processes():
     logger = logging.getLogger(__name__)
-    missing = [script for script in required_scripts if not is_script_running(script)]
+    missing = [proc for proc in required_processes if not is_process_running(proc)]
     if missing:
         insert_action_detached(
             f"[ERROR] Missing python processes: {', '.join(missing)}. Please restart container and check configuration, errors. "
@@ -84,30 +87,30 @@ def check_api_health_and_restart():
     if unhealthy:
         log_info(
             logger,
-            "[INFO] Attempting to terminate api.py process due to failed health check...",
+            "[INFO] Attempting to terminate api process due to failed health check...",
         )
         try:
             insert_action(
                 "Health check failed for API endpoints. There may be a problem with API health."
             )
-            # Find and terminate the running api.py process
+            # Find and terminate the running 'python -m src.processes.api' process
             for proc in psutil.process_iter(["pid", "name", "cmdline"]):
                 try:
                     cmdline = proc.info.get("cmdline")
-                    if cmdline and any("api.py" in part for part in cmdline):
+                    if cmdline and "python -m src.processes.api" in " ".join(cmdline):
                         log_info(
                             logger,
-                            f"[INFO] Terminating api.py process with PID {proc.pid}",
+                            f"[INFO] Terminating api process with PID {proc.pid}",
                         )
                         proc.terminate()
                         proc.wait(timeout=10)
                 except Exception:
                     continue
             log_info(
-                logger, "[INFO] api.py process terminated due to health check failure."
+                logger, "[INFO] api process terminated due to health check failure."
             )
         except Exception as e:
-            log_error(logger, f"[ERROR] Failed to terminate api.py: {e}")
+            log_error(logger, f"[ERROR] Failed to terminate api process: {e}")
 
 
 if __name__ == "__main__":
@@ -115,6 +118,6 @@ if __name__ == "__main__":
     time.sleep(180)
     log_info(logger, "[INFO] Starting health monitor... (checks every 60 seconds)")
     while True:
-        check_scripts()
+        check_processes()
         check_api_health_and_restart()
         time.sleep(60)
