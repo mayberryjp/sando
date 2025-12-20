@@ -20,7 +20,6 @@ required_processes = [
 ]
 
 
-
 # Check for process running as 'python -m src.processes.<name>'
 def is_process_running(process_name):
     target = f"python -m src.processes.{process_name}"
@@ -115,8 +114,10 @@ def check_api_health_and_restart():
 
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
-    time.sleep(180)
-    log_info(logger, "[INFO] Starting health monitor... (checks every 60 seconds)")
+    SLEEP_INITIAL = 180
+    log_info(logger, f"[INFO] Watchdog process started. Waiting {SLEEP_INITIAL} before doing anything. Initializing...")
+    time.sleep(SLEEP_INITIAL)
+    log_info(logger, "[INFO] Running process monitor... (checks every 60 seconds)")
     while True:
         check_processes()
         check_api_health_and_restart()
