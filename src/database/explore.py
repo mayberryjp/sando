@@ -271,9 +271,57 @@ def get_latest_master_flows(limit=100, page=0):
         cursor.execute("SELECT COUNT(*) FROM explore")
         total = cursor.fetchone()[0]
 
+        query = '''
+                SELECT
+                    src_ip,
+                    dst_ip,
+                    src_ip_int,
+                    dst_ip_int,
+                    dst_port,
+                    protocol,
+                    tags,
+                    src_dns,
+                    dst_dns,
+                    src_country,
+                    dst_country,
+                    src_asn,
+                    dst_asn,
+                    src_isp,
+                    dst_isp,
+                    src_sandoname,
+                    dst_sandoname,
+                    SUM(packets)    AS sum_packets,
+                    SUM(bytes)      AS sum_bytes,
+                    SUM(times_seen) AS sum_times_seen,
+                    MAX(last_seen)  AS max_last_seen,
+                    COUNT(*)        AS row_count
+                FROM explore
+                WHERE src_port > dst_port
+                GROUP BY
+                    src_ip,
+                    dst_ip,
+                    src_ip_int,
+                    dst_ip_int,
+                    dst_port,
+                    protocol,
+                    tags,
+                    src_dns,
+                    dst_dns,
+                    src_country,
+                    dst_country,
+                    src_asn,
+                    dst_asn,
+                    src_isp,
+                    dst_isp,
+                    src_sandoname,
+                    dst_sandoname
+                ORDER BY sum_packets DESC
+                LIMIT ? OFFSET ?
+                '''
+
         # Get paginated results
         cursor.execute(
-            "SELECT * FROM explore ORDER BY packets DESC LIMIT ? OFFSET ?",
+            query,
             (limit, offset),
         )
         rows = cursor.fetchall()
@@ -314,6 +362,54 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
+        query = '''
+        SELECT
+            src_ip,
+            dst_ip,
+            src_ip_int,
+            dst_ip_int,
+            dst_port,
+            protocol,
+            tags,
+            src_dns,
+            dst_dns,
+            src_country,
+            dst_country,
+            src_asn,
+            dst_asn,
+            src_isp,
+            dst_isp,
+            src_sandoname,
+            dst_sandoname,
+            SUM(packets)    AS sum_packets,
+            SUM(bytes)      AS sum_bytes,
+            SUM(times_seen) AS sum_times_seen,
+            MAX(last_seen)  AS max_last_seen,
+            COUNT(*)        AS row_count
+        FROM explore
+        WHERE concat LIKE ? COLLATE NOCASE AND
+        src_port > dst_port
+        GROUP BY
+            src_ip,
+            dst_ip,
+            src_ip_int,
+            dst_ip_int,
+            dst_port,
+            protocol,
+            tags,
+            src_dns,
+            dst_dns,
+            src_country,
+            dst_country,
+            src_asn,
+            dst_asn,
+            src_isp,
+            dst_isp,
+            src_sandoname,
+            dst_sandoname
+        ORDER BY sum_packets DESC
+        LIMIT ? OFFSET ?
+        '''
         # Get total count
         count_query = """
             SELECT COUNT(*) FROM explore
@@ -324,12 +420,12 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
         total = cursor.fetchone()[0]
 
         # Get paginated results
-        query = """
-            SELECT * FROM explore
-            WHERE concat LIKE ? COLLATE NOCASE
-            ORDER BY packets DESC
-            LIMIT ? OFFSET ?
-        """
+        # query = """
+        #     SELECT * FROM explore
+        #     WHERE concat LIKE ? COLLATE NOCASE
+        #     ORDER BY packets DESC
+        #     LIMIT ? OFFSET ?
+        # """
         cursor.execute(query, (like_pattern, page_size, offset))
         rows = cursor.fetchall()
         disconnect_from_db(conn)
