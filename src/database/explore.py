@@ -271,7 +271,7 @@ def get_latest_master_flows(limit=100, page=0):
         cursor.execute("SELECT COUNT(*) FROM explore")
         total = cursor.fetchone()[0]
 
-        query = '''
+        query = """
                 SELECT
                     src_ip,
                     dst_ip,
@@ -317,7 +317,7 @@ def get_latest_master_flows(limit=100, page=0):
                     dst_sandoname
                 ORDER BY sum_packets DESC
                 LIMIT ? OFFSET ?
-                '''
+                """
 
         # Get paginated results
         cursor.execute(
@@ -362,7 +362,7 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
-        query = '''
+        query = """
         SELECT
             src_ip,
             dst_ip,
@@ -409,7 +409,7 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
             dst_sandoname
         ORDER BY sum_packets DESC
         LIMIT ? OFFSET ?
-        '''
+        """
         # Get total count
         count_query = """
             SELECT COUNT(*) FROM explore

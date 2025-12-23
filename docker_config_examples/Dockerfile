@@ -16,8 +16,9 @@ RUN git clone https://github.com/mayberryjp/sando.git /sando
 # Set the working directory
 WORKDIR /sando
 
-# Install Python dependencies
-RUN pip install --no-cache-dir schedule requests bottle dnspython python-nmap psutil dnslib waitress pytz
+
+# Install project in editable mode (installs dependencies from pyproject.toml)
+RUN pip install --no-cache-dir .
 
 # Expose the required ports
 EXPOSE 2055
