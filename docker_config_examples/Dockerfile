@@ -1,5 +1,7 @@
 FROM python:3.13.3-alpine
 
+RUN rm -rf /sando
+RUN rm -rf pyproject.toml
 # Install system and build dependencies
 RUN apk update && apk add --no-cache \
     git \

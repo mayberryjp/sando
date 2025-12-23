@@ -18,10 +18,6 @@ dependencies = [
   "pytz"
 ]
 
-lint = [
-  "flake8",
-]
-
 [project.scripts]
 collector = "src.processes.collector:main"
 processor = "src.processes.processor:main"
