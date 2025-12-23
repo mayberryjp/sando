@@ -12,7 +12,9 @@ RUN apk update && apk add --no-cache \
     openssl-dev \
     ca-certificates
 
-# Clone the repository
+
+# Clone the repository (disable cache by adding a build arg that always changes)
+ARG CACHEBUST=1
 RUN git clone https://github.com/mayberryjp/sando.git /sando
 
 # Set the working directory
