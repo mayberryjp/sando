@@ -2,7 +2,7 @@
 name = "sando"
 version = "0.1.0"
 description = "Network monitoring and analysis tool."
-authors = ["Sando <homelabids@gmail.com>"]
+authors = [{name = "Sando", email = "homelabids@gmail.com"}]
 readme = "README.md"
 requires-python = ">=3.8"
 
