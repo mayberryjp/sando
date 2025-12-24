@@ -1,4 +1,3 @@
-
 import json
 import logging
 import os
@@ -8,8 +7,8 @@ from enum import Enum
 
 import requests
 
-from src.database.actions import insert_action
 from src.const import CONST_EXPLORE_DB, CONST_PERFORMANCE_DB
+from src.database.actions import insert_action
 from src.database.allflows import get_flows_by_source_ip
 from src.database.common import (
     CONST_DATABASE_SCHEMA_VERSION,
@@ -47,7 +46,9 @@ def check_and_insert_new_release_action():
                 )
                 try:
                     insert_action(action_text)
-                    log_info(logger, f"[INFO] Inserted action for new release: {action_text}")
+                    log_info(
+                        logger, f"[INFO] Inserted action for new release: {action_text}"
+                    )
                 except Exception as e:
                     log_error(logger, f"[ERROR] Failed to insert action: {e}")
     except Exception as e:

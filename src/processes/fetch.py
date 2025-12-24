@@ -16,10 +16,10 @@ from src.integrations.reputation import import_reputation_list
 from src.integrations.services import create_services_db
 from src.integrations.tor import update_tor_nodes
 from src.utils.client import (
+    check_and_insert_new_release_action,
     upload_all_client_definitions,
     upload_configuration,
     upload_database_metrics,
-    check_and_insert_new_release_action
 )
 from src.utils.locallogging import log_error, log_info
 
