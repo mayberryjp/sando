@@ -176,6 +176,7 @@ Sando is licensed under the GNU Affero General Public License v3 (AGPLv3). You a
 ## 💬 **Join the Community**
 
 **Reddit**: [r/SandoSecurityAndDhcp](https://www.reddit.com/r/SandoSecurityAndDhcp/)
+**Youtube**: [@SandoSecurityAndDhcp](https://www.youtube.com/@SandoSecurityAndDhcp)
 
 ---
 
