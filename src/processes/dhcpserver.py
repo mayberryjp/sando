@@ -482,8 +482,13 @@ class DHCPServer:
         # Check DhcpPassiveMonitoring setting
         config_dict = get_config_settings() or {}
         if str(config_dict.get("DhcpPassiveMonitoring", "0")) == "1":
-            log_info(self.logger, f"[INFO] Passive monitoring enabled, not responding to DHCP DISCOVER from {mac.upper()}")
-            assigned_ip = self._get_registered_ip(mac, packet)  # Still record new localhosts
+            log_info(
+                self.logger,
+                f"[INFO] Passive monitoring enabled, not responding to DHCP DISCOVER from {mac.upper()}",
+            )
+            assigned_ip = self._get_registered_ip(
+                mac, packet
+            )  # Still record new localhosts
             return
 
         assigned_ip = self._get_registered_ip(mac, packet)
@@ -537,8 +542,13 @@ class DHCPServer:
         # Check DhcpPassiveMonitoring setting
         config_dict = get_config_settings() or {}
         if str(config_dict.get("DhcpPassiveMonitoring", "0")) == "1":
-            log_info(self.logger, f"[INFO] Passive monitoring enabled, not responding to DHCP REQUEST from {mac.upper()}")
-            assigned_ip = self._get_registered_ip(mac, packet)  # Still record new localhosts
+            log_info(
+                self.logger,
+                f"[INFO] Passive monitoring enabled, not responding to DHCP REQUEST from {mac.upper()}",
+            )
+            assigned_ip = self._get_registered_ip(
+                mac, packet
+            )  # Still record new localhosts
             return
 
         requested_ip = None

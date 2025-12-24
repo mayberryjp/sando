@@ -11,6 +11,7 @@ from src.integrations.dns import resolve_empty_dns_responses
 from src.integrations.geolocation import create_geolocation_db
 from src.integrations.ipasn import create_asn_database
 from src.integrations.piholedns import get_pihole_ftl_logs
+from src.integrations.adguarddns import get_adguard_dns_logs
 from src.integrations.reputation import import_reputation_list
 from src.integrations.services import create_services_db
 from src.integrations.tor import update_tor_nodes
@@ -25,12 +26,12 @@ if IS_CONTAINER:
     REINITIALIZE_DB = os.getenv("REINITIALIZE_DB", CONST_REINITIALIZE_DB)
 
 
-def pihole_logs_thread():
+def dns_logs_thread():
     """
     Thread function to fetch Pihole DNS logs every hour.
     """
     logger = logging.getLogger(__name__)
-    log_info(logger, "[INFO] Starting hourly Pihole DNS logs fetch thread")
+    log_info(logger, "[INFO] Starting hourly DNS logs fetch thread")
     config_dict = get_config_settings()
 
     # Hourly interval in seconds
@@ -54,6 +55,12 @@ def pihole_logs_thread():
                 get_pihole_ftl_logs(fetch_size, config_dict)
                 log_info(logger, "[INFO] Pihole DNS query history fetch completed")
 
+            if config_dict.get("StoreAdGuardDnsQueryHistory", 0) > 0:
+                log_info(logger, "[INFO] Fetching Adguard DNS query history (hourly)...")
+                fetch_size = config_dict.get("PiHoleDnsFetchRecordSize", 10000)
+                get_adguard_dns_logs(fetch_size, config_dict)
+                log_info(logger, "[INFO] AdGuard DNS query history fetch completed")
+
             if config_dict.get(
                 "PerformDnsResponseLookupsForInvestigations", 0
             ) > 0 and config_dict.get("DnsResponseLookupResolver", None):
@@ -61,14 +68,14 @@ def pihole_logs_thread():
                     logger, "[INFO] Preparing to resolve unresolved dns entries..."
                 )
                 resolve_empty_dns_responses(config_dict)
-                log_info(logger, "[INFO] Pihole DNS query history fetch completed")
+                log_info(logger, "[INFO] DNS query history fetch completed")
 
         except Exception as e:
-            log_error(logger, f"[ERROR] Error during hourly Pihole data fetch: {e}")
+            log_error(logger, f"[ERROR] Error during hourly DNS data fetch: {e}")
 
         # Wait for the next interval
         log_info(
-            logger, f"[INFO] Pihole thread sleeping for {pihole_fetch_interval} seconds"
+            logger, f"[INFO] DNS logs thread sleeping for {pihole_fetch_interval} seconds"
         )
         time.sleep(pihole_fetch_interval)
 
@@ -87,9 +94,9 @@ def main():
     fetch_interval = config_dict.get("IntegrationFetchInterval", 86400)
 
     # Start the Pihole logs fetch thread
-    pihole_thread = threading.Thread(target=pihole_logs_thread, daemon=True)
+    pihole_thread = threading.Thread(target=dns_logs_thread, daemon=True)
     pihole_thread.start()
-    log_info(logger, "[INFO] Started hourly Pihole DNS logs fetch thread")
+    log_info(logger, "[INFO] Started hourly DNS logs fetch thread")
 
     while True:
         try:

@@ -217,6 +217,8 @@ def upload_configuration():
             "PiholeApiKey",
             "TelegramBotToken",
             "TelegramChatId",
+            "AdGuardPassword",
+            "AdGuardUsername"
         ]
 
         # Set sensitive values to empty strings
