@@ -19,6 +19,7 @@ from src.utils.client import (
     upload_all_client_definitions,
     upload_configuration,
     upload_database_metrics,
+    check_and_insert_new_release_action
 )
 from src.utils.locallogging import log_error, log_info
 
@@ -181,6 +182,10 @@ def main():
         log_info(logger, "[INFO] Populating Explore Master Flow Table..")
         bulk_populate_master_flow_view()
         log_info(logger, "[INFO] Populating Explore Master Flow Table finished.")
+
+        log_info(logger, "[INFO] Checking for new releases..")
+        check_and_insert_new_release_action()
+        log_info(logger, "[INFO] New release check finished.")
 
         # Wait for the next interval
         log_info(

@@ -1,3 +1,4 @@
+
 import json
 import logging
 import os
@@ -7,6 +8,7 @@ from enum import Enum
 
 import requests
 
+from src.database.actions import insert_action
 from src.const import CONST_EXPLORE_DB, CONST_PERFORMANCE_DB
 from src.database.allflows import get_flows_by_source_ip
 from src.database.common import (
@@ -24,6 +26,32 @@ from src.utils.locallogging import log_error, log_info, log_warn
 
 class ActionType(Enum):
     """Placeholder for action types"""
+
+
+def check_and_insert_new_release_action():
+    """
+    Calls the /api/releases endpoint, checks for releases with days_ago == 0,
+    and inserts an action for each such release.
+    """
+    logger = logging.getLogger(__name__)
+    api_url = "http://api.homelabids.com:8045/api/releases"
+    try:
+        response = requests.get(api_url, timeout=10)
+        response.raise_for_status()
+        releases = response.json()
+        for release in releases:
+            if release.get("days_ago") == 0:
+                action_text = (
+                    f"New release for {release.get('container_name')}: v{release.get('current_version')} "
+                    f"on {release.get('release_date')} - Announcement: {release.get('release_announcement_url')}"
+                )
+                try:
+                    insert_action(action_text)
+                    log_info(logger, f"[INFO] Inserted action for new release: {action_text}")
+                except Exception as e:
+                    log_error(logger, f"[ERROR] Failed to insert action: {e}")
+    except Exception as e:
+        log_error(logger, f"[ERROR] Failed to fetch or process releases: {e}")
 
 
 def export_client_definition(client_ip):
