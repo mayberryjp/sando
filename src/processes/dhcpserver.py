@@ -479,6 +479,13 @@ class DHCPServer:
             )
         log_info(self.logger, f"[INFO] DHCP DISCOVER from {mac} via {addr}")
 
+        # Check DhcpPassiveMonitoring setting
+        config_dict = get_config_settings() or {}
+        if str(config_dict.get("DhcpPassiveMonitoring", "0")) == "1":
+            log_info(self.logger, f"[INFO] Passive monitoring enabled, not responding to DHCP DISCOVER from {mac.upper()}")
+            assigned_ip = self._get_registered_ip(mac, packet)  # Still record new localhosts
+            return
+
         assigned_ip = self._get_registered_ip(mac, packet)
         if not assigned_ip:
             log_warn(
@@ -526,6 +533,13 @@ class DHCPServer:
                 self.logger,
                 f"[ERROR] Failed to update last_dhcp_discover for {mac}: {e}",
             )
+
+        # Check DhcpPassiveMonitoring setting
+        config_dict = get_config_settings() or {}
+        if str(config_dict.get("DhcpPassiveMonitoring", "0")) == "1":
+            log_info(self.logger, f"[INFO] Passive monitoring enabled, not responding to DHCP REQUEST from {mac.upper()}")
+            assigned_ip = self._get_registered_ip(mac, packet)  # Still record new localhosts
+            return
 
         requested_ip = None
         if DHCP_OPTION_REQUESTED_IP in packet["options"]:

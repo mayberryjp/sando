@@ -1,4 +1,4 @@
-VERSION = "v0.3.1164"
+VERSION = "v0.3.1165"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT = 2055
 CONST_COLLECTOR_LISTEN_ADDRESS = "0.0.0.0"
@@ -339,6 +339,7 @@ CONST_INSTALL_CONFIGS = [
     ("ReputationUrl", "https://iplists.firehol.org/files/firehol_level1.netset"),
     ("ReputationListRemove", "192.168.0.0/16,0.0.0.0/8,224.0.0.0/3,169.254.0.0/16"),
     ("ReputationListDetection", "0"),
+    ("DhcpPassiveMonitoring", "0"),
     ("VpnTrafficDetection", "0"),
     ("ApprovedVpnServersList", ""),
     ("RemoveBroadcastFlows", 1),
