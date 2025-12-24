@@ -7,6 +7,7 @@ import requests
 from src.database.dnsqueries import insert_dns_query
 from src.utils.locallogging import log_error, log_info
 
+
 def authenticate_adguard(adguard_url, username, password):
     """
     Authenticate with the AdGuard Home API and retrieve a session token (if required).
@@ -26,10 +27,15 @@ def authenticate_adguard(adguard_url, username, password):
         response.raise_for_status()
         # AdGuard Home returns 200 OK and sets a session cookie if successful
         if response.status_code == 200 and session.cookies:
-            log_info(logger, "[INFO] AdGuard authentication successful (session cookie set).")
+            log_info(
+                logger, "[INFO] AdGuard authentication successful (session cookie set)."
+            )
             return session
         else:
-            log_error(logger, "[ERROR] AdGuard authentication failed: No session cookie or bad status code.")
+            log_error(
+                logger,
+                "[ERROR] AdGuard authentication failed: No session cookie or bad status code.",
+            )
             return None
     except requests.exceptions.RequestException as e:
         log_error(logger, f"[ERROR] AdGuard authentication failed: {e}")
@@ -37,6 +43,7 @@ def authenticate_adguard(adguard_url, username, password):
     except ValueError:
         log_error(logger, "[ERROR] AdGuard failed to parse authentication response")
         return None
+
 
 def get_adguard_dns_logs(page_size, config_dict):
     """
@@ -53,7 +60,8 @@ def get_adguard_dns_logs(page_size, config_dict):
 
     if not adguard_url or not username or not password:
         log_error(
-            logger, "[ERROR] AdGuard URL, username, or password not provided in configuration"
+            logger,
+            "[ERROR] AdGuard URL, username, or password not provided in configuration",
         )
         return {"error": "AdGuard URL, username, or password not provided"}
 
@@ -90,7 +98,9 @@ def get_adguard_dns_logs(page_size, config_dict):
             client_ip = entry.get("client")
             if not client_ip or not domain:
                 continue
-            has_a_answer = any(ans.get("type") == "A" for ans in entry.get("answer", []))
+            has_a_answer = any(
+                ans.get("type") == "A" for ans in entry.get("answer", [])
+            )
             if not has_a_answer:
                 continue
             if client_ip not in client_data:
@@ -99,9 +109,7 @@ def get_adguard_dns_logs(page_size, config_dict):
                 client_data[client_ip][domain] = 0
             client_data[client_ip][domain] += 1
         except Exception as e:
-            log_error(
-                logger, f"[ERROR] Failed to process entry: {entry}, Error: {e}"
-            )
+            log_error(logger, f"[ERROR] Failed to process entry: {entry}, Error: {e}")
     log_info(
         logger,
         f"[INFO] Successfully processed DNS query logs for {len(client_data)} clients and {query_count} queries",

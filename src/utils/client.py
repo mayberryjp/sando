@@ -218,7 +218,7 @@ def upload_configuration():
             "TelegramBotToken",
             "TelegramChatId",
             "AdGuardPassword",
-            "AdGuardUsername"
+            "AdGuardUsername",
         ]
 
         # Set sensitive values to empty strings

@@ -7,11 +7,11 @@ from src.const import CONST_REINITIALIZE_DB, IS_CONTAINER
 from src.database.configuration import get_config_settings
 from src.database.explore import bulk_populate_master_flow_view, create_dns_key_value
 from src.database.trafficstats import delete_old_traffic_stats
+from src.integrations.adguarddns import get_adguard_dns_logs
 from src.integrations.dns import resolve_empty_dns_responses
 from src.integrations.geolocation import create_geolocation_db
 from src.integrations.ipasn import create_asn_database
 from src.integrations.piholedns import get_pihole_ftl_logs
-from src.integrations.adguarddns import get_adguard_dns_logs
 from src.integrations.reputation import import_reputation_list
 from src.integrations.services import create_services_db
 from src.integrations.tor import update_tor_nodes
@@ -56,7 +56,9 @@ def dns_logs_thread():
                 log_info(logger, "[INFO] Pihole DNS query history fetch completed")
 
             if config_dict.get("StoreAdGuardDnsQueryHistory", 0) > 0:
-                log_info(logger, "[INFO] Fetching Adguard DNS query history (hourly)...")
+                log_info(
+                    logger, "[INFO] Fetching Adguard DNS query history (hourly)..."
+                )
                 fetch_size = config_dict.get("PiHoleDnsFetchRecordSize", 10000)
                 get_adguard_dns_logs(fetch_size, config_dict)
                 log_info(logger, "[INFO] AdGuard DNS query history fetch completed")
@@ -75,7 +77,8 @@ def dns_logs_thread():
 
         # Wait for the next interval
         log_info(
-            logger, f"[INFO] DNS logs thread sleeping for {pihole_fetch_interval} seconds"
+            logger,
+            f"[INFO] DNS logs thread sleeping for {pihole_fetch_interval} seconds",
         )
         time.sleep(pihole_fetch_interval)
 
