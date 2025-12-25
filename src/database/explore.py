@@ -267,8 +267,32 @@ def get_latest_master_flows(limit=100, page=0):
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
-        # Get total count
-        cursor.execute("SELECT COUNT(*) FROM explore")
+        # Get total count of grouped results
+        total_query = '''
+            SELECT COUNT(*) FROM (
+                SELECT 1 FROM explore
+                WHERE src_port > dst_port
+                GROUP BY
+                    src_ip,
+                    dst_ip,
+                    src_ip_int,
+                    dst_ip_int,
+                    dst_port,
+                    protocol,
+                    tags,
+                    src_dns,
+                    dst_dns,
+                    src_country,
+                    dst_country,
+                    src_asn,
+                    dst_asn,
+                    src_isp,
+                    dst_isp,
+                    src_sandoname,
+                    dst_sandoname
+            )
+        '''
+        cursor.execute(total_query)
         total = cursor.fetchone()[0]
 
         query = """
@@ -410,12 +434,32 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
         ORDER BY sum_packets DESC
         LIMIT ? OFFSET ?
         """
-        # Get total count
-        count_query = """
-            SELECT COUNT(*) FROM explore
-            WHERE concat LIKE ? COLLATE NOCASE
-        """
+        # Get total count of grouped results
         like_pattern = f"%{search_string}%"
+        count_query = '''
+            SELECT COUNT(*) FROM (
+                SELECT 1 FROM explore
+                WHERE concat LIKE ? COLLATE NOCASE AND src_port > dst_port
+                GROUP BY
+                    src_ip,
+                    dst_ip,
+                    src_ip_int,
+                    dst_ip_int,
+                    dst_port,
+                    protocol,
+                    tags,
+                    src_dns,
+                    dst_dns,
+                    src_country,
+                    dst_country,
+                    src_asn,
+                    dst_asn,
+                    src_isp,
+                    dst_isp,
+                    src_sandoname,
+                    dst_sandoname
+            )
+        '''
         cursor.execute(count_query, (like_pattern,))
         total = cursor.fetchone()[0]
 
