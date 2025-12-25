@@ -3,13 +3,13 @@
   <img src="assets/small.png?text=Sando" alt="Sando Logo" />
 </p>
 
-# 🚀 **Sando** - A network security & monitoring solution!
+# 🚀 **Sando** - A network monitoring solution!
 
 ---
 
-## 🛡️ **What is Sando? (Security AND Dhcp Offer)**
+## 🛡️ **What is Sando? **
 
-**Sando** is a lightweight, customizable, and powerful **network security & monitoring solution**. Sando helps you inventory the devices on your network, monitor, detect, and respond to suspicious activity in your network with ease.
+**Sando** is a lightweight, customizable, and powerful **network monitoring solution**. Sando helps you inventory the devices on your network, monitor, detect, and respond to suspicious activity in your network with ease.
 
 ---
 
@@ -37,11 +37,11 @@
 ### 🛠️ **Customizable Configurations**
 - Fine-tune detection thresholds and approved lists.
 - Enable or disable specific detection mechanisms.
-- Integrate with **Pi-hole** for DNS query monitoring.
+- Integrate with **Pi-hole** and **AdGuard** for DNS query monitoring.
 
 ### 📊 **Integrations**
 - Works with Home Assistant and Homepage.dev dashboard and potentially more
-- Works with Pihole and PfSense
+- Works with Pihole and PfSense, OPNSense
 - Works with various reputation and geolist providers like MaxMind, IPASN, Tor list, etc
 
 ### ⚡ **Lightweight and Efficient**
@@ -140,6 +140,11 @@ Second, after softflowd installation go to Services -> softflowd and configure s
 
 After this, save your settings.
 
+## **Security**
+
+As this is still an early release of the software, not all security features have been incorporated like API keys, user login authentication, database or website to database connection encryption (TLS). It's assumed that the container is installed on a private network and is only accessed by the admin. Security features will be implemented in future releases. For now, we're focused on core functionality.
+
+
 ## **Getting Help And Troubleshooting**
 
 ## 📸 **Screenshots**
@@ -184,6 +189,8 @@ Sando is licensed under the GNU Affero General Public License v3 (AGPLv3). You a
 
 If you find Sando useful, please consider giving us a ⭐ on GitHub! It helps others discover the project and motivates us to keep improving.
 
+**GitHub**: [@sando](https://github.com/mayberryjp/sando)
+
 ---
 
 # **Sando Configuration Documentation**
@@ -213,7 +220,7 @@ These settings enable or disable specific detection mechanisms.
 | `BypassLocalDnsDetection`         | Detects flows bypassing local DNS servers.                                                         | `0`               |
 | `IncorrectAuthoritativeDnsDetection` | Detects incorrect authoritative DNS servers.                                                     | `0`               |
 | `BypassLocalNtpDetection`         | Detects flows bypassing local NTP servers.                                                         | `0`               |
-| `IncorrectNtpStratrumDetection`   | Detects incorrect NTP stratum levels.                                                              | `0`               |
+| `IncorrectNtpStratumDetection`   | Detects incorrect NTP stratum levels.                                                              | `0`               |
 
 ---
 

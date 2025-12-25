@@ -6,14 +6,14 @@ from src.utils.network import is_ip_in_range
 
 def tag_ignorelist(record, ignorelist_entries):
     """
-    Check if a single row matches any ignorelist entry.
+    Check if a single record matches any ignorelist entry.
 
     Args:
-        row: A single flow record
+        record: A single flow record
         ignorelist_entries: List of ignorelist entries from src.database
 
     Returns:
-        bool: True if the row matches a ignorelist entry, False otherwise
+        str or None: Tag string if the record matches an ignorelist entry, None otherwise
     """
 
     if not ignorelist_entries:
@@ -52,14 +52,14 @@ def tag_ignorelist(record, ignorelist_entries):
 
 def tag_broadcast(record, broadcast_addresses):
     """
-    Remove flows where the destination IP matches broadcast addresses of LOCAL_NETWORKS.
+    Tag flows where the source or destination IP matches broadcast addresses of LOCAL_NETWORKS.
 
     Args:
-        rows: List of flow records
-        config_dict: Dictionary containing configuration settings
+        record: Flow record to check
+        broadcast_addresses: List or set of broadcast addresses
 
     Returns:
-        list: Filtered rows with broadcast destination addresses removed
+        str or None: "Broadcast;" if a match is found, None otherwise
     """
     logger = logging.getLogger(__name__)
 
@@ -82,10 +82,9 @@ def tag_multicast(record):
 
     Args:
         record: Flow record to check
-        broadcast_addresses: List of broadcast addresses (not used but kept for consistency)
 
     Returns:
-        str: "Multicast;" if destination IP is multicast, None otherwise
+        str or None: "Multicast;" if destination IP is multicast, None otherwise
     """
     logger = logging.getLogger(__name__)
 
