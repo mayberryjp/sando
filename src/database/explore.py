@@ -268,7 +268,7 @@ def get_latest_master_flows(limit=100, page=0):
         cursor = conn.cursor()
 
         # Get total count of grouped results
-        total_query = '''
+        total_query = """
             SELECT COUNT(*) FROM (
                 SELECT 1 FROM explore
                 WHERE src_port > dst_port
@@ -291,7 +291,7 @@ def get_latest_master_flows(limit=100, page=0):
                     src_sandoname,
                     dst_sandoname
             )
-        '''
+        """
         cursor.execute(total_query)
         total = cursor.fetchone()[0]
 
@@ -436,7 +436,7 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
         """
         # Get total count of grouped results
         like_pattern = f"%{search_string}%"
-        count_query = '''
+        count_query = """
             SELECT COUNT(*) FROM (
                 SELECT 1 FROM explore
                 WHERE concat LIKE ? COLLATE NOCASE AND src_port > dst_port
@@ -459,7 +459,7 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
                     src_sandoname,
                     dst_sandoname
             )
-        '''
+        """
         cursor.execute(count_query, (like_pattern,))
         total = cursor.fetchone()[0]
 
