@@ -1,4 +1,4 @@
-FROM python:3.13.3-alpine
+FROM python:3.14.2-alpine
 
 RUN rm -rf /sando
 RUN rm -rf pyproject.toml
