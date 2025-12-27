@@ -29,7 +29,8 @@ def detect_incorrect_authoritative_dns(rows, config_dict):
     APPROVED_LOCAL_DNS_SERVERS_LIST = set(
         config_dict.get("ApprovedLocalDnsServersList", "").split(",")
     )
-    filtered_rows = [row for row in rows if row[3] == 53]
+    # Detect both DNS (port 53) and DNS-over-TLS (port 853)
+    filtered_rows = [row for row in rows if row[3] in (53, 853)]
 
     for row in filtered_rows:
         src_ip, dst_ip, src_port, dst_port, protocol = row[0:5]
@@ -40,18 +41,19 @@ def detect_incorrect_authoritative_dns(rows, config_dict):
             and dst_ip not in approved_authoritative_dns_servers
         ):
             # Check if dst_ip is not in the approved authoritative DNS servers list
-            alert_id = f"{src_ip}_{dst_ip}__IncorrectAuthoritativeDNS"
+            alert_id = f"{src_ip}_{dst_ip}_{dst_port}__IncorrectAuthoritativeDNS"
 
             log_info(
                 logger,
-                f"[INFO] Incorrect Authoritative DNS Detected: {src_ip} -> {dst_ip}",
+                f"[INFO] Incorrect Authoritative DNS Detected: {src_ip} -> {dst_ip} on port {dst_port}",
             )
 
             message = (
                 f"Incorrect Authoritative DNS Detected:\n"
                 f"Source: {src_ip}:{src_port}\n"
                 f"Destination: {dst_ip}:{dst_port}\n"
-                f"Protocol: {protocol}"
+                f"Protocol: {protocol}\n"
+                f"Port: {dst_port}"
             )
 
             handle_alert(

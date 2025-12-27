@@ -37,7 +37,8 @@ def detect_unauthorized_dns(rows, config_dict):
         return
 
     LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
-    filtered_rows = [row for row in rows if row[3] == 53]
+    # Detect both DNS (port 53) and DNS-over-TLS (port 853)
+    filtered_rows = [row for row in rows if row[3] in (53, 853)]
 
     for row in filtered_rows:
         src_ip, dst_ip, src_port, dst_port, protocol = row[0:5]
@@ -45,19 +46,20 @@ def detect_unauthorized_dns(rows, config_dict):
         # Check if either IP is not in the approved DNS servers list
         if dst_ip not in approved_dns_servers:
             if is_ip_in_range(src_ip, LOCAL_NETWORKS):
-                # Create a unique identifier for this alert
-                alert_id = f"{src_ip}_{dst_ip}__UnauthorizedDNS"
+                # Create a unique identifier for this alert, include port for clarity
+                alert_id = f"{src_ip}_{dst_ip}_{dst_port}__UnauthorizedDNS"
 
                 log_info(
                     logger,
-                    f"[INFO] Unauthorized DNS Traffic Detected: {src_ip} -> {dst_ip}",
+                    f"[INFO] Unauthorized DNS Traffic Detected: {src_ip} -> {dst_ip} on port {dst_port}",
                 )
 
                 message = (
                     f"Unauthorized DNS Traffic Detected:\n"
                     f"Source: {src_ip}:{src_port}\n"
                     f"Destination: {dst_ip}:{dst_port}\n"
-                    f"Protocol: {protocol}"
+                    f"Protocol: {protocol}\n"
+                    f"Port: {dst_port}"
                 )
 
                 handle_alert(
