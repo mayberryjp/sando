@@ -5,6 +5,10 @@
 
 # 🚀 **Sando** - Know your network!
 
+- What hosts are on your network?
+- What internet destinations are they connecting to?
+- What DNS lookups are they doing?
+
 ---
 
 ## 🛡️ **What is Sando? **
