@@ -3,7 +3,7 @@
   <img src="assets/small.png?text=Sando" alt="Sando Logo" />
 </p>
 
-# 🚀 **Sando** - A network monitoring solution!
+# 🚀 **Sando** - Know your network!
 
 ---
 
