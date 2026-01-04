@@ -15,12 +15,15 @@
 
 **Sando** is a lightweight, customizable, and powerful **network monitoring solution**. Sando helps you inventory the devices on your network, monitor, detect, and respond to suspicious activity in your network with ease.
 
+**30 Second Intro Video** [Youtube](https://www.youtube.com/watch?v=6P8XtUhSUis)
+**What is Sando?** [Youtube](https://www.youtube.com/watch?v=2rwY5qXNQjk)
+
 ---
 
 ## 🌟 **Features**
 
 ### 🔍 **Network Host Inventorying**
-- Integrated DHCP Server **prevents new hosts** from joining your network.
+- Integrated DHCP Server **won't respond to unknown hosts**.
 - DHCP Relay support **supports multiple VLANs** from one DHCP Server.
 - Maintains **network host inventory** and **easily classify hosts on your network**.
 
@@ -186,6 +189,7 @@ Sando is licensed under the GNU Affero General Public License v3 (AGPLv3). You a
 
 **Reddit**: [r/SandoSecurityAndDhcp](https://www.reddit.com/r/SandoSecurityAndDhcp/)
 **Youtube**: [@SandoSecurityAndDhcp](https://www.youtube.com/@SandoSecurityAndDhcp)
+**GitHub**: [@sando](https://github.com/mayberryjp/sando)
 
 ---
 
