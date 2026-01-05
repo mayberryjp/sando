@@ -41,7 +41,7 @@ def handle_alert(
 
     # Initialize localhost_info before first use
     localhost_info = get_localhost_by_ip(local_ip)
-    if localhost_info and len(localhost_info) > 19 and localhost_info[19] == 1:
+    if localhost_info and len(localhost_info) > 20 and localhost_info[20] == 1:
         log_info(
             logger,
             f"[INFO] Alert logic skipped for {local_ip} host is excluded from alerting",
