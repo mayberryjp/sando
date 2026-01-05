@@ -220,13 +220,14 @@ def setup_localhosts_routes(app):
                     "icon": host_record[13],
                     "local_description": host_record[12],
                     "first_seen": host_record[1],
-                    "last_dhcp_discover": host_record[18],
-                    "whitelisted": host_record[19],
-                    "total_packets_src": host_record[20],
-                    "total_packets_dst": host_record[21],
-                    "total_bytes_src": host_record[22],
-                    "total_bytes_dst": host_record[23],
-                    "ip6_address": host_record[24],
+                    "last_seen": host_record[18],
+                    "last_dhcp_discover": host_record[19],
+                    "whitelisted": host_record[20],
+                    "total_packets_src": host_record[21],
+                    "total_packets_dst": host_record[22],
+                    "total_bytes_src": host_record[23],
+                    "total_bytes_dst": host_record[24],
+                    "ip6_address": host_record[25],
                 }
 
                 response.content_type = "application/json"
