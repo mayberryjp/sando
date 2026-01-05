@@ -1,10 +1,10 @@
+import ipaddress
 import json
 import logging
 import os
 import socket
 import struct
 import threading
-import ipaddress
 import time
 from datetime import datetime
 from queue import Queue
@@ -21,11 +21,11 @@ from src.database.configuration import (
     update_flow_metrics,
 )
 from src.database.ignorelist import get_ignorelist
+from src.database.localhosts import update_localhost_stats
 from src.database.newflows import update_new_flow
 from src.utils.locallogging import log_error, log_info
 from src.utils.network import calculate_broadcast
 from src.utils.tags import apply_tags
-from src.database.localhosts import update_localhost_stats
 
 if IS_CONTAINER:
     COLLECTOR_LISTEN_ADDRESS = os.getenv(
@@ -154,7 +154,6 @@ def process_netflow_packets():
             last_flows = 0
             last_bytes = 0
 
-
             if packets:
                 log_info(logger, f"[INFO] Processing {len(packets)} queued packets")
                 total_flows = 0
@@ -162,7 +161,6 @@ def process_netflow_packets():
                 total_packets = 0
 
                 # Stats structure: {ip: {src_packets, dst_packets, src_bytes, dst_bytes}}
-
 
                 for data, addr in packets:
                     if len(data) < 24:
@@ -211,16 +209,24 @@ def process_netflow_packets():
 
                         if src_ip:
                             if src_ip not in ip_stats:
-                                ip_stats[src_ip] = {"src_packets": 0, "dst_packets": 0, "src_bytes": 0, "dst_bytes": 0}
+                                ip_stats[src_ip] = {
+                                    "src_packets": 0,
+                                    "dst_packets": 0,
+                                    "src_bytes": 0,
+                                    "dst_bytes": 0,
+                                }
                             ip_stats[src_ip]["src_packets"] += packets
                             ip_stats[src_ip]["src_bytes"] += bytes_
                         if dst_ip:
                             if dst_ip not in ip_stats:
-                                ip_stats[dst_ip] = {"src_packets": 0, "dst_packets": 0, "src_bytes": 0, "dst_bytes": 0}
+                                ip_stats[dst_ip] = {
+                                    "src_packets": 0,
+                                    "dst_packets": 0,
+                                    "src_bytes": 0,
+                                    "dst_bytes": 0,
+                                }
                             ip_stats[dst_ip]["dst_packets"] += packets
                             ip_stats[dst_ip]["dst_bytes"] += bytes_
-
-
 
                 log_info(
                     logger,
@@ -244,7 +250,7 @@ def process_netflow_packets():
                         stats["src_packets"],
                         stats["dst_packets"],
                         stats["src_bytes"],
-                        stats["dst_bytes"]
+                        stats["dst_bytes"],
                     )
 
             # Wait for next processing interval

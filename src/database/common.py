@@ -418,12 +418,16 @@ def migrate_configurations_schema16_to_schema17():
         )
         return False
 
+
 def migrate_configurations_schema17_to_schema18():
     """
     Adds 'total_packets_src', 'total_packets_dst', 'total_bytes_src', 'total_bytes_dst', and 'ip6_address' columns to the localhosts table if they do not exist.
     """
     logger = logging.getLogger(__name__)
-    log_info(logger, "[INFO] Adding 'total_packets_src', 'total_packets_dst', 'total_bytes_src', 'total_bytes_dst', and 'ip6_address' columns to localhosts table if missing.")
+    log_info(
+        logger,
+        "[INFO] Adding 'total_packets_src', 'total_packets_dst', 'total_bytes_src', 'total_bytes_dst', and 'ip6_address' columns to localhosts table if missing.",
+    )
     try:
         conn = connect_to_db("localhosts")
         if not conn:
@@ -434,40 +438,71 @@ def migrate_configurations_schema17_to_schema18():
         columns = [row[1] for row in cursor.fetchall()]
         added = False
         if "total_packets_src" not in columns:
-            cursor.execute("ALTER TABLE localhosts ADD COLUMN total_packets_src INTEGER DEFAULT 0")
+            cursor.execute(
+                "ALTER TABLE localhosts ADD COLUMN total_packets_src INTEGER DEFAULT 0"
+            )
             conn.commit()
-            log_info(logger, "[INFO] 'total_packets_src' column added to localhosts table.")
+            log_info(
+                logger, "[INFO] 'total_packets_src' column added to localhosts table."
+            )
             added = True
         else:
-            log_info(logger, "[INFO] 'total_packets_src' column already exists in localhosts table.")
+            log_info(
+                logger,
+                "[INFO] 'total_packets_src' column already exists in localhosts table.",
+            )
         if "total_packets_dst" not in columns:
-            cursor.execute("ALTER TABLE localhosts ADD COLUMN total_packets_dst INTEGER DEFAULT 0")
+            cursor.execute(
+                "ALTER TABLE localhosts ADD COLUMN total_packets_dst INTEGER DEFAULT 0"
+            )
             conn.commit()
-            log_info(logger, "[INFO] 'total_packets_dst' column added to localhosts table.")
+            log_info(
+                logger, "[INFO] 'total_packets_dst' column added to localhosts table."
+            )
             added = True
         else:
-            log_info(logger, "[INFO] 'total_packets_dst' column already exists in localhosts table.")
+            log_info(
+                logger,
+                "[INFO] 'total_packets_dst' column already exists in localhosts table.",
+            )
         if "total_bytes_src" not in columns:
-            cursor.execute("ALTER TABLE localhosts ADD COLUMN total_bytes_src INTEGER DEFAULT 0")
+            cursor.execute(
+                "ALTER TABLE localhosts ADD COLUMN total_bytes_src INTEGER DEFAULT 0"
+            )
             conn.commit()
-            log_info(logger, "[INFO] 'total_bytes_src' column added to localhosts table.")
+            log_info(
+                logger, "[INFO] 'total_bytes_src' column added to localhosts table."
+            )
             added = True
         else:
-            log_info(logger, "[INFO] 'total_bytes_src' column already exists in localhosts table.")
+            log_info(
+                logger,
+                "[INFO] 'total_bytes_src' column already exists in localhosts table.",
+            )
         if "total_bytes_dst" not in columns:
-            cursor.execute("ALTER TABLE localhosts ADD COLUMN total_bytes_dst INTEGER DEFAULT 0")
+            cursor.execute(
+                "ALTER TABLE localhosts ADD COLUMN total_bytes_dst INTEGER DEFAULT 0"
+            )
             conn.commit()
-            log_info(logger, "[INFO] 'total_bytes_dst' column added to localhosts table.")
+            log_info(
+                logger, "[INFO] 'total_bytes_dst' column added to localhosts table."
+            )
             added = True
         else:
-            log_info(logger, "[INFO] 'total_bytes_dst' column already exists in localhosts table.")
+            log_info(
+                logger,
+                "[INFO] 'total_bytes_dst' column already exists in localhosts table.",
+            )
         if "ip6_address" not in columns:
             cursor.execute("ALTER TABLE localhosts ADD COLUMN ip6_address TEXT")
             conn.commit()
             log_info(logger, "[INFO] 'ip6_address' column added to localhosts table.")
             added = True
         else:
-            log_info(logger, "[INFO] 'ip6_address' column already exists in localhosts table.")
+            log_info(
+                logger,
+                "[INFO] 'ip6_address' column already exists in localhosts table.",
+            )
         disconnect_from_db(conn)
         return True
     except Exception as e:

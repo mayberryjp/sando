@@ -568,6 +568,7 @@ def update_localhost_whitelisted(identifier, whitelisted):
         if "conn" in locals() and conn:
             disconnect_from_db(conn)
 
+
 def update_localhost_alerts_enabled(identifier, alerts_enabled):
     """
     Update the alerts_enabled flag for a localhost in the database by IP address or MAC address.
@@ -803,8 +804,6 @@ def get_localhost(identifier):
             disconnect_from_db(conn)
 
 
-
-
 def delete_localhost(identifier):
     """
     Delete a localhost record from the database using IP address or MAC address.
@@ -908,6 +907,7 @@ def update_localhost_last_dhcp_discover(mac_address):
         if "conn" in locals() and conn:
             disconnect_from_db(conn)
 
+
 def update_localhost_stats(ip_address, src_packets, dst_packets, src_bytes, dst_bytes):
     """
     Increment total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst for a localhost entry, and update last_seen timestamp.
@@ -939,19 +939,21 @@ def update_localhost_stats(ip_address, src_packets, dst_packets, src_bytes, dst_
                 last_seen = datetime('now', 'localtime')
             WHERE ip_address = ?
             """,
-            (src_packets, dst_packets, src_bytes, dst_bytes, ip_address)
+            (src_packets, dst_packets, src_bytes, dst_bytes, ip_address),
         )
         conn.commit()
         log_info(
             logger,
-            f"[INFO] Updated localhost {ip_address}: +{src_packets} src_packets, +{dst_packets} dst_packets, +{src_bytes} src_bytes, +{dst_bytes} dst_bytes"
+            f"[INFO] Updated localhost {ip_address}: +{src_packets} src_packets, +{dst_packets} dst_packets, +{src_bytes} src_bytes, +{dst_bytes} dst_bytes",
         )
         return True
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while updating localhost stats: {e}")
         return False
     except Exception as e:
-        log_error(logger, f"[ERROR] Unexpected error while updating localhost stats: {e}")
+        log_error(
+            logger, f"[ERROR] Unexpected error while updating localhost stats: {e}"
+        )
         return False
     finally:
         if "conn" in locals() and conn:
