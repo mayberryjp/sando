@@ -16,6 +16,71 @@ app = Bottle()
 
 def setup_localhosts_routes(app):
 
+    @app.route("/api/localhosts/<ip_address>/whitelisted-enabled", method=["PUT"])
+    def toggle_localhost_whitelisted(ip_address):
+        """
+        API endpoint to toggle the whitelisted flag for a specific local host.
+
+        Args:
+            ip_address: The IP address of the local host to update.
+
+        Request body:
+            {
+                "whitelisted": true|false  (Boolean value to enable/disable whitelisting)
+            }
+
+        Returns:
+            JSON object indicating success or failure.
+        """
+        logger = logging.getLogger(__name__)
+
+        try:
+            # Parse request body
+            data = request.json
+            if not data or "whitelisted" not in data:
+                response.status = 400
+                return {
+                    "success": False,
+                    "error": "Missing required field: whitelisted",
+                }
+
+            whitelisted = bool(data["whitelisted"])
+
+            # Call the database function to update the whitelisted flag
+            from src.database.localhosts import update_localhost_whitelisted
+
+            success = update_localhost_whitelisted(ip_address, whitelisted)
+
+            if success:
+                response.content_type = "application/json"
+                log_info(
+                    logger,
+                    f"[INFO] Updated whitelisted to {whitelisted} for IP address: {ip_address}",
+                )
+                return {
+                    "success": True,
+                    "ip_address": ip_address,
+                    "whitelisted": whitelisted,
+                }
+            else:
+                log_warn(
+                    logger,
+                    f"[WARN] Failed to update whitelisted for IP address: {ip_address}",
+                )
+                response.status = 404
+                return {
+                    "success": False,
+                    "error": f"No local host found with IP address: {ip_address}",
+                }
+
+        except Exception as e:
+            log_error(
+                logger,
+                f"[ERROR] Failed to update whitelisted for IP address {ip_address}: {e}",
+            )
+            response.status = 500
+            return {"success": False, "error": str(e)}
+
     @app.route("/api/localhosts", method=["GET"])
     def localhosts():
         """

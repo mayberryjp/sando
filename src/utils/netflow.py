@@ -4,6 +4,7 @@ import os
 import socket
 import struct
 import threading
+import ipaddress
 import time
 from datetime import datetime
 from queue import Queue
@@ -24,6 +25,7 @@ from src.database.newflows import update_new_flow
 from src.utils.locallogging import log_error, log_info
 from src.utils.network import calculate_broadcast
 from src.utils.tags import apply_tags
+from src.database.localhosts import update_localhost_stats
 
 if IS_CONTAINER:
     COLLECTOR_LISTEN_ADDRESS = os.getenv(
@@ -116,6 +118,8 @@ def process_netflow_packets():
             ignorelist = get_ignorelist()
             config_dict = get_config_settings()
 
+            ip_stats = {}
+
             if not config_dict:
                 log_error(logger, "[ERROR] Failed to load configuration settings")
                 time.sleep(60)  # Wait before retry
@@ -150,11 +154,15 @@ def process_netflow_packets():
             last_flows = 0
             last_bytes = 0
 
+
             if packets:
                 log_info(logger, f"[INFO] Processing {len(packets)} queued packets")
                 total_flows = 0
                 total_bytes = 0
                 total_packets = 0
+
+                # Stats structure: {ip: {src_packets, dst_packets, src_bytes, dst_bytes}}
+
 
                 for data, addr in packets:
                     if len(data) < 24:
@@ -195,6 +203,25 @@ def process_netflow_packets():
                         total_bytes += record.get("bytes", 0)
                         total_packets += record.get("packets", 0)
 
+                        # Update stats for src and dst IPs
+                        src_ip = record.get("src_ip")
+                        dst_ip = record.get("dst_ip")
+                        packets = record.get("packets", 0)
+                        bytes_ = record.get("bytes", 0)
+
+                        if src_ip:
+                            if src_ip not in ip_stats:
+                                ip_stats[src_ip] = {"src_packets": 0, "dst_packets": 0, "src_bytes": 0, "dst_bytes": 0}
+                            ip_stats[src_ip]["src_packets"] += packets
+                            ip_stats[src_ip]["src_bytes"] += bytes_
+                        if dst_ip:
+                            if dst_ip not in ip_stats:
+                                ip_stats[dst_ip] = {"src_packets": 0, "dst_packets": 0, "src_bytes": 0, "dst_bytes": 0}
+                            ip_stats[dst_ip]["dst_packets"] += packets
+                            ip_stats[dst_ip]["dst_bytes"] += bytes_
+
+
+
                 log_info(
                     logger,
                     f"[INFO] Processed {total_flows} flows from {len(packets)} packets",
@@ -206,6 +233,19 @@ def process_netflow_packets():
 
             # Update flow metrics in the configuration database
             update_flow_metrics(last_packets, last_flows, last_bytes)
+
+            # After all packets processed, update localhosts stats for each IP
+            for ip, stats in ip_stats.items():
+                ip_obj = ipaddress.ip_address(ip)
+                # Only update if IP is in any LOCAL_NETWORKS CIDR
+                if any(ip_obj in ipaddress.ip_network(net) for net in LOCAL_NETWORKS):
+                    update_localhost_stats(
+                        ip,
+                        stats["src_packets"],
+                        stats["dst_packets"],
+                        stats["src_bytes"],
+                        stats["dst_bytes"]
+                    )
 
             # Wait for next processing interval
             interval = int(config_dict.get("CollectorProcessingInterval", 60))

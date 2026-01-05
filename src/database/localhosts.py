@@ -88,7 +88,8 @@ def get_localhosts_all():
         query = """
             SELECT ip_address, first_seen, original_flow,
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
-                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, last_dhcp_discover, whitelisted
+                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, last_dhcp_discover, whitelisted,
+                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst
             FROM localhosts
         """
         cursor.execute(query)
@@ -509,6 +510,64 @@ def update_localhost_threat_score(identifier, threat_score):
             disconnect_from_db(conn)
 
 
+def update_localhost_whitelisted(identifier, whitelisted):
+    """
+    Update the whitelisted flag for a localhost in the database by IP address or MAC address.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        conn = connect_to_db("localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to localhosts database.")
+            return False
+
+        cursor = conn.cursor()
+        # First check if the localhost exists
+        cursor.execute(
+            "SELECT 1 FROM localhosts WHERE ip_address = ? OR mac_address = ?",
+            (identifier, identifier),
+        )
+        if not cursor.fetchone():
+            log_warn(
+                logger,
+                f"[WARN] No localhost found with IP or MAC {identifier} to update whitelisted flag",
+            )
+            return False
+
+        whitelisted_int = 1 if whitelisted else 0
+
+        cursor.execute(
+            """
+            UPDATE localhosts
+            SET whitelisted = ?
+            WHERE ip_address = ? OR mac_address = ?
+            """,
+            (whitelisted_int, identifier, identifier),
+        )
+
+        conn.commit()
+        log_info(
+            logger,
+            f"[INFO] Successfully updated whitelisted for {identifier} to {whitelisted}",
+        )
+        return True
+
+    except sqlite3.Error as e:
+        log_error(
+            logger,
+            f"[ERROR] Database error while updating whitelisted for {identifier}: {e}",
+        )
+        return False
+    except Exception as e:
+        log_error(
+            logger,
+            f"[ERROR] Unexpected error while updating whitelisted for {identifier}: {e}",
+        )
+        return False
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
+
 def update_localhost_alerts_enabled(identifier, alerts_enabled):
     """
     Update the alerts_enabled flag for a localhost in the database by IP address or MAC address.
@@ -744,6 +803,8 @@ def get_localhost(identifier):
             disconnect_from_db(conn)
 
 
+
+
 def delete_localhost(identifier):
     """
     Delete a localhost record from the database using IP address or MAC address.
@@ -842,6 +903,55 @@ def update_localhost_last_dhcp_discover(mac_address):
             logger,
             f"[ERROR] Unexpected error while updating last_dhcp_discover for MAC {mac_address}: {e}",
         )
+        return False
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
+
+def update_localhost_stats(ip_address, src_packets, dst_packets, src_bytes, dst_bytes):
+    """
+    Increment total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst for a localhost entry, and update last_seen timestamp.
+
+    Args:
+        ip_address (str): The IPv4 address of the localhost to update.
+        src_packets (int): Number of source packets to add.
+        dst_packets (int): Number of destination packets to add.
+        src_bytes (int): Number of source bytes to add.
+        dst_bytes (int): Number of destination bytes to add.
+
+    Returns:
+        bool: True if the update was successful, False otherwise.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        conn = connect_to_db("localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to localhosts database.")
+            return False
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            UPDATE localhosts
+            SET total_packets_src = COALESCE(total_packets_src, 0) + ?,
+                total_packets_dst = COALESCE(total_packets_dst, 0) + ?,
+                total_bytes_src = COALESCE(total_bytes_src, 0) + ?,
+                total_bytes_dst = COALESCE(total_bytes_dst, 0) + ?,
+                last_seen = datetime('now', 'localtime')
+            WHERE ip_address = ?
+            """,
+            (src_packets, dst_packets, src_bytes, dst_bytes, ip_address)
+        )
+        conn.commit()
+        log_info(
+            logger,
+            f"[INFO] Updated localhost {ip_address}: +{src_packets} src_packets, +{dst_packets} dst_packets, +{src_bytes} src_bytes, +{dst_bytes} dst_bytes"
+        )
+        return True
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while updating localhost stats: {e}")
+        return False
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while updating localhost stats: {e}")
         return False
     finally:
         if "conn" in locals() and conn:

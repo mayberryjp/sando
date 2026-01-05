@@ -198,6 +198,13 @@ def update_database_schema(current_version, target_version):
             )
             migrate_configurations_schema16_to_schema17()
 
+        if current_version_int < 18:  # RESUME HERE #TODO: Implement migration logic
+            log_info(
+                logger,
+                "[INFO] Version is less than 18, adding column to localhosts table",
+            )
+            migrate_configurations_schema17_to_schema18()
+
         return True
 
     except ValueError as e:
@@ -410,6 +417,65 @@ def migrate_configurations_schema16_to_schema17():
             logger, f"[ERROR] Failed to add src_sandoname/dst_sandoname columns: {e}"
         )
         return False
+
+def migrate_configurations_schema17_to_schema18():
+    """
+    Adds 'total_packets_src', 'total_packets_dst', 'total_bytes_src', 'total_bytes_dst', and 'ip6_address' columns to the localhosts table if they do not exist.
+    """
+    logger = logging.getLogger(__name__)
+    log_info(logger, "[INFO] Adding 'total_packets_src', 'total_packets_dst', 'total_bytes_src', 'total_bytes_dst', and 'ip6_address' columns to localhosts table if missing.")
+    try:
+        conn = connect_to_db("localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Failed to connect to LOCALHOSTS_DB")
+            return False
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA table_info(localhosts)")
+        columns = [row[1] for row in cursor.fetchall()]
+        added = False
+        if "total_packets_src" not in columns:
+            cursor.execute("ALTER TABLE localhosts ADD COLUMN total_packets_src INTEGER DEFAULT 0")
+            conn.commit()
+            log_info(logger, "[INFO] 'total_packets_src' column added to localhosts table.")
+            added = True
+        else:
+            log_info(logger, "[INFO] 'total_packets_src' column already exists in localhosts table.")
+        if "total_packets_dst" not in columns:
+            cursor.execute("ALTER TABLE localhosts ADD COLUMN total_packets_dst INTEGER DEFAULT 0")
+            conn.commit()
+            log_info(logger, "[INFO] 'total_packets_dst' column added to localhosts table.")
+            added = True
+        else:
+            log_info(logger, "[INFO] 'total_packets_dst' column already exists in localhosts table.")
+        if "total_bytes_src" not in columns:
+            cursor.execute("ALTER TABLE localhosts ADD COLUMN total_bytes_src INTEGER DEFAULT 0")
+            conn.commit()
+            log_info(logger, "[INFO] 'total_bytes_src' column added to localhosts table.")
+            added = True
+        else:
+            log_info(logger, "[INFO] 'total_bytes_src' column already exists in localhosts table.")
+        if "total_bytes_dst" not in columns:
+            cursor.execute("ALTER TABLE localhosts ADD COLUMN total_bytes_dst INTEGER DEFAULT 0")
+            conn.commit()
+            log_info(logger, "[INFO] 'total_bytes_dst' column added to localhosts table.")
+            added = True
+        else:
+            log_info(logger, "[INFO] 'total_bytes_dst' column already exists in localhosts table.")
+        if "ip6_address" not in columns:
+            cursor.execute("ALTER TABLE localhosts ADD COLUMN ip6_address TEXT")
+            conn.commit()
+            log_info(logger, "[INFO] 'ip6_address' column added to localhosts table.")
+            added = True
+        else:
+            log_info(logger, "[INFO] 'ip6_address' column already exists in localhosts table.")
+        disconnect_from_db(conn)
+        return True
+    except Exception as e:
+        log_error(logger, f"[ERROR] Failed to add columns to localhosts table: {e}")
+        return False
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
 
 
 def store_site_name(site_name):
