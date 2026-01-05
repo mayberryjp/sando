@@ -204,7 +204,7 @@ def process_netflow_packets():
                         # Update stats for src and dst IPs
                         src_ip = record.get("src_ip")
                         dst_ip = record.get("dst_ip")
-                        packets = record.get("packets", 0)
+                        pkt_count = record.get("packets", 0)
                         bytes_ = record.get("bytes", 0)
 
                         if src_ip:
@@ -215,7 +215,7 @@ def process_netflow_packets():
                                     "src_bytes": 0,
                                     "dst_bytes": 0,
                                 }
-                            ip_stats[src_ip]["src_packets"] += packets
+                            ip_stats[src_ip]["src_packets"] += pkt_count
                             ip_stats[src_ip]["src_bytes"] += bytes_
                         if dst_ip:
                             if dst_ip not in ip_stats:
@@ -225,7 +225,7 @@ def process_netflow_packets():
                                     "src_bytes": 0,
                                     "dst_bytes": 0,
                                 }
-                            ip_stats[dst_ip]["dst_packets"] += packets
+                            ip_stats[dst_ip]["dst_packets"] += pkt_count
                             ip_stats[dst_ip]["dst_bytes"] += bytes_
 
                 log_info(

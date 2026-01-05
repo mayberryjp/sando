@@ -33,7 +33,9 @@ def get_localhost_by_ip(ip_address):
         query = """
             SELECT ip_address, first_seen, original_flow,
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
-                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, last_dhcp_discover, whitelisted
+                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon,
+                   tags, threat_score, alerts_enabled, management_link, last_dhcp_discover, whitelisted,
+                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address
             FROM localhosts
             WHERE ip_address = ? OR mac_address = ?
         """
