@@ -6,6 +6,7 @@ from src.database.configuration import get_config_settings
 from src.database.core import delete_all_records
 from src.database.newflows import get_new_flows
 from src.database.trafficstats import update_traffic_stats
+from src.detect.detect_bandwidth_anomaly import detect_bandwidth_anomaly
 from src.detect.detect_custom_tag import detect_custom_tag
 from src.detect.detect_dead_connections import detect_dead_connections
 from src.detect.detect_geolocation_flows import detect_geolocation_flows
@@ -30,7 +31,6 @@ from src.detect.update_localhosts import update_local_hosts
 from src.integrations.geolocation import load_geolocation_data
 from src.integrations.reputation import load_reputation_data
 from src.utils.locallogging import log_error, log_info
-from src.detect.detect_bandwidth_anomaly import detect_bandwidth_anomaly
 
 
 # Function to process data
@@ -169,7 +169,6 @@ def process_data():
 
                 if config_dict.get("AlertOnCustomTags", 0) > 0:
                     detect_custom_tag(filtered_rows, config_dict)
-
 
         except sqlite3.Error as e:
             log_error(logger, f"[ERROR] Error reading from src.database: {e}")

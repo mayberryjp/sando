@@ -116,9 +116,6 @@ def main():
         except Exception as e:
             log_error(logger, f"[ERROR] Error during deleting old traffic stats: {e}")
 
-
-        # Call the update_tor_nodes function
-
         try:
             if config_dict.get("SendDeviceClassificationsToHomelabApi", 0) > 0:
                 log_info(
