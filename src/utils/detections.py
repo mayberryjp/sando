@@ -30,6 +30,7 @@ from src.detect.update_localhosts import update_local_hosts
 from src.integrations.geolocation import load_geolocation_data
 from src.integrations.reputation import load_reputation_data
 from src.utils.locallogging import log_error, log_info
+from src.detect.detect_bandwidth_anomaly import detect_bandwidth_anomaly
 
 
 # Function to process data
@@ -62,6 +63,9 @@ def process_data():
                 # Pass the rows to update_all_flows
                 update_all_flows(newflows, config_dict)
                 update_traffic_stats(newflows, config_dict)
+
+                if config_dict.get("BandwidthAnomalyDetection", 0) > 0:
+                    detect_bandwidth_anomaly(config_dict)
 
                 if config_dict.get("GeolocationFlowsDetection", 0) > 0:
                     geolocation_data = load_geolocation_data()
@@ -165,6 +169,7 @@ def process_data():
 
                 if config_dict.get("AlertOnCustomTags", 0) > 0:
                     detect_custom_tag(filtered_rows, config_dict)
+
 
         except sqlite3.Error as e:
             log_error(logger, f"[ERROR] Error reading from src.database: {e}")

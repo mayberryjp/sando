@@ -103,6 +103,12 @@ def main():
     log_info(logger, "[INFO] Started hourly DNS logs fetch thread")
 
     while True:
+
+        config_dict = get_config_settings()
+        if not config_dict:
+            log_error(logger, "[ERROR] Failed to load configuration settings")
+            exit(1)
+
         try:
             log_info(logger, "[INFO] Deleting old traffic stats...")
             delete_old_traffic_stats()
@@ -110,10 +116,7 @@ def main():
         except Exception as e:
             log_error(logger, f"[ERROR] Error during deleting old traffic stats: {e}")
 
-        config_dict = get_config_settings()
-        if not config_dict:
-            log_error(logger, "[ERROR] Failed to load configuration settings")
-            exit(1)
+
         # Call the update_tor_nodes function
 
         try:
