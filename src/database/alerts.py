@@ -509,10 +509,7 @@ def log_alert_to_db(
         )
 
         # Check if this was the 0th occurrence (insert only)
-        cursor.execute(
-            "SELECT times_seen FROM alerts WHERE id = ?",
-            (alert_id_hash,)
-        )
+        cursor.execute("SELECT times_seen FROM alerts WHERE id = ?", (alert_id_hash,))
         row = cursor.fetchone()
         if row and row[0] == 1:
             operation = "insert"
