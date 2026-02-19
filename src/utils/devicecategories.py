@@ -43,4 +43,5 @@ CONST_DEVICE_CATEGORIES = [
     {"category": "HOME_ASSISTANT", "ICON": "_device_icon"},
     {"category": "ESP32_DEVICE", "ICON": "_device_icon"},
     {"category": "OTHER", "ICON": "other_device_icon"},
+    {"category": "PICTURE_FRAME", "ICON": "picture_frame_icon"},
 ]
