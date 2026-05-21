@@ -91,7 +91,7 @@ def get_localhosts_all():
             SELECT ip_address, first_seen, original_flow,
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
                    lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, last_dhcp_discover, whitelisted,
-                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst
+                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address
             FROM localhosts
         """
         cursor.execute(query)
@@ -786,7 +786,7 @@ def get_localhost(identifier):
         query = """
             SELECT ip_address, first_seen, original_flow,
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
-                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link
+                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, ip6_address
             FROM localhosts
             WHERE ip_address = ? OR mac_address = ?
         """
@@ -903,6 +903,68 @@ def update_localhost_last_dhcp_discover(mac_address):
         log_error(
             logger,
             f"[ERROR] Unexpected error while updating last_dhcp_discover for MAC {mac_address}: {e}",
+        )
+        return False
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
+
+
+def update_localhost_ip6_address(identifier, ip6_address):
+    """
+    Update the ip6_address for a localhost in the database by IP address or MAC address.
+
+    Args:
+        identifier (str): The IPv4 address or MAC address of the localhost to update.
+        ip6_address (str): The IPv6 address to store, or None to clear it.
+
+    Returns:
+        bool: True if the update was successful, False otherwise.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        conn = connect_to_db("localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to localhosts database.")
+            return False
+
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT 1 FROM localhosts WHERE ip_address = ? OR mac_address = ?",
+            (identifier, identifier),
+        )
+        if not cursor.fetchone():
+            log_warn(
+                logger,
+                f"[WARN] No localhost found with IP or MAC {identifier} to update ip6_address",
+            )
+            return False
+
+        cursor.execute(
+            """
+            UPDATE localhosts
+            SET ip6_address = ?
+            WHERE ip_address = ? OR mac_address = ?
+        """,
+            (ip6_address, identifier, identifier),
+        )
+        conn.commit()
+        log_info(
+            logger,
+            f"[INFO] Successfully updated ip6_address for {identifier} to {ip6_address}",
+        )
+        return True
+
+    except sqlite3.Error as e:
+        log_error(
+            logger,
+            f"[ERROR] Database error while updating ip6_address for {identifier}: {e}",
+        )
+        return False
+    except Exception as e:
+        log_error(
+            logger,
+            f"[ERROR] Unexpected error while updating ip6_address for {identifier}: {e}",
         )
         return False
     finally:

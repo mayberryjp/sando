@@ -21,6 +21,7 @@ from src.detect.detect_new_outbound_connections import detect_new_outbound_conne
 from src.detect.detect_port_scanning import detect_port_scanning
 from src.detect.detect_reputation_flows import detect_reputation_flows
 from src.detect.detect_tor_traffic import detect_tor_traffic
+from src.detect.detect_rogue_dhcp import detect_rogue_dhcp
 from src.detect.detect_unauthorized_dns import detect_unauthorized_dns
 from src.detect.detect_unauthorized_ntp import detect_unauthorized_ntp
 from src.detect.detect_vpn_traffic import detect_vpn_traffic
@@ -166,6 +167,9 @@ def process_data():
 
                 if config_dict.get("HighBandwidthFlowDetection", 0) > 0:
                     detect_high_bandwidth_flows(filtered_rows, config_dict)
+
+                if config_dict.get("RogueDhcpDetection", 0) > 0:
+                    detect_rogue_dhcp(filtered_rows, config_dict)
 
                 if config_dict.get("AlertOnCustomTags", 0) > 0:
                     detect_custom_tag(filtered_rows, config_dict)

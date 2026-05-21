@@ -6,11 +6,12 @@ from src.database.core import connect_to_db, disconnect_from_db
 from src.utils.locallogging import log_error, log_info
 
 
-def get_routers(config_dict):
+def get_routers(config_dict, ip_version=None):
     """
     Extracts a set of router IP addresses from the LocalNetworks config entry.
     Args:
         config_dict (dict): Configuration dictionary containing 'LocalNetworks' as a JSON array.
+        ip_version (int, optional): Filter by IP version (4 or 6). None returns all.
     Returns:
         set: Set of router IP addresses.
     """
@@ -18,7 +19,11 @@ def get_routers(config_dict):
     try:
         scopes = json.loads(raw)
         return {
-            scope["router"] for scope in scopes if "router" in scope and scope["router"]
+            scope["router"]
+            for scope in scopes
+            if "router" in scope
+            and scope["router"]
+            and (ip_version is None or scope.get("ip_version") == ip_version)
         }
     except Exception as e:
         logging.getLogger(__name__).error(
@@ -27,18 +32,24 @@ def get_routers(config_dict):
         return set()
 
 
-def get_local_network_cidrs(config_dict):
+def get_local_network_cidrs(config_dict, ip_version=None):
     """
     Extracts a set of CIDR strings from the LocalNetworks config entry.
     Args:
         config_dict (dict): Configuration dictionary containing 'LocalNetworks' as a JSON array.
+        ip_version (int, optional): Filter by IP version (4 or 6). None returns all.
     Returns:
         set: Set of CIDR strings.
     """
     raw = config_dict.get("LocalNetworks", "[]")
     try:
         scopes = json.loads(raw)
-        return {scope["cidr"] for scope in scopes if "cidr" in scope}
+        return {
+            scope["cidr"]
+            for scope in scopes
+            if "cidr" in scope
+            and (ip_version is None or scope.get("ip_version") == ip_version)
+        }
     except Exception as e:
         logging.getLogger(__name__).error(f"[ERROR] Could not parse LocalNetworks: {e}")
         return set()

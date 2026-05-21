@@ -226,12 +226,17 @@ class DHCPServer:
             lease_time = scope.get(
                 "lease_time", 86400
             )  # <-- NEW: get lease_time or default
+            ip_version = scope.get("ip_version", 4)  # default to IPv4 if not specified
             # Calculate subnet_mask from CIDR
             try:
                 net = ipaddress.ip_network(cidr, strict=False)
                 subnet_mask = str(net.netmask)
             except Exception:
                 log_warn(self.logger, f"[WARN] Invalid CIDR in LocalNetworks: {cidr}")
+                continue
+            # DHCP only handles IPv4 scopes
+            if ip_version != 4:
+                log_info(self.logger, f"[INFO] Skipping non-IPv4 scope {cidr} (ip_version={ip_version})")
                 continue
             normalized.append(
                 {
@@ -242,6 +247,7 @@ class DHCPServer:
                     "ntp_servers": ntp_servers,
                     "domain_name": domain_name,
                     "lease_time": lease_time,  # <-- NEW: store lease_time in scope
+                    "ip_version": ip_version,
                 }
             )
         return normalized

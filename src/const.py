@@ -1,4 +1,4 @@
-VERSION = "v2026.1.86"
+VERSION = "v2026.1.110"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT = 2055
 CONST_COLLECTOR_LISTEN_ADDRESS = "0.0.0.0"
@@ -323,7 +323,7 @@ CONST_INSTALL_CONFIGS = [
         "BannedCountryList",
         "North Korea,Iran,Russia,Ukraine,Georgia,Armenia,Azerbaijan,Belarus,Syria,Venezuela,Cuba,Myanmar,Afghanistan",
     ),
-    ("LocalNetworks", "{}"),
+    ("LocalNetworks", "[]"),
     ("ProcessingInterval", "60"),
     ("TelegramBotToken", ""),
     ("TelegramChatId", ""),
@@ -368,6 +368,8 @@ CONST_INSTALL_CONFIGS = [
     ("RemoveMulticastFlows", "1"),
     ("TagEntries", "[]"),
     ("AlertOnCustomTagList", ""),
+    ("RogueDhcpDetection", "0"),
+    ("ApprovedDhcpServersList", ""),
     ("AlertOnCustomTags", "0"),
     ("SendConfigurationToCloudApi", "0"),
     ("ApprovedHighRiskDestinations", ""),
