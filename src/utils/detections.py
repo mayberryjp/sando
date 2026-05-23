@@ -20,8 +20,8 @@ from src.detect.detect_many_destinations import detect_many_destinations
 from src.detect.detect_new_outbound_connections import detect_new_outbound_connections
 from src.detect.detect_port_scanning import detect_port_scanning
 from src.detect.detect_reputation_flows import detect_reputation_flows
-from src.detect.detect_tor_traffic import detect_tor_traffic
 from src.detect.detect_rogue_dhcp import detect_rogue_dhcp
+from src.detect.detect_tor_traffic import detect_tor_traffic
 from src.detect.detect_unauthorized_dns import detect_unauthorized_dns
 from src.detect.detect_unauthorized_ntp import detect_unauthorized_ntp
 from src.detect.detect_vpn_traffic import detect_vpn_traffic

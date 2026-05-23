@@ -17,7 +17,7 @@ required_processes = [
     "fetch",
     "sinkholedns",
     "dhcpserver",
-    "mcp"
+    "mcp",
 ]
 
 

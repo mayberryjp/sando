@@ -141,7 +141,6 @@ def setup_localhosts_routes(app):
                 if ip6_address is not None:
                     update_localhost_ip6_address(ip_address, ip6_address)
 
-
                 response.content_type = "application/json"
                 log_info(
                     logger, f"Updated local host: {ip_address} (MAC: {mac_address})"

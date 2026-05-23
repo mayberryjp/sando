@@ -236,7 +236,10 @@ class DHCPServer:
                 continue
             # DHCP only handles IPv4 scopes
             if ip_version != 4:
-                log_info(self.logger, f"[INFO] Skipping non-IPv4 scope {cidr} (ip_version={ip_version})")
+                log_info(
+                    self.logger,
+                    f"[INFO] Skipping non-IPv4 scope {cidr} (ip_version={ip_version})",
+                )
                 continue
             normalized.append(
                 {

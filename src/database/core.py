@@ -34,7 +34,9 @@ def connect_to_db(table):
         raise ValueError(f"No database mapping found for table: {table}")
 
     if not os.path.exists(DB_NAME):
-        log_error(logger, f"[ERROR] Database file does not exist: {DB_NAME} (table: {table})")
+        log_error(
+            logger, f"[ERROR] Database file does not exist: {DB_NAME} (table: {table})"
+        )
         return None
 
     try:
@@ -253,7 +255,10 @@ def delete_aged_dbperformance(days=30):
     try:
         conn = connect_to_db("dbperformance")
         if not conn:
-            log_error(logger, f"[ERROR] Unable to connect to {CONST_PERFORMANCE_DB} for aged entry deletion.")
+            log_error(
+                logger,
+                f"[ERROR] Unable to connect to {CONST_PERFORMANCE_DB} for aged entry deletion.",
+            )
             return -1
 
         cursor = conn.cursor()
@@ -263,7 +268,10 @@ def delete_aged_dbperformance(days=30):
         )
         deleted = cursor.rowcount
         conn.commit()
-        log_info(logger, f"[INFO] Deleted {deleted} aged dbperformance entries older than {days} days.")
+        log_info(
+            logger,
+            f"[INFO] Deleted {deleted} aged dbperformance entries older than {days} days.",
+        )
         return deleted
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Error deleting aged dbperformance entries: {e}")

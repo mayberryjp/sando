@@ -5,6 +5,7 @@ import sqlite3
 from src.database.core import connect_to_db, disconnect_from_db
 from src.utils.locallogging import log_error, log_info
 
+
 def get_routers(config_dict, ip_version=None):
     """
     Extracts a set of router IP addresses from the LocalNetworks config entry.

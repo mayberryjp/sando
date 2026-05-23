@@ -520,7 +520,10 @@ def migrate_configurations_schema18_to_schema19():
     Adds 'firewall_interface_name' column to the localhosts table if it does not exist.
     """
     logger = logging.getLogger(__name__)
-    log_info(logger, "[INFO] Adding 'firewall_interface_name' column to localhosts table if missing.")
+    log_info(
+        logger,
+        "[INFO] Adding 'firewall_interface_name' column to localhosts table if missing.",
+    )
     try:
         conn = connect_to_db("localhosts")
         if not conn:
@@ -530,15 +533,25 @@ def migrate_configurations_schema18_to_schema19():
         cursor.execute("PRAGMA table_info(localhosts)")
         columns = [row[1] for row in cursor.fetchall()]
         if "firewall_interface_name" not in columns:
-            cursor.execute("ALTER TABLE localhosts ADD COLUMN firewall_interface_name TEXT")
+            cursor.execute(
+                "ALTER TABLE localhosts ADD COLUMN firewall_interface_name TEXT"
+            )
             conn.commit()
-            log_info(logger, "[INFO] 'firewall_interface_name' column added to localhosts table.")
+            log_info(
+                logger,
+                "[INFO] 'firewall_interface_name' column added to localhosts table.",
+            )
         else:
-            log_info(logger, "[INFO] 'firewall_interface_name' column already exists in localhosts table.")
+            log_info(
+                logger,
+                "[INFO] 'firewall_interface_name' column already exists in localhosts table.",
+            )
         disconnect_from_db(conn)
         return True
     except Exception as e:
-        log_error(logger, f"[ERROR] Failed to add 'firewall_interface_name' column: {e}")
+        log_error(
+            logger, f"[ERROR] Failed to add 'firewall_interface_name' column: {e}"
+        )
         return False
     finally:
         if "conn" in locals() and conn:

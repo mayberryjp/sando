@@ -557,7 +557,9 @@ def get_flows_for_country(country, limit=50):
         disconnect_from_db(conn)
         return [dict(r) for r in rows]
     except Exception as e:
-        log_error(logging.getLogger(__name__), f"[ERROR] get_flows_for_country failed: {e}")
+        log_error(
+            logging.getLogger(__name__), f"[ERROR] get_flows_for_country failed: {e}"
+        )
         return []
 
 
@@ -575,7 +577,9 @@ def get_flows_for_port(port, limit=50):
         disconnect_from_db(conn)
         return [dict(r) for r in rows]
     except Exception as e:
-        log_error(logging.getLogger(__name__), f"[ERROR] get_flows_for_port failed: {e}")
+        log_error(
+            logging.getLogger(__name__), f"[ERROR] get_flows_for_port failed: {e}"
+        )
         return []
 
 
@@ -597,7 +601,9 @@ def get_flows_for_tag(tag, limit=50):
         return []
 
 
-def search_flows(src_ip=None, dst_ip=None, dst_port=None, country=None, tag=None, limit=50):
+def search_flows(
+    src_ip=None, dst_ip=None, dst_port=None, country=None, tag=None, limit=50
+):
     """Flexible flow search; all filters are optional and combined with AND logic."""
     clauses = []
     params = []

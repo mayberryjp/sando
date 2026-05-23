@@ -1030,12 +1030,31 @@ def get_localhost_as_dict(ip_address):
     if not row:
         return None
     columns = [
-        "ip_address", "first_seen", "original_flow",
-        "mac_address", "mac_vendor", "dhcp_hostname", "dns_hostname", "os_fingerprint",
-        "lease_hostname", "lease_hwaddr", "lease_clientid", "acknowledged",
-        "local_description", "icon", "tags", "threat_score", "alerts_enabled",
-        "management_link", "last_seen", "last_dhcp_discover", "whitelisted",
-        "total_packets_src", "total_packets_dst", "total_bytes_src", "total_bytes_dst",
+        "ip_address",
+        "first_seen",
+        "original_flow",
+        "mac_address",
+        "mac_vendor",
+        "dhcp_hostname",
+        "dns_hostname",
+        "os_fingerprint",
+        "lease_hostname",
+        "lease_hwaddr",
+        "lease_clientid",
+        "acknowledged",
+        "local_description",
+        "icon",
+        "tags",
+        "threat_score",
+        "alerts_enabled",
+        "management_link",
+        "last_seen",
+        "last_dhcp_discover",
+        "whitelisted",
+        "total_packets_src",
+        "total_packets_dst",
+        "total_bytes_src",
+        "total_bytes_dst",
         "ip6_address",
     ]
     return dict(zip(columns, row))
@@ -1044,5 +1063,3 @@ def get_localhost_as_dict(ip_address):
 def get_whitelisted_localhosts():
     """Return all localhost records where whitelisted = 1 as a list of dicts."""
     return [h for h in get_localhosts_all() if h.get("whitelisted") == 1]
-
-

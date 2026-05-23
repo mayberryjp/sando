@@ -40,7 +40,11 @@ from src.database.common import (
     store_version,
 )
 from src.database.configuration import get_config_settings
-from src.database.core import create_table, delete_all_records, delete_aged_dbperformance
+from src.database.core import (
+    create_table,
+    delete_aged_dbperformance,
+    delete_all_records,
+)
 from src.database.customtags import import_custom_tags
 from src.database.ignorelist import (
     import_ignorelists,

@@ -1,32 +1,22 @@
-"""
-Sando MCP Server using FastMCP and sqlite3 for database access.
-
-Available tools:
-  Host investigation:
-    get_host                 - Full profile for a host (details + alerts + flow summary)
-    get_host_alerts          - All alerts for a specific host
-    get_host_flows           - Top flows originating from a host
-
-  Flow explorer / investigation:
-    get_top_flows            - Top flows across all hosts ordered by bytes or packets
-    search_flows             - Flexible flow search (src_ip, dst_ip, port, country, tag)
-    get_flows_by_country     - All flows to/from a specific country
-    get_flows_by_port        - All flows on a specific destination port
-    get_flows_by_tag         - All flows carrying a specific tag
-
-  Allow / whitelist export:
-    export_ignorelist        - Export all active ignore-list (allow-list) entries
-    export_whitelisted_hosts - Export all hosts with the whitelisted flag set
-
-  Configuration:
-    list_configuration       - All configuration key/value pairs
-    list_alerts              - All alerts (unfiltered)
-"""
-
+import logging
 import os
 import sys
-import logging
 from typing import Optional
+
+from database.alerts import get_all_alerts, get_all_alerts_by_ip  # noqa: E402
+from database.configuration import get_all_configuration  # noqa: E402
+from database.explore import (
+    get_flows_for_country,
+    get_flows_for_ip,
+    get_flows_for_port,
+    get_flows_for_tag,
+)
+from database.explore import get_top_flows as db_get_top_flows  # noqa: E402
+from database.explore import search_flows as db_search_flows
+from database.ignorelist import get_all_ignorelist_entries  # noqa: E402
+from database.localhosts import get_localhost_as_dict  # noqa: E402
+from database.localhosts import get_whitelisted_localhosts
+from utils.locallogging import log_error, log_info  # noqa: E402
 
 # Force unbuffered stdout so print() output appears immediately
 os.environ["PYTHONUNBUFFERED"] = "1"
@@ -34,14 +24,21 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(line_buffering=True)
 
 # Suppress FastMCP's rich/colored logging and startup banner before anything else loads.
-import fastmcp.settings as _fmcp_settings
-_fmcp_settings.log_enabled = False          # prevent FastMCP from installing its own handlers
-_fmcp_settings.enable_rich_logging = False  # no RichHandler even if log_enabled were True
+import fastmcp.settings as _fmcp_settings  # noqa: E402
 
-from fastmcp import FastMCP
+_fmcp_settings.log_enabled = False  # prevent FastMCP from installing its own handlers
+_fmcp_settings.enable_rich_logging = (
+    False  # no RichHandler even if log_enabled were True
+)
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))    # sando/src/
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))  # sando/ — required by locallogging's "from src.X import"
+from fastmcp import FastMCP  # noqa: E402
+
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+)  # sando/src/
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+)  # sando/ — required by locallogging's "from src.X import"
 # locallogging uses print() for all output, so the Python logging system only
 # needs a NullHandler on the root logger.  Without this, every logger.info()
 # call inside locallogging produces a second, unformatted duplicate line via
@@ -52,26 +49,18 @@ _root.handlers.clear()
 _root.addHandler(logging.NullHandler())
 _root.setLevel(logging.DEBUG)
 for _name in (
-    "uvicorn", "uvicorn.error", "uvicorn.access",
-    "fastmcp", "httpx",
-    "mcp", "mcp.server", "mcp.server.session",
-    "mcp.server.streamable_http_manager", "asyncio",
+    "uvicorn",
+    "uvicorn.error",
+    "uvicorn.access",
+    "fastmcp",
+    "httpx",
+    "mcp",
+    "mcp.server",
+    "mcp.server.session",
+    "mcp.server.streamable_http_manager",
+    "asyncio",
 ):
     logging.getLogger(_name).setLevel(logging.CRITICAL)
-
-from database.alerts import get_all_alerts, get_all_alerts_by_ip
-from database.configuration import get_all_configuration
-from database.explore import (
-    get_flows_for_country,
-    get_flows_for_ip,
-    get_flows_for_port,
-    get_flows_for_tag,
-    get_top_flows as db_get_top_flows,
-    search_flows as db_search_flows,
-)
-from database.ignorelist import get_all_ignorelist_entries
-from database.localhosts import get_localhost_as_dict, get_whitelisted_localhosts
-from utils.locallogging import log_error, log_info
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +71,7 @@ app = FastMCP("Sando MCP Server")
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
+
 
 @app.tool("list_configuration")
 def list_configuration():
@@ -100,6 +90,7 @@ def list_configuration():
 # Alerts
 # ---------------------------------------------------------------------------
 
+
 @app.tool("list_alerts")
 def list_alerts(unacknowledged_only: bool = False):
     """
@@ -109,7 +100,10 @@ def list_alerts(unacknowledged_only: bool = False):
         unacknowledged_only: When True only return alerts where acknowledged = 0.
     """
     try:
-        log_info(logger, f"[INFO] MCP list_alerts called (unacknowledged_only={unacknowledged_only})")
+        log_info(
+            logger,
+            f"[INFO] MCP list_alerts called (unacknowledged_only={unacknowledged_only})",
+        )
         alerts = get_all_alerts()
         if unacknowledged_only:
             alerts = [a for a in alerts if not a.get("acknowledged")]
@@ -131,7 +125,10 @@ def get_host_alerts(ip_address: str):
     try:
         log_info(logger, f"[INFO] MCP get_host_alerts called for {ip_address}")
         result = get_all_alerts_by_ip(ip_address)
-        log_info(logger, f"[INFO] MCP get_host_alerts returned {len(result)} items for {ip_address}")
+        log_info(
+            logger,
+            f"[INFO] MCP get_host_alerts returned {len(result)} items for {ip_address}",
+        )
         return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_host_alerts failed for {ip_address}: {e}")
@@ -141,6 +138,7 @@ def get_host_alerts(ip_address: str):
 # ---------------------------------------------------------------------------
 # Host investigation
 # ---------------------------------------------------------------------------
+
 
 @app.tool("get_host")
 def get_host(ip_address: str):
@@ -158,7 +156,10 @@ def get_host(ip_address: str):
             "alerts": get_all_alerts_by_ip(ip_address),
             "top_flows": get_flows_for_ip(ip_address, limit=10),
         }
-        log_info(logger, f"[INFO] MCP get_host returned host={'found' if result.get('host') else 'not found'}, {len(result.get('alerts', []))} alerts, {len(result.get('top_flows', []))} flows for {ip_address}")
+        log_info(
+            logger,
+            f"[INFO] MCP get_host returned host={'found' if result.get('host') else 'not found'}, {len(result.get('alerts', []))} alerts, {len(result.get('top_flows', []))} flows for {ip_address}",
+        )
         return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_host failed for {ip_address}: {e}")
@@ -176,9 +177,15 @@ def get_host_flows(ip_address: str, limit: int = 25, order_by: str = "bytes"):
         order_by:   Sort column — "bytes" (default) or "packets".
     """
     try:
-        log_info(logger, f"[INFO] MCP get_host_flows called for {ip_address} (limit={limit}, order_by={order_by})")
+        log_info(
+            logger,
+            f"[INFO] MCP get_host_flows called for {ip_address} (limit={limit}, order_by={order_by})",
+        )
         result = get_flows_for_ip(ip_address, limit=limit, order_by=order_by)
-        log_info(logger, f"[INFO] MCP get_host_flows returned {len(result)} flows for {ip_address}")
+        log_info(
+            logger,
+            f"[INFO] MCP get_host_flows returned {len(result)} flows for {ip_address}",
+        )
         return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_host_flows failed for {ip_address}: {e}")
@@ -188,6 +195,7 @@ def get_host_flows(ip_address: str, limit: int = 25, order_by: str = "bytes"):
 # ---------------------------------------------------------------------------
 # Flow explorer / investigation
 # ---------------------------------------------------------------------------
+
 
 @app.tool("get_top_flows")
 def get_top_flows(limit: int = 25, order_by: str = "bytes"):
@@ -199,7 +207,10 @@ def get_top_flows(limit: int = 25, order_by: str = "bytes"):
         order_by: Sort column — "bytes" (default) or "packets".
     """
     try:
-        log_info(logger, f"[INFO] MCP get_top_flows called (limit={limit}, order_by={order_by})")
+        log_info(
+            logger,
+            f"[INFO] MCP get_top_flows called (limit={limit}, order_by={order_by})",
+        )
         result = db_get_top_flows(limit=limit, order_by=order_by)
         log_info(logger, f"[INFO] MCP get_top_flows returned {len(result)} flows")
         return result
@@ -230,7 +241,10 @@ def search_flows(
         limit:    Maximum rows to return (default 50).
     """
     try:
-        log_info(logger, f"[INFO] MCP search_flows called (src_ip={src_ip}, dst_ip={dst_ip}, dst_port={dst_port}, country={country}, tag={tag}, limit={limit})")
+        log_info(
+            logger,
+            f"[INFO] MCP search_flows called (src_ip={src_ip}, dst_ip={dst_ip}, dst_port={dst_port}, country={country}, tag={tag}, limit={limit})",
+        )
         result = db_search_flows(
             src_ip=src_ip,
             dst_ip=dst_ip,
@@ -256,9 +270,15 @@ def get_flows_by_country(country: str, limit: int = 50):
         limit:   Maximum rows to return (default 50).
     """
     try:
-        log_info(logger, f"[INFO] MCP get_flows_by_country called for '{country}' (limit={limit})")
+        log_info(
+            logger,
+            f"[INFO] MCP get_flows_by_country called for '{country}' (limit={limit})",
+        )
         result = get_flows_for_country(country, limit=limit)
-        log_info(logger, f"[INFO] MCP get_flows_by_country returned {len(result)} flows for '{country}'")
+        log_info(
+            logger,
+            f"[INFO] MCP get_flows_by_country returned {len(result)} flows for '{country}'",
+        )
         return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_flows_by_country failed for '{country}': {e}")
@@ -275,9 +295,15 @@ def get_flows_by_port(port: int, limit: int = 50):
         limit: Maximum rows to return (default 50).
     """
     try:
-        log_info(logger, f"[INFO] MCP get_flows_by_port called for port {port} (limit={limit})")
+        log_info(
+            logger,
+            f"[INFO] MCP get_flows_by_port called for port {port} (limit={limit})",
+        )
         result = get_flows_for_port(port, limit=limit)
-        log_info(logger, f"[INFO] MCP get_flows_by_port returned {len(result)} flows for port {port}")
+        log_info(
+            logger,
+            f"[INFO] MCP get_flows_by_port returned {len(result)} flows for port {port}",
+        )
         return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_flows_by_port failed for port {port}: {e}")
@@ -294,9 +320,15 @@ def get_flows_by_tag(tag: str, limit: int = 50):
         limit: Maximum rows to return (default 50).
     """
     try:
-        log_info(logger, f"[INFO] MCP get_flows_by_tag called for tag '{tag}' (limit={limit})")
+        log_info(
+            logger,
+            f"[INFO] MCP get_flows_by_tag called for tag '{tag}' (limit={limit})",
+        )
         result = get_flows_for_tag(tag, limit=limit)
-        log_info(logger, f"[INFO] MCP get_flows_by_tag returned {len(result)} flows for tag '{tag}'")
+        log_info(
+            logger,
+            f"[INFO] MCP get_flows_by_tag returned {len(result)} flows for tag '{tag}'",
+        )
         return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_flows_by_tag failed for tag '{tag}': {e}")
@@ -306,6 +338,7 @@ def get_flows_by_tag(tag: str, limit: int = 50):
 # ---------------------------------------------------------------------------
 # Allow list / whitelist export
 # ---------------------------------------------------------------------------
+
 
 @app.tool("export_ignorelist")
 def export_ignorelist():
@@ -332,7 +365,9 @@ def export_whitelisted_hosts():
     try:
         log_info(logger, "[INFO] MCP export_whitelisted_hosts called")
         result = get_whitelisted_localhosts()
-        log_info(logger, f"[INFO] MCP export_whitelisted_hosts returned {len(result)} hosts")
+        log_info(
+            logger, f"[INFO] MCP export_whitelisted_hosts returned {len(result)} hosts"
+        )
         return result
     except Exception as e:
         log_error(logger, f"[ERROR] export_whitelisted_hosts failed: {e}")
@@ -345,16 +380,18 @@ def export_whitelisted_hosts():
 
 if __name__ == "__main__":
     import asyncio
+
     log_info(logger, "[INFO] MCP server starting on 0.0.0.0:8030")
     try:
-        asyncio.run(app.run_http_async(
-            host="0.0.0.0",
-            port=8030,
-            show_banner=False,
-            # Prevent uvicorn from calling logging.config.dictConfig() on startup,
-            # which would reinstall its own colored formatters over our plain setup.
-            uvicorn_config={"log_config": None},
-        ))
+        asyncio.run(
+            app.run_http_async(
+                host="0.0.0.0",
+                port=8030,
+                show_banner=False,
+                # Prevent uvicorn from calling logging.config.dictConfig() on startup,
+                # which would reinstall its own colored formatters over our plain setup.
+                uvicorn_config={"log_config": None},
+            )
+        )
     except Exception as e:
         log_error(logger, f"[ERROR] MCP server failed: {e}")
-

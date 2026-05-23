@@ -1,7 +1,6 @@
 import json
 import logging
 
-from src.database.configuration import get_local_network_cidrs
 from src.notifications.core import handle_alert
 from src.utils.locallogging import log_info, log_warn
 
@@ -28,7 +27,9 @@ def detect_rogue_dhcp(rows, config_dict):
     # Add any explicitly configured servers
     explicit = config_dict.get("ApprovedDhcpServersList", "")
     if explicit:
-        approved_dhcp_servers.update(s.strip() for s in explicit.split(",") if s.strip())
+        approved_dhcp_servers.update(
+            s.strip() for s in explicit.split(",") if s.strip()
+        )
 
     # Add routers from LocalNetworks scopes (they are typically also the DHCP server)
     try:
@@ -42,10 +43,11 @@ def detect_rogue_dhcp(rows, config_dict):
         log_warn(logger, f"[WARN] Could not parse LocalNetworks for DHCP servers: {e}")
 
     if not approved_dhcp_servers:
-        log_warn(logger, "[WARN] No authorized DHCP servers configured — skipping rogue DHCP detection")
+        log_warn(
+            logger,
+            "[WARN] No authorized DHCP servers configured — skipping rogue DHCP detection",
+        )
         return
-
-    LOCAL_NETWORKS = get_local_network_cidrs(config_dict)
 
     # DHCP responses: server sends from port 67, client receives on port 68, UDP protocol 17
     dhcp_response_rows = [
