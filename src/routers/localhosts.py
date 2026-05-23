@@ -8,7 +8,6 @@ from src.database.localhosts import (
     delete_localhost_database,
     get_localhost_by_ip,
     get_localhosts_all,
-    update_localhost_firewall_interface,
     update_localhost_ip6_address,
 )
 from src.utils.locallogging import log_error, log_info, log_warn
@@ -131,7 +130,6 @@ def setup_localhosts_routes(app):
             mac_address = data.get("mac_address")  # <-- Accept mac_address
             ip_address = data.get("ip_address")  # Allow updating IP address if provided
             ip6_address = data.get("ip6_address")
-            firewall_interface_name = data.get("firewall_interface_name")
 
             try:
                 # Update the localhost classification in the database
@@ -143,8 +141,6 @@ def setup_localhosts_routes(app):
                 if ip6_address is not None:
                     update_localhost_ip6_address(ip_address, ip6_address)
 
-                if firewall_interface_name is not None:
-                    update_localhost_firewall_interface(ip_address, firewall_interface_name)
 
                 response.content_type = "application/json"
                 log_info(
@@ -238,7 +234,6 @@ def setup_localhosts_routes(app):
                     "total_bytes_src": host_record[23],
                     "total_bytes_dst": host_record[24],
                     "ip6_address": host_record[25],
-                    "firewall_interface_name": host_record[26] if len(host_record) > 26 else None,
                 }
 
                 response.content_type = "application/json"

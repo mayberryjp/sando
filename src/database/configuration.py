@@ -5,7 +5,6 @@ import sqlite3
 from src.database.core import connect_to_db, disconnect_from_db
 from src.utils.locallogging import log_error, log_info
 
-
 def get_routers(config_dict, ip_version=None):
     """
     Extracts a set of router IP addresses from the LocalNetworks config entry.
@@ -32,24 +31,25 @@ def get_routers(config_dict, ip_version=None):
         return set()
 
 
-def get_local_network_cidrs(config_dict, ip_version=None):
+def get_local_network_cidrs(config_dict):
     """
     Extracts a set of CIDR strings from the LocalNetworks config entry.
+    Each scope that is missing an ip_version flag defaults to 4.
     Args:
         config_dict (dict): Configuration dictionary containing 'LocalNetworks' as a JSON array.
-        ip_version (int, optional): Filter by IP version (4 or 6). None returns all.
     Returns:
         set: Set of CIDR strings.
     """
     raw = config_dict.get("LocalNetworks", "[]")
     try:
         scopes = json.loads(raw)
-        return {
-            scope["cidr"]
-            for scope in scopes
-            if "cidr" in scope
-            and (ip_version is None or scope.get("ip_version") == ip_version)
-        }
+        result = set()
+        for scope in scopes:
+            if "cidr" in scope:
+                if "ip_version" not in scope:
+                    scope["ip_version"] = 4
+                result.add(scope["cidr"])
+        return result
     except Exception as e:
         logging.getLogger(__name__).error(f"[ERROR] Could not parse LocalNetworks: {e}")
         return set()

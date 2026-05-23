@@ -40,7 +40,7 @@ from src.database.common import (
     store_version,
 )
 from src.database.configuration import get_config_settings
-from src.database.core import create_table, delete_all_records, delete_aged_dbperformance_records
+from src.database.core import create_table, delete_all_records, delete_aged_dbperformance
 from src.database.customtags import import_custom_tags
 from src.database.ignorelist import (
     import_ignorelists,
@@ -140,7 +140,7 @@ if __name__ == "__main__":
     )
 
     check_update_database_schema(config_dict)
-    delete_aged_dbperformance_records(days=180)
+    delete_aged_dbperformance(days=180)
 
     # Add NTP whitelists if bypass detection is enabled and servers are configured
     if (

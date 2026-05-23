@@ -28,6 +28,11 @@ import sys
 import logging
 from typing import Optional
 
+# Force unbuffered stdout so print() output appears immediately
+os.environ["PYTHONUNBUFFERED"] = "1"
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(line_buffering=True)
+
 # Suppress FastMCP's rich/colored logging and startup banner before anything else loads.
 import fastmcp.settings as _fmcp_settings
 _fmcp_settings.log_enabled = False          # prevent FastMCP from installing its own handlers
@@ -83,7 +88,9 @@ def list_configuration():
     """Return all configuration key/value pairs."""
     try:
         log_info(logger, "[INFO] MCP list_configuration called")
-        return get_all_configuration()
+        result = get_all_configuration()
+        log_info(logger, f"[INFO] MCP list_configuration returned {len(result)} items")
+        return result
     except Exception as e:
         log_error(logger, f"[ERROR] list_configuration failed: {e}")
         return []
@@ -106,6 +113,7 @@ def list_alerts(unacknowledged_only: bool = False):
         alerts = get_all_alerts()
         if unacknowledged_only:
             alerts = [a for a in alerts if not a.get("acknowledged")]
+        log_info(logger, f"[INFO] MCP list_alerts returned {len(alerts)} items")
         return alerts
     except Exception as e:
         log_error(logger, f"[ERROR] list_alerts failed: {e}")
@@ -122,7 +130,9 @@ def get_host_alerts(ip_address: str):
     """
     try:
         log_info(logger, f"[INFO] MCP get_host_alerts called for {ip_address}")
-        return get_all_alerts_by_ip(ip_address)
+        result = get_all_alerts_by_ip(ip_address)
+        log_info(logger, f"[INFO] MCP get_host_alerts returned {len(result)} items for {ip_address}")
+        return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_host_alerts failed for {ip_address}: {e}")
         return []
@@ -143,11 +153,13 @@ def get_host(ip_address: str):
     """
     try:
         log_info(logger, f"[INFO] MCP get_host called for {ip_address}")
-        return {
+        result = {
             "host": get_localhost_as_dict(ip_address),
             "alerts": get_all_alerts_by_ip(ip_address),
             "top_flows": get_flows_for_ip(ip_address, limit=10),
         }
+        log_info(logger, f"[INFO] MCP get_host returned host={'found' if result.get('host') else 'not found'}, {len(result.get('alerts', []))} alerts, {len(result.get('top_flows', []))} flows for {ip_address}")
+        return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_host failed for {ip_address}: {e}")
         return {}
@@ -165,7 +177,9 @@ def get_host_flows(ip_address: str, limit: int = 25, order_by: str = "bytes"):
     """
     try:
         log_info(logger, f"[INFO] MCP get_host_flows called for {ip_address} (limit={limit}, order_by={order_by})")
-        return get_flows_for_ip(ip_address, limit=limit, order_by=order_by)
+        result = get_flows_for_ip(ip_address, limit=limit, order_by=order_by)
+        log_info(logger, f"[INFO] MCP get_host_flows returned {len(result)} flows for {ip_address}")
+        return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_host_flows failed for {ip_address}: {e}")
         return []
@@ -186,7 +200,9 @@ def get_top_flows(limit: int = 25, order_by: str = "bytes"):
     """
     try:
         log_info(logger, f"[INFO] MCP get_top_flows called (limit={limit}, order_by={order_by})")
-        return db_get_top_flows(limit=limit, order_by=order_by)
+        result = db_get_top_flows(limit=limit, order_by=order_by)
+        log_info(logger, f"[INFO] MCP get_top_flows returned {len(result)} flows")
+        return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_top_flows failed: {e}")
         return []
@@ -215,7 +231,7 @@ def search_flows(
     """
     try:
         log_info(logger, f"[INFO] MCP search_flows called (src_ip={src_ip}, dst_ip={dst_ip}, dst_port={dst_port}, country={country}, tag={tag}, limit={limit})")
-        return db_search_flows(
+        result = db_search_flows(
             src_ip=src_ip,
             dst_ip=dst_ip,
             dst_port=dst_port,
@@ -223,6 +239,8 @@ def search_flows(
             tag=tag,
             limit=limit,
         )
+        log_info(logger, f"[INFO] MCP search_flows returned {len(result)} flows")
+        return result
     except Exception as e:
         log_error(logger, f"[ERROR] search_flows failed: {e}")
         return []
@@ -239,7 +257,9 @@ def get_flows_by_country(country: str, limit: int = 50):
     """
     try:
         log_info(logger, f"[INFO] MCP get_flows_by_country called for '{country}' (limit={limit})")
-        return get_flows_for_country(country, limit=limit)
+        result = get_flows_for_country(country, limit=limit)
+        log_info(logger, f"[INFO] MCP get_flows_by_country returned {len(result)} flows for '{country}'")
+        return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_flows_by_country failed for '{country}': {e}")
         return []
@@ -256,7 +276,9 @@ def get_flows_by_port(port: int, limit: int = 50):
     """
     try:
         log_info(logger, f"[INFO] MCP get_flows_by_port called for port {port} (limit={limit})")
-        return get_flows_for_port(port, limit=limit)
+        result = get_flows_for_port(port, limit=limit)
+        log_info(logger, f"[INFO] MCP get_flows_by_port returned {len(result)} flows for port {port}")
+        return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_flows_by_port failed for port {port}: {e}")
         return []
@@ -273,7 +295,9 @@ def get_flows_by_tag(tag: str, limit: int = 50):
     """
     try:
         log_info(logger, f"[INFO] MCP get_flows_by_tag called for tag '{tag}' (limit={limit})")
-        return get_flows_for_tag(tag, limit=limit)
+        result = get_flows_for_tag(tag, limit=limit)
+        log_info(logger, f"[INFO] MCP get_flows_by_tag returned {len(result)} flows for tag '{tag}'")
+        return result
     except Exception as e:
         log_error(logger, f"[ERROR] get_flows_by_tag failed for tag '{tag}': {e}")
         return []
@@ -291,7 +315,9 @@ def export_ignorelist():
     """
     try:
         log_info(logger, "[INFO] MCP export_ignorelist called")
-        return get_all_ignorelist_entries()
+        result = get_all_ignorelist_entries()
+        log_info(logger, f"[INFO] MCP export_ignorelist returned {len(result)} entries")
+        return result
     except Exception as e:
         log_error(logger, f"[ERROR] export_ignorelist failed: {e}")
         return []
@@ -305,7 +331,9 @@ def export_whitelisted_hosts():
     """
     try:
         log_info(logger, "[INFO] MCP export_whitelisted_hosts called")
-        return get_whitelisted_localhosts()
+        result = get_whitelisted_localhosts()
+        log_info(logger, f"[INFO] MCP export_whitelisted_hosts returned {len(result)} hosts")
+        return result
     except Exception as e:
         log_error(logger, f"[ERROR] export_whitelisted_hosts failed: {e}")
         return []

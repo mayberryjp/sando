@@ -205,12 +205,7 @@ def update_database_schema(current_version, target_version):
             )
             migrate_configurations_schema17_to_schema18()
 
-        if current_version_int < 19:
-            log_info(
-                logger,
-                "[INFO] Version is less than 19, adding firewall_interface_name column to localhosts table",
-            )
-            migrate_configurations_schema18_to_schema19()
+        # Removed migration for firewall_interface_name column in localhosts table
 
         return True
 
