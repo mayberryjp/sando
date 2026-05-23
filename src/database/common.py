@@ -205,6 +205,13 @@ def update_database_schema(current_version, target_version):
             )
             migrate_configurations_schema17_to_schema18()
 
+        if current_version_int < 19:
+            log_info(
+                logger,
+                "[INFO] Version is less than 19, adding firewall_interface_name column to localhosts table",
+            )
+            migrate_configurations_schema18_to_schema19()
+
         return True
 
     except ValueError as e:
@@ -507,6 +514,36 @@ def migrate_configurations_schema17_to_schema18():
         return True
     except Exception as e:
         log_error(logger, f"[ERROR] Failed to add columns to localhosts table: {e}")
+        return False
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
+
+
+def migrate_configurations_schema18_to_schema19():
+    """
+    Adds 'firewall_interface_name' column to the localhosts table if it does not exist.
+    """
+    logger = logging.getLogger(__name__)
+    log_info(logger, "[INFO] Adding 'firewall_interface_name' column to localhosts table if missing.")
+    try:
+        conn = connect_to_db("localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Failed to connect to LOCALHOSTS_DB")
+            return False
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA table_info(localhosts)")
+        columns = [row[1] for row in cursor.fetchall()]
+        if "firewall_interface_name" not in columns:
+            cursor.execute("ALTER TABLE localhosts ADD COLUMN firewall_interface_name TEXT")
+            conn.commit()
+            log_info(logger, "[INFO] 'firewall_interface_name' column added to localhosts table.")
+        else:
+            log_info(logger, "[INFO] 'firewall_interface_name' column already exists in localhosts table.")
+        disconnect_from_db(conn)
+        return True
+    except Exception as e:
+        log_error(logger, f"[ERROR] Failed to add 'firewall_interface_name' column: {e}")
         return False
     finally:
         if "conn" in locals() and conn:

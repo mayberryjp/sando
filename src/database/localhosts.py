@@ -35,7 +35,8 @@ def get_localhost_by_ip(ip_address):
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
                    lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon,
                    tags, threat_score, alerts_enabled, management_link, last_seen, last_dhcp_discover, whitelisted,
-                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address
+                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address,
+                   firewall_interface_name
             FROM localhosts
             WHERE ip_address = ? OR mac_address = ?
         """
@@ -91,7 +92,8 @@ def get_localhosts_all():
             SELECT ip_address, first_seen, original_flow,
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
                    lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, last_dhcp_discover, whitelisted,
-                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address
+                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address,
+                   firewall_interface_name
             FROM localhosts
         """
         cursor.execute(query)
@@ -786,7 +788,8 @@ def get_localhost(identifier):
         query = """
             SELECT ip_address, first_seen, original_flow,
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
-                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, ip6_address
+                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, ip6_address,
+                   firewall_interface_name
             FROM localhosts
             WHERE ip_address = ? OR mac_address = ?
         """
@@ -1018,6 +1021,65 @@ def update_localhost_stats(ip_address, src_packets, dst_packets, src_bytes, dst_
         log_error(
             logger, f"[ERROR] Unexpected error while updating localhost stats: {e}"
         )
+        return False
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
+
+
+def get_localhost_as_dict(ip_address):
+    """Return a single localhost record as a dict, or None if not found."""
+    row = get_localhost_by_ip(ip_address)
+    if not row:
+        return None
+    columns = [
+        "ip_address", "first_seen", "original_flow",
+        "mac_address", "mac_vendor", "dhcp_hostname", "dns_hostname", "os_fingerprint",
+        "lease_hostname", "lease_hwaddr", "lease_clientid", "acknowledged",
+        "local_description", "icon", "tags", "threat_score", "alerts_enabled",
+        "management_link", "last_seen", "last_dhcp_discover", "whitelisted",
+        "total_packets_src", "total_packets_dst", "total_bytes_src", "total_bytes_dst",
+        "ip6_address", "firewall_interface_name",
+    ]
+    return dict(zip(columns, row))
+
+
+def get_whitelisted_localhosts():
+    """Return all localhost records where whitelisted = 1 as a list of dicts."""
+    return [h for h in get_localhosts_all() if h.get("whitelisted") == 1]
+
+
+def update_localhost_firewall_interface(identifier, firewall_interface_name):
+    """
+    Update the firewall_interface_name for a localhost by IP address or MAC address.
+
+    Args:
+        identifier (str): The IP address or MAC address of the localhost.
+        firewall_interface_name (str): The firewall interface name to set (None to clear).
+
+    Returns:
+        bool: True if the update was successful, False otherwise.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        conn = connect_to_db("localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to localhosts database.")
+            return False
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE localhosts SET firewall_interface_name = ? WHERE ip_address = ? OR mac_address = ?",
+            (firewall_interface_name, identifier, identifier),
+        )
+        if cursor.rowcount > 0:
+            conn.commit()
+            log_info(logger, f"[INFO] Updated firewall_interface_name for {identifier}.")
+            return True
+        else:
+            log_warn(logger, f"[WARN] No localhost found with identifier {identifier} to update.")
+            return False
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error updating firewall_interface_name for {identifier}: {e}")
         return False
     finally:
         if "conn" in locals() and conn:

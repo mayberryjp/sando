@@ -15,7 +15,8 @@ dependencies = [
   "psutil",
   "dnslib",
   "waitress",
-  "pytz"
+  "pytz",
+  "fastmcp"
 ]
 
 [project.scripts]
@@ -27,6 +28,7 @@ watchdog = "src.processes.watchdog:main"
 fetch = "src.processes.fetch:main"
 sinkholedns = "src.processes.sinkholedns:main"
 dhcpserver = "src.processes.dhcpserver:main"
+mcp = "src.processes.mcp:main"
 # Add more as needed, ensure each module has a main() function
 
 [build-system]

@@ -495,3 +495,140 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
             "success": False,
             "error": str(e),
         }
+
+
+_FLOW_COLUMNS = """
+    src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes,
+    times_seen, flow_start, last_seen, tags,
+    src_dns, dst_dns, src_country, dst_country, src_asn, dst_asn,
+    src_isp, dst_isp, src_sandoname, dst_sandoname
+"""
+
+
+def get_top_flows(limit=25, order_by="bytes"):
+    """Return top flows across all hosts ordered by bytes or packets."""
+    order_col = "bytes" if order_by != "packets" else "packets"
+    try:
+        conn = connect_to_db("explore")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(
+            f"SELECT {_FLOW_COLUMNS} FROM explore ORDER BY {order_col} DESC LIMIT ?",
+            (limit,),
+        )
+        rows = cursor.fetchall()
+        disconnect_from_db(conn)
+        return [dict(r) for r in rows]
+    except Exception as e:
+        log_error(logging.getLogger(__name__), f"[ERROR] get_top_flows failed: {e}")
+        return []
+
+
+def get_flows_for_ip(ip_address, limit=25, order_by="bytes"):
+    """Return flows where src_ip or dst_ip matches, ordered by bytes or packets."""
+    order_col = "bytes" if order_by != "packets" else "packets"
+    try:
+        conn = connect_to_db("explore")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(
+            f"SELECT {_FLOW_COLUMNS} FROM explore WHERE src_ip = ? OR dst_ip = ? ORDER BY {order_col} DESC LIMIT ?",
+            (ip_address, ip_address, limit),
+        )
+        rows = cursor.fetchall()
+        disconnect_from_db(conn)
+        return [dict(r) for r in rows]
+    except Exception as e:
+        log_error(logging.getLogger(__name__), f"[ERROR] get_flows_for_ip failed: {e}")
+        return []
+
+
+def get_flows_for_country(country, limit=50):
+    """Return flows where src or dst country matches (partial, case-insensitive)."""
+    try:
+        conn = connect_to_db("explore")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(
+            f"SELECT {_FLOW_COLUMNS} FROM explore WHERE src_country LIKE ? OR dst_country LIKE ? ORDER BY bytes DESC LIMIT ?",
+            (f"%{country}%", f"%{country}%", limit),
+        )
+        rows = cursor.fetchall()
+        disconnect_from_db(conn)
+        return [dict(r) for r in rows]
+    except Exception as e:
+        log_error(logging.getLogger(__name__), f"[ERROR] get_flows_for_country failed: {e}")
+        return []
+
+
+def get_flows_for_port(port, limit=50):
+    """Return flows on a specific destination port."""
+    try:
+        conn = connect_to_db("explore")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(
+            f"SELECT {_FLOW_COLUMNS} FROM explore WHERE dst_port = ? ORDER BY bytes DESC LIMIT ?",
+            (port, limit),
+        )
+        rows = cursor.fetchall()
+        disconnect_from_db(conn)
+        return [dict(r) for r in rows]
+    except Exception as e:
+        log_error(logging.getLogger(__name__), f"[ERROR] get_flows_for_port failed: {e}")
+        return []
+
+
+def get_flows_for_tag(tag, limit=50):
+    """Return flows whose tags column contains the given tag string."""
+    try:
+        conn = connect_to_db("explore")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(
+            f"SELECT {_FLOW_COLUMNS} FROM explore WHERE tags LIKE ? ORDER BY bytes DESC LIMIT ?",
+            (f"%{tag}%", limit),
+        )
+        rows = cursor.fetchall()
+        disconnect_from_db(conn)
+        return [dict(r) for r in rows]
+    except Exception as e:
+        log_error(logging.getLogger(__name__), f"[ERROR] get_flows_for_tag failed: {e}")
+        return []
+
+
+def search_flows(src_ip=None, dst_ip=None, dst_port=None, country=None, tag=None, limit=50):
+    """Flexible flow search; all filters are optional and combined with AND logic."""
+    clauses = []
+    params = []
+    if src_ip:
+        clauses.append("src_ip = ?")
+        params.append(src_ip)
+    if dst_ip:
+        clauses.append("dst_ip = ?")
+        params.append(dst_ip)
+    if dst_port is not None:
+        clauses.append("dst_port = ?")
+        params.append(dst_port)
+    if country:
+        clauses.append("(src_country LIKE ? OR dst_country LIKE ?)")
+        params.extend([f"%{country}%", f"%{country}%"])
+    if tag:
+        clauses.append("tags LIKE ?")
+        params.append(f"%{tag}%")
+    where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
+    params.append(limit)
+    try:
+        conn = connect_to_db("explore")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(
+            f"SELECT {_FLOW_COLUMNS} FROM explore {where} ORDER BY bytes DESC LIMIT ?",
+            params,
+        )
+        rows = cursor.fetchall()
+        disconnect_from_db(conn)
+        return [dict(r) for r in rows]
+    except Exception as e:
+        log_error(logging.getLogger(__name__), f"[ERROR] search_flows failed: {e}")
+        return []

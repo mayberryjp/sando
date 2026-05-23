@@ -201,3 +201,26 @@ def update_flow_metrics(last_packets, last_flows, last_bytes):
     except Exception as e:
         log_error(logger, f"[ERROR] Exception in update_flow_metrics: {e}")
         return False
+
+
+def get_all_configuration():
+    """
+    Return all configuration records as a list of dicts with key, value, and last_changed.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        conn = connect_to_db("configuration")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to configuration database")
+            return []
+        cursor = conn.cursor()
+        cursor.execute("SELECT key, value, last_changed FROM configuration")
+        columns = [col[0] for col in cursor.description]
+        rows = cursor.fetchall()
+        return [dict(zip(columns, row)) for row in rows]
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Error reading configuration database: {e}")
+        return []
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)

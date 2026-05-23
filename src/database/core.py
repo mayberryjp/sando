@@ -33,6 +33,10 @@ def connect_to_db(table):
     if not DB_NAME:
         raise ValueError(f"No database mapping found for table: {table}")
 
+    if not os.path.exists(DB_NAME):
+        log_error(logger, f"[ERROR] Database file does not exist: {DB_NAME} (table: {table})")
+        return None
+
     try:
         conn = sqlite3.connect(DB_NAME)
         conn.execute("PRAGMA busy_timeout = 10000")
@@ -232,6 +236,41 @@ def run_timed_query(cursor, query, params=None, description=None, fetch_all=True
         )
         insert_dbperformance("", query, desc, execution_time, rowcount)
         return rowcount, execution_time
+
+
+def delete_aged_dbperformance(days=30):
+    """
+    Delete dbperformance entries older than the specified number of days.
+
+    Args:
+        days (int): Age threshold in days. Records older than this will be deleted. Defaults to 30.
+
+    Returns:
+        int: Number of rows deleted, or -1 on error.
+    """
+    logger = logging.getLogger(__name__)
+
+    try:
+        conn = connect_to_db("dbperformance")
+        if not conn:
+            log_error(logger, f"[ERROR] Unable to connect to {CONST_PERFORMANCE_DB} for aged entry deletion.")
+            return -1
+
+        cursor = conn.cursor()
+        cursor.execute(
+            "DELETE FROM dbperformance WHERE run_timestamp < datetime('now', 'localtime', ?)",
+            (f"-{days} days",),
+        )
+        deleted = cursor.rowcount
+        conn.commit()
+        log_info(logger, f"[INFO] Deleted {deleted} aged dbperformance entries older than {days} days.")
+        return deleted
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Error deleting aged dbperformance entries: {e}")
+        return -1
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
 
 
 def delete_table(table_name):

@@ -552,3 +552,33 @@ def whitelist_approved_ntp_servers(config_dict):
     except Exception as e:
         log_error(logger, f"[ERROR] Error creating NTP whitelists: {e}")
         return False
+
+
+def get_all_ignorelist_entries():
+    """Return all active ignorelist entries with full details as a list of dicts."""
+    logger = logging.getLogger(__name__)
+    try:
+        conn = connect_to_db("ignorelist")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to ignorelist database")
+            return []
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT ignorelist_id, ignorelist_src_ip, ignorelist_dst_ip,
+                   ignorelist_dst_port, ignorelist_protocol,
+                   ignorelist_description, ignorelist_added, ignorelist_insert_date
+            FROM ignorelist
+            WHERE ignorelist_enabled = 1
+            ORDER BY ignorelist_insert_date DESC
+            """
+        )
+        columns = [col[0] for col in cursor.description]
+        rows = cursor.fetchall()
+        return [dict(zip(columns, row)) for row in rows]
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Error retrieving ignorelist entries: {e}")
+        return []
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)

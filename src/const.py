@@ -228,7 +228,8 @@ CONST_CREATE_LOCALHOSTS_SQL = """
         total_packets_dst INTEGER DEFAULT 0,
         total_bytes_src INTEGER DEFAULT 0,
         total_bytes_dst INTEGER DEFAULT 0,
-        ip6_address TEXT
+        ip6_address TEXT,
+        firewall_interface_name TEXT
     )
 """
 
