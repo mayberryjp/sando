@@ -3,10 +3,6 @@ import logging
 import os
 import sys
 
-os.environ["PYTHONUNBUFFERED"] = "1"
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(line_buffering=True)
-
 from bottle import Bottle, request, response, run  # noqa: E402
 
 from src.database.alerts import get_all_alerts, get_all_alerts_by_ip  # noqa: E402
@@ -20,11 +16,13 @@ from src.database.explore import (
 from src.database.explore import get_top_flows as db_get_top_flows  # noqa: E402
 from src.database.explore import search_flows as db_search_flows
 from src.database.ignorelist import get_all_ignorelist_entries  # noqa: E402
-from src.database.localhosts import (
-    get_localhost_as_dict,  # noqa: E402
-    get_whitelisted_localhosts,
-)
+from src.database.localhosts import get_localhost_as_dict  # noqa: E402
+from src.database.localhosts import get_whitelisted_localhosts
 from src.utils.locallogging import log_error, log_info  # noqa: E402
+
+os.environ["PYTHONUNBUFFERED"] = "1"
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(line_buffering=True)
 
 """
 Sando MCP Server — Bottle-based JSON-RPC 2.0 implementation.
