@@ -1,3 +1,31 @@
+import json
+import logging
+import os
+import sys
+
+os.environ["PYTHONUNBUFFERED"] = "1"
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(line_buffering=True)
+
+from bottle import Bottle, request, response, run  # noqa: E402
+
+from src.database.alerts import get_all_alerts, get_all_alerts_by_ip  # noqa: E402
+from src.database.configuration import get_all_configuration  # noqa: E402
+from src.database.explore import (
+    get_flows_for_country,
+    get_flows_for_ip,
+    get_flows_for_port,
+    get_flows_for_tag,
+)
+from src.database.explore import get_top_flows as db_get_top_flows  # noqa: E402
+from src.database.explore import search_flows as db_search_flows
+from src.database.ignorelist import get_all_ignorelist_entries  # noqa: E402
+from src.database.localhosts import (
+    get_localhost_as_dict,  # noqa: E402
+    get_whitelisted_localhosts,
+)
+from src.utils.locallogging import log_error, log_info  # noqa: E402
+
 """
 Sando MCP Server — Bottle-based JSON-RPC 2.0 implementation.
 
@@ -26,34 +54,6 @@ Available tools:
     list_alerts              - All alerts (unfiltered)
 """
 
-import json
-import logging
-import os
-import sys
-import uuid
-
-os.environ["PYTHONUNBUFFERED"] = "1"
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(line_buffering=True)
-
-from bottle import Bottle, request, response, run
-
-from src.database.alerts import get_all_alerts, get_all_alerts_by_ip
-from src.database.configuration import get_all_configuration
-from src.database.explore import (
-    get_flows_for_country,
-    get_flows_for_ip,
-    get_flows_for_port,
-    get_flows_for_tag,
-    get_top_flows as db_get_top_flows,
-    search_flows as db_search_flows,
-)
-from src.database.ignorelist import get_all_ignorelist_entries
-from src.database.localhosts import (
-    get_localhost_as_dict,
-    get_whitelisted_localhosts,
-)
-from src.utils.locallogging import log_error, log_info
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +116,10 @@ def list_configuration(arguments):
 )
 def list_alerts(arguments):
     unacknowledged_only = arguments.get("unacknowledged_only", False)
-    log_info(logger, f"[INFO] MCP list_alerts called (unacknowledged_only={unacknowledged_only})")
+    log_info(
+        logger,
+        f"[INFO] MCP list_alerts called (unacknowledged_only={unacknowledged_only})",
+    )
     alerts = get_all_alerts()
     if unacknowledged_only:
         alerts = [a for a in alerts if not a.get("acknowledged")]
@@ -130,7 +133,10 @@ def list_alerts(arguments):
     {
         "type": "object",
         "properties": {
-            "ip_address": {"type": "string", "description": "The IPv4 or IPv6 address of the host."}
+            "ip_address": {
+                "type": "string",
+                "description": "The IPv4 or IPv6 address of the host.",
+            }
         },
         "required": ["ip_address"],
     },
@@ -139,7 +145,10 @@ def get_host_alerts(arguments):
     ip_address = arguments["ip_address"]
     log_info(logger, f"[INFO] MCP get_host_alerts called for {ip_address}")
     result = get_all_alerts_by_ip(ip_address)
-    log_info(logger, f"[INFO] MCP get_host_alerts returned {len(result)} items for {ip_address}")
+    log_info(
+        logger,
+        f"[INFO] MCP get_host_alerts returned {len(result)} items for {ip_address}",
+    )
     return result
 
 
@@ -149,7 +158,10 @@ def get_host_alerts(arguments):
     {
         "type": "object",
         "properties": {
-            "ip_address": {"type": "string", "description": "The IPv4 address or MAC address of the host."}
+            "ip_address": {
+                "type": "string",
+                "description": "The IPv4 address or MAC address of the host.",
+            }
         },
         "required": ["ip_address"],
     },
@@ -176,9 +188,20 @@ def get_host(arguments):
     {
         "type": "object",
         "properties": {
-            "ip_address": {"type": "string", "description": "Source or destination IP address."},
-            "limit": {"type": "integer", "description": "Max flows to return.", "default": 25},
-            "order_by": {"type": "string", "description": "'bytes' or 'packets'.", "default": "bytes"},
+            "ip_address": {
+                "type": "string",
+                "description": "Source or destination IP address.",
+            },
+            "limit": {
+                "type": "integer",
+                "description": "Max flows to return.",
+                "default": 25,
+            },
+            "order_by": {
+                "type": "string",
+                "description": "'bytes' or 'packets'.",
+                "default": "bytes",
+            },
         },
         "required": ["ip_address"],
     },
@@ -187,9 +210,15 @@ def get_host_flows(arguments):
     ip_address = arguments["ip_address"]
     limit = arguments.get("limit", 25)
     order_by = arguments.get("order_by", "bytes")
-    log_info(logger, f"[INFO] MCP get_host_flows called for {ip_address} (limit={limit}, order_by={order_by})")
+    log_info(
+        logger,
+        f"[INFO] MCP get_host_flows called for {ip_address} (limit={limit}, order_by={order_by})",
+    )
     result = get_flows_for_ip(ip_address, limit=limit, order_by=order_by)
-    log_info(logger, f"[INFO] MCP get_host_flows returned {len(result)} flows for {ip_address}")
+    log_info(
+        logger,
+        f"[INFO] MCP get_host_flows returned {len(result)} flows for {ip_address}",
+    )
     return result
 
 
@@ -199,15 +228,25 @@ def get_host_flows(arguments):
     {
         "type": "object",
         "properties": {
-            "limit": {"type": "integer", "description": "Max flows to return.", "default": 25},
-            "order_by": {"type": "string", "description": "'bytes' or 'packets'.", "default": "bytes"},
+            "limit": {
+                "type": "integer",
+                "description": "Max flows to return.",
+                "default": 25,
+            },
+            "order_by": {
+                "type": "string",
+                "description": "'bytes' or 'packets'.",
+                "default": "bytes",
+            },
         },
     },
 )
 def get_top_flows(arguments):
     limit = arguments.get("limit", 25)
     order_by = arguments.get("order_by", "bytes")
-    log_info(logger, f"[INFO] MCP get_top_flows called (limit={limit}, order_by={order_by})")
+    log_info(
+        logger, f"[INFO] MCP get_top_flows called (limit={limit}, order_by={order_by})"
+    )
     result = db_get_top_flows(limit=limit, order_by=order_by)
     log_info(logger, f"[INFO] MCP get_top_flows returned {len(result)} flows")
     return result
@@ -221,10 +260,23 @@ def get_top_flows(arguments):
         "properties": {
             "src_ip": {"type": "string", "description": "Filter by source IP."},
             "dst_ip": {"type": "string", "description": "Filter by destination IP."},
-            "dst_port": {"type": "integer", "description": "Filter by destination port."},
-            "country": {"type": "string", "description": "Filter by country name (partial match)."},
-            "tag": {"type": "string", "description": "Filter flows whose tags contain this string."},
-            "limit": {"type": "integer", "description": "Max rows to return.", "default": 50},
+            "dst_port": {
+                "type": "integer",
+                "description": "Filter by destination port.",
+            },
+            "country": {
+                "type": "string",
+                "description": "Filter by country name (partial match).",
+            },
+            "tag": {
+                "type": "string",
+                "description": "Filter flows whose tags contain this string.",
+            },
+            "limit": {
+                "type": "integer",
+                "description": "Max rows to return.",
+                "default": 50,
+            },
         },
     },
 )
@@ -235,8 +287,18 @@ def search_flows(arguments):
     country = arguments.get("country")
     tag = arguments.get("tag")
     limit = arguments.get("limit", 50)
-    log_info(logger, f"[INFO] MCP search_flows called (src_ip={src_ip}, dst_ip={dst_ip}, dst_port={dst_port}, country={country}, tag={tag}, limit={limit})")
-    result = db_search_flows(src_ip=src_ip, dst_ip=dst_ip, dst_port=dst_port, country=country, tag=tag, limit=limit)
+    log_info(
+        logger,
+        f"[INFO] MCP search_flows called (src_ip={src_ip}, dst_ip={dst_ip}, dst_port={dst_port}, country={country}, tag={tag}, limit={limit})",
+    )
+    result = db_search_flows(
+        src_ip=src_ip,
+        dst_ip=dst_ip,
+        dst_port=dst_port,
+        country=country,
+        tag=tag,
+        limit=limit,
+    )
     log_info(logger, f"[INFO] MCP search_flows returned {len(result)} flows")
     return result
 
@@ -247,8 +309,15 @@ def search_flows(arguments):
     {
         "type": "object",
         "properties": {
-            "country": {"type": "string", "description": "Country name or partial name (case-insensitive)."},
-            "limit": {"type": "integer", "description": "Max rows to return.", "default": 50},
+            "country": {
+                "type": "string",
+                "description": "Country name or partial name (case-insensitive).",
+            },
+            "limit": {
+                "type": "integer",
+                "description": "Max rows to return.",
+                "default": 50,
+            },
         },
         "required": ["country"],
     },
@@ -256,9 +325,15 @@ def search_flows(arguments):
 def get_flows_by_country(arguments):
     country = arguments["country"]
     limit = arguments.get("limit", 50)
-    log_info(logger, f"[INFO] MCP get_flows_by_country called for '{country}' (limit={limit})")
+    log_info(
+        logger,
+        f"[INFO] MCP get_flows_by_country called for '{country}' (limit={limit})",
+    )
     result = get_flows_for_country(country, limit=limit)
-    log_info(logger, f"[INFO] MCP get_flows_by_country returned {len(result)} flows for '{country}'")
+    log_info(
+        logger,
+        f"[INFO] MCP get_flows_by_country returned {len(result)} flows for '{country}'",
+    )
     return result
 
 
@@ -269,7 +344,11 @@ def get_flows_by_country(arguments):
         "type": "object",
         "properties": {
             "port": {"type": "integer", "description": "Destination port number."},
-            "limit": {"type": "integer", "description": "Max rows to return.", "default": 50},
+            "limit": {
+                "type": "integer",
+                "description": "Max rows to return.",
+                "default": 50,
+            },
         },
         "required": ["port"],
     },
@@ -277,9 +356,14 @@ def get_flows_by_country(arguments):
 def get_flows_by_port(arguments):
     port = arguments["port"]
     limit = arguments.get("limit", 50)
-    log_info(logger, f"[INFO] MCP get_flows_by_port called for port {port} (limit={limit})")
+    log_info(
+        logger, f"[INFO] MCP get_flows_by_port called for port {port} (limit={limit})"
+    )
     result = get_flows_for_port(port, limit=limit)
-    log_info(logger, f"[INFO] MCP get_flows_by_port returned {len(result)} flows for port {port}")
+    log_info(
+        logger,
+        f"[INFO] MCP get_flows_by_port returned {len(result)} flows for port {port}",
+    )
     return result
 
 
@@ -289,8 +373,15 @@ def get_flows_by_port(arguments):
     {
         "type": "object",
         "properties": {
-            "tag": {"type": "string", "description": "Tag string to search for (partial match)."},
-            "limit": {"type": "integer", "description": "Max rows to return.", "default": 50},
+            "tag": {
+                "type": "string",
+                "description": "Tag string to search for (partial match).",
+            },
+            "limit": {
+                "type": "integer",
+                "description": "Max rows to return.",
+                "default": 50,
+            },
         },
         "required": ["tag"],
     },
@@ -298,9 +389,14 @@ def get_flows_by_port(arguments):
 def get_flows_by_tag(arguments):
     tag = arguments["tag"]
     limit = arguments.get("limit", 50)
-    log_info(logger, f"[INFO] MCP get_flows_by_tag called for tag '{tag}' (limit={limit})")
+    log_info(
+        logger, f"[INFO] MCP get_flows_by_tag called for tag '{tag}' (limit={limit})"
+    )
     result = get_flows_for_tag(tag, limit=limit)
-    log_info(logger, f"[INFO] MCP get_flows_by_tag returned {len(result)} flows for tag '{tag}'")
+    log_info(
+        logger,
+        f"[INFO] MCP get_flows_by_tag returned {len(result)} flows for tag '{tag}'",
+    )
     return result
 
 
@@ -322,7 +418,9 @@ def export_ignorelist(arguments):
 def export_whitelisted_hosts(arguments):
     log_info(logger, "[INFO] MCP export_whitelisted_hosts called")
     result = get_whitelisted_localhosts()
-    log_info(logger, f"[INFO] MCP export_whitelisted_hosts returned {len(result)} hosts")
+    log_info(
+        logger, f"[INFO] MCP export_whitelisted_hosts returned {len(result)} hosts"
+    )
     return result
 
 
@@ -366,7 +464,9 @@ def mcp_endpoint():
         return json.dumps(jsonrpc_error(None, -32700, "Parse error"))
 
     if not body or "method" not in body:
-        return json.dumps(jsonrpc_error(body.get("id") if body else None, -32600, "Invalid request"))
+        return json.dumps(
+            jsonrpc_error(body.get("id") if body else None, -32600, "Invalid request")
+        )
 
     method = body.get("method")
     params = body.get("params", {})
@@ -391,11 +491,13 @@ def mcp_endpoint():
     if method == "tools/list":
         tool_list = []
         for t in TOOLS.values():
-            tool_list.append({
-                "name": t["name"],
-                "description": t["description"],
-                "inputSchema": t["inputSchema"],
-            })
+            tool_list.append(
+                {
+                    "name": t["name"],
+                    "description": t["description"],
+                    "inputSchema": t["inputSchema"],
+                }
+            )
         return json.dumps(jsonrpc_success(req_id, {"tools": tool_list}))
 
     # --- tools/call ---
@@ -404,7 +506,9 @@ def mcp_endpoint():
         arguments = params.get("arguments", {})
 
         if tool_name not in TOOLS:
-            return json.dumps(jsonrpc_error(req_id, -32602, f"Unknown tool: {tool_name}"))
+            return json.dumps(
+                jsonrpc_error(req_id, -32602, f"Unknown tool: {tool_name}")
+            )
 
         try:
             result = TOOLS[tool_name]["function"](arguments)
@@ -413,7 +517,9 @@ def mcp_endpoint():
         except Exception as e:
             log_error(logger, f"[ERROR] Tool {tool_name} failed: {e}")
             content = [{"type": "text", "text": json.dumps({"error": str(e)})}]
-            return json.dumps(jsonrpc_success(req_id, {"content": content, "isError": True}))
+            return json.dumps(
+                jsonrpc_success(req_id, {"content": content, "isError": True})
+            )
 
     # --- unknown method ---
     return json.dumps(jsonrpc_error(req_id, -32601, f"Method not found: {method}"))
