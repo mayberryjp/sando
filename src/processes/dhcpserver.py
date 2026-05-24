@@ -227,6 +227,9 @@ class DHCPServer:
                 "lease_time", 86400
             )  # <-- NEW: get lease_time or default
             ip_version = scope.get("ip_version", 4)  # default to IPv4 if not specified
+            # Normalize ip_version: accept "IPv4"/4 as v4, "IPv6"/6 as v6
+            if isinstance(ip_version, str):
+                ip_version = 4 if ip_version.lower() in ("ipv4", "4") else 6
             # Calculate subnet_mask from CIDR
             try:
                 net = ipaddress.ip_network(cidr, strict=False)

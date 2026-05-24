@@ -18,13 +18,16 @@ def get_routers(config_dict, ip_version=None):
     raw = config_dict.get("LocalNetworks", "[]")
     try:
         scopes = json.loads(raw)
-        return {
-            scope["router"]
-            for scope in scopes
-            if "router" in scope
-            and scope["router"]
-            and (ip_version is None or scope.get("ip_version") == ip_version)
-        }
+        result = set()
+        for scope in scopes:
+            if "router" not in scope or not scope["router"]:
+                continue
+            v = scope.get("ip_version", 4)
+            if isinstance(v, str):
+                v = 4 if v.lower() in ("ipv4", "4") else 6
+            if ip_version is None or v == ip_version:
+                result.add(scope["router"])
+        return result
     except Exception as e:
         logging.getLogger(__name__).error(
             f"[ERROR] Could not parse LocalNetworks for routers: {e}"
@@ -49,6 +52,11 @@ def get_local_network_cidrs(config_dict):
             if "cidr" in scope:
                 if "ip_version" not in scope:
                     scope["ip_version"] = 4
+                else:
+                    # Normalize: accept "IPv4"/4 as 4, "IPv6"/6 as 6
+                    v = scope["ip_version"]
+                    if isinstance(v, str):
+                        scope["ip_version"] = 4 if v.lower() in ("ipv4", "4") else 6
                 result.add(scope["cidr"])
         return result
     except Exception as e:

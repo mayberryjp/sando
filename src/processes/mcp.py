@@ -3,25 +3,18 @@ import os
 import sys
 from typing import Optional
 
-from database.alerts import get_all_alerts, get_all_alerts_by_ip  # noqa: E402
-from database.configuration import get_all_configuration  # noqa: E402
-from database.explore import (
-    get_flows_for_country,
-    get_flows_for_ip,
-    get_flows_for_port,
-    get_flows_for_tag,
-)
-from database.explore import get_top_flows as db_get_top_flows  # noqa: E402
-from database.explore import search_flows as db_search_flows
-from database.ignorelist import get_all_ignorelist_entries  # noqa: E402
-from database.localhosts import get_localhost_as_dict  # noqa: E402
-from database.localhosts import get_whitelisted_localhosts
-from utils.locallogging import log_error, log_info  # noqa: E402
-
 # Force unbuffered stdout so print() output appears immediately
 os.environ["PYTHONUNBUFFERED"] = "1"
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(line_buffering=True)
+
+# Must set sys.path before local imports
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+)  # sando/src/
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+)  # sando/ — required by locallogging's "from src.X import"
 
 # Suppress FastMCP's rich/colored logging and startup banner before anything else loads.
 import fastmcp.settings as _fmcp_settings  # noqa: E402
@@ -33,12 +26,20 @@ _fmcp_settings.enable_rich_logging = (
 
 from fastmcp import FastMCP  # noqa: E402
 
-sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-)  # sando/src/
-sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-)  # sando/ — required by locallogging's "from src.X import"
+from database.alerts import get_all_alerts, get_all_alerts_by_ip  # noqa: E402
+from database.configuration import get_all_configuration  # noqa: E402
+from database.explore import (  # noqa: E402
+    get_flows_for_country,
+    get_flows_for_ip,
+    get_flows_for_port,
+    get_flows_for_tag,
+)
+from database.explore import get_top_flows as db_get_top_flows  # noqa: E402
+from database.explore import search_flows as db_search_flows  # noqa: E402
+from database.ignorelist import get_all_ignorelist_entries  # noqa: E402
+from database.localhosts import get_localhost_as_dict  # noqa: E402
+from database.localhosts import get_whitelisted_localhosts  # noqa: E402
+from utils.locallogging import log_error, log_info  # noqa: E402
 # locallogging uses print() for all output, so the Python logging system only
 # needs a NullHandler on the root logger.  Without this, every logger.info()
 # call inside locallogging produces a second, unformatted duplicate line via
