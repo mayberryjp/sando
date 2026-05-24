@@ -15,8 +15,7 @@ dependencies = [
   "psutil",
   "dnslib",
   "waitress",
-  "pytz",
-  "fastmcp"
+  "pytz"
 ]
 
 [project.scripts]
