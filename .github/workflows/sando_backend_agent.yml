@@ -113,6 +113,20 @@ jobs:
           echo "Built full issue context:"
           sed -n '1,240p' .agent/issue.md
 
+
+      - name: Verify OpenAI API key secret
+        env:
+          OPENAI_API_KEY_CHECK: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY_CHECK" ]; then
+            echo "OPENAI_API_KEY is empty or unavailable"
+            exit 1
+          fi
+
+          echo "OPENAI_API_KEY is present"
+          echo "Length: ${#OPENAI_API_KEY_CHECK}"
+          echo "Prefix: $(printf '%s' "$OPENAI_API_KEY_CHECK" | cut -c1-7)"
+
       - name: Run Codex coding agent
         uses: openai/codex-action@v1
         with:
