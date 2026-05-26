@@ -134,7 +134,7 @@ jobs:
           prompt-file: .agent/issue.md
           output-file: .agent/codex-output.md
           codex-home: ${{ runner.temp }}/codex-home
-          safety-strategy: unprivileged-user
+          safety-strategy: unsafe
           codex-user: runner
           sandbox: workspace-write
 
