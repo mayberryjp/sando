@@ -1,0 +1,60 @@
+name: Sando Backend Agent
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  sando-backend-agent:
+    if: github.event.label.name == 'sando_backend_agent_delegated'
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Create test file from issue
+        run: |
+          mkdir -p agent-output
+
+          cat > agent-output/issue-${{ github.event.issue.number }}.md <<'EOF'
+          # Sando Backend Agent Test
+
+          Issue number:
+          ${{ github.event.issue.number }}
+
+          Issue title:
+          ${{ github.event.issue.title }}
+
+          Label:
+          ${{ github.event.label.name }}
+
+          Issue body:
+          ${{ github.event.issue.body }}
+          EOF
+
+      - name: Create branch and PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BRANCH="sando-backend-agent/issue-${{ github.event.issue.number }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git checkout -b "$BRANCH"
+          git add agent-output/
+
+          git commit -m "Sando backend agent test for issue #${{ github.event.issue.number }}" || exit 0
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --title "Sando backend agent test for issue #${{ github.event.issue.number }}" \
+            --body "Automated backend-agent test output for #${{ github.event.issue.number }}" \
+            --base main \
+            --head "$BRANCH"
