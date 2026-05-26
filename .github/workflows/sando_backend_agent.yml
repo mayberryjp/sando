@@ -165,6 +165,24 @@ jobs:
           codex-user: runner
           sandbox: workspace-write
 
+      - name: Show Codex output
+        if: always()
+        run: |
+          echo "=== Codex output ==="
+          if [ -f .agent/codex-output.md ]; then
+            cat .agent/codex-output.md
+          else
+            echo "No .agent/codex-output.md found"
+          fi
+
+          echo
+          echo "=== Git status ==="
+          git status --short
+
+          echo
+          echo "=== Git diff summary ==="
+          git diff --stat || true
+
       - name: Show changed files
         run: |
           echo "Changed files:"
