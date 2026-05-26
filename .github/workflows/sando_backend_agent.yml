@@ -163,7 +163,7 @@ jobs:
           codex-home: ${{ runner.temp }}/codex-home
           safety-strategy: unsafe
           codex-user: runner
-          sandbox: workspace-write
+          sandbox: danger-full-access
 
       - name: Show Codex output
         if: always()
