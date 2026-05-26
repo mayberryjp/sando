@@ -58,7 +58,8 @@ jobs:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           prompt-file: .agent/issue.md
           output-file: .agent/codex-output.md
-          safety-strategy: drop-sudo
+          safety-strategy: unprivileged-user
+          codex-user: runner
           sandbox: workspace-write
 
       - name: Show changed files
