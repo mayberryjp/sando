@@ -12,53 +12,120 @@ permissions:
 jobs:
   sando-backend-agent:
     if: github.event.label.name == 'sando_backend_agent_delegated'
-    runs-on: [self-hosted]
+    runs-on: [self-hosted, sando, backend, agent, docker]
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Create test file from issue
+      - name: Create agent prompt from issue
         run: |
-          mkdir -p agent-output
+          mkdir -p .agent
 
-          cat > agent-output/issue-${{ github.event.issue.number }}-${{ github.run_id }}.md <<'EOF'
-          # Sando Backend Agent Test
+          cat > .agent/issue.md <<'EOF'
+          You are working in the mayberryjp/sando repository.
 
-          Issue number:
+          Implement the requested backend change from this GitHub issue.
+
+          Rules:
+          - Make the smallest reasonable code change.
+          - Prefer backend/API/server code changes.
+          - Do not edit unrelated files.
+          - Do not change secrets, credentials, workflow permissions, runner config, or Docker runner configuration.
+          - Do not edit files under .github/workflows unless the issue explicitly asks for workflow changes.
+          - Run relevant tests if available.
+          - Leave the repo in a commit-ready state.
+          - If the request is ambiguous, make a conservative implementation and document assumptions in the PR.
+
+          Definition of done:
+          - The requested change is implemented.
+          - Relevant tests pass, or you clearly document why tests could not be run.
+          - The change is ready for human review.
+
+          GitHub issue number:
           ${{ github.event.issue.number }}
 
-          Issue title:
+          GitHub issue title:
           ${{ github.event.issue.title }}
 
-          Label:
-          ${{ github.event.label.name }}
-
-          Issue body:
+          GitHub issue body:
           ${{ github.event.issue.body }}
           EOF
 
-      - name: Create branch and PR
+      - name: Run Codex coding agent
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: .agent/issue.md
+          output-file: .agent/codex-output.md
+          safety-strategy: drop-sudo
+          sandbox: workspace-write
+
+      - name: Show changed files
+        run: |
+          echo "Changed files:"
+          git status --short
+          echo
+          git diff --name-only
+
+      - name: Block sensitive file changes
+        run: |
+          CHANGED="$(git diff --name-only)"
+
+          if echo "$CHANGED" | grep -E '(^\.env|\.pem$|\.key$|secrets|credentials)' ; then
+            echo "Refusing PR because sensitive files were changed."
+            exit 1
+          fi
+
+          if echo "$CHANGED" | grep -E '^\.github/workflows/' ; then
+            echo "Refusing PR because workflow files were changed."
+            exit 1
+          fi
+
+          if echo "$CHANGED" | grep -E '(^docker-compose\.ya?ml$|^compose\.ya?ml$)' ; then
+            echo "Refusing PR because Docker compose files were changed."
+            exit 1
+          fi
+
+      - name: Run basic validation
+        run: |
+          set -e
+
+          if [ -f package.json ]; then
+            echo "Detected package.json"
+            npm install
+            npm test --if-present
+          fi
+
+          if [ -f pyproject.toml ] || [ -f requirements.txt ]; then
+            echo "Detected Python project"
+            python3 -m compileall .
+          fi
+
+      - name: Create branch and PR if changed
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set -e
+
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No changes made by agent."
+            exit 0
+          fi
+
           BRANCH="sando-backend-agent/issue-${{ github.event.issue.number }}-${{ github.run_id }}"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           git checkout -b "$BRANCH"
-          git add agent-output/
+          git add .
 
-          git commit -m "Sando backend agent test for issue #${{ github.event.issue.number }}" || {
-            echo "No changes to commit"
-            exit 0
-          }
-
+          git commit -m "Sando backend agent work for issue #${{ github.event.issue.number }}"
           git push origin "$BRANCH"
 
           gh pr create \
-            --title "Sando backend agent test for issue #${{ github.event.issue.number }}" \
-            --body "Automated backend-agent test output for #${{ github.event.issue.number }}" \
+            --title "Sando backend agent work for issue #${{ github.event.issue.number }}" \
+            --body-file .agent/codex-output.md \
             --base main \
             --head "$BRANCH"
