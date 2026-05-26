@@ -12,7 +12,7 @@ permissions:
 jobs:
   sando-backend-agent:
     if: github.event.label.name == 'sando_backend_agent_delegated'
-    runs-on: self-hosted
+    runs-on: [self-hosted, sando, backend, agent, docker]
 
     steps:
       - name: Checkout repo
@@ -22,7 +22,7 @@ jobs:
         run: |
           mkdir -p agent-output
 
-          cat > agent-output/issue-${{ github.event.issue.number }}.md <<'EOF'
+          cat > agent-output/issue-${{ github.event.issue.number }}-${{ github.run_id }}.md <<'EOF'
           # Sando Backend Agent Test
 
           Issue number:
@@ -42,7 +42,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          BRANCH="sando-backend-agent/issue-${{ github.event.issue.number }}"
+          BRANCH="sando-backend-agent/issue-${{ github.event.issue.number }}-${{ github.run_id }}"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -50,7 +50,11 @@ jobs:
           git checkout -b "$BRANCH"
           git add agent-output/
 
-          git commit -m "Sando backend agent test for issue #${{ github.event.issue.number }}" || exit 0
+          git commit -m "Sando backend agent test for issue #${{ github.event.issue.number }}" || {
+            echo "No changes to commit"
+            exit 0
+          }
+
           git push origin "$BRANCH"
 
           gh pr create \
