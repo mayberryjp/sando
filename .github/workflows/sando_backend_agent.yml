@@ -79,6 +79,33 @@ jobs:
         run: |
           mkdir -p .agent
 
+          cat > .agent/issue.md <<'EOF'
+          You are working in the mayberryjp/sando repository.
+
+          Implement the requested backend change from this GitHub issue.
+
+          Important:
+          - You must inspect the repository and make source code changes unless the feature is already implemented.
+          - Do not only summarize the issue.
+          - Do not stop after analysis.
+          - If no code change is needed, explain exactly which existing files already implement the behavior.
+          - Make the smallest reasonable code change.
+          - Prefer backend/API/server code changes.
+          - Do not edit unrelated files.
+          - Do not change secrets, credentials, workflow permissions, runner config, or Docker runner configuration.
+          - Do not edit files under .github/workflows unless the issue explicitly asks for workflow changes.
+          - Run relevant tests if available.
+          - Leave the repo in a commit-ready state.
+
+          Definition of done:
+          - The requested change is implemented.
+          - Relevant tests pass, or you clearly document why tests could not be run.
+          - The change is ready for human review.
+
+          Full GitHub issue context follows.
+
+          EOF
+
           gh issue view "$ISSUE_NUMBER" \
             --repo "$REPO" \
             --json number,title,body,author,comments,labels,url \
@@ -108,10 +135,10 @@ jobs:
                   )
                 end
               )
-            ' > .agent/issue.md
+            ' >> .agent/issue.md
 
           echo "Built full issue context:"
-          sed -n '1,240p' .agent/issue.md
+          sed -n '1,260p' .agent/issue.md
 
 
       - name: Verify OpenAI API key secret
