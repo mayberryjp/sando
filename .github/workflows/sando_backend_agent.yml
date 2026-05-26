@@ -71,6 +71,48 @@ jobs:
           mkdir -p /home/runner/.codex
           chown -R runner:runner /home/runner/.codex
 
+      - name: Build full issue context for Codex
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p .agent
+
+          gh issue view "$ISSUE_NUMBER" \
+            --repo "$REPO" \
+            --json number,title,body,author,comments,labels,url \
+            --jq '
+              "# GitHub Issue #" + (.number|tostring) + "\n\n" +
+              "URL: " + .url + "\n\n" +
+              "Title: " + .title + "\n\n" +
+              "Labels: " + ([.labels[].name] | join(", ")) + "\n\n" +
+              "Author: @" + .author.login + "\n\n" +
+
+              "## Original Issue Body\n\n" +
+              (.body // "") + "\n\n" +
+
+              "## Issue Comments / Conversation\n\n" +
+              (
+                if (.comments | length) == 0 then
+                  "_No comments yet._\n"
+                else
+                  (
+                    .comments
+                    | sort_by(.createdAt)
+                    | map(
+                        "### Comment by @" + .author.login + " at " + .createdAt + "\n\n" +
+                        (.body // "") + "\n"
+                      )
+                    | join("\n---\n\n")
+                  )
+                end
+              )
+            ' > .agent/issue.md
+
+          echo "Built full issue context:"
+          sed -n '1,240p' .agent/issue.md
+
       - name: Run Codex coding agent
         uses: openai/codex-action@v1
         with:
