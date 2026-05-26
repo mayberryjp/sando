@@ -70,8 +70,15 @@ jobs:
           sudo -n which node || true
           sudo -n node -v || true
           
+      - name: Prepare clean Codex home
+        run: |
+          mkdir -p "$RUNNER_TEMP/codex-home"
+          chown -R runner:runner "$RUNNER_TEMP/codex-home"
+
       - name: Run Codex coding agent
         uses: openai/codex-action@v1
+        env:
+          CODEX_HOME: ${{ runner.temp }}/codex-home
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           prompt-file: .agent/issue.md
