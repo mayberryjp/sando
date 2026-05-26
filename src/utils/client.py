@@ -246,6 +246,7 @@ def upload_configuration():
             "PiholeApiKey",
             "TelegramBotToken",
             "TelegramChatId",
+            "DiscordWebhookUrl",
             "AdGuardPassword",
             "AdGuardUsername",
         ]

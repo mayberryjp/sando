@@ -11,3 +11,5 @@ __pycache__/
 .ruff_cache
 .ruff_cache/
 tests/
+!tests/
+!tests/*.py
