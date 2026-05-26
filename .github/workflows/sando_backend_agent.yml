@@ -52,6 +52,24 @@ jobs:
           ${{ github.event.issue.body }}
           EOF
 
+      - name: Make Node 20 visible to sudo
+        run: |
+          echo "Before:"
+          which node || true
+          node -v || true
+          sudo -n which node || true
+          sudo -n node -v || true
+
+          sudo ln -sf /opt/hostedtoolcache/node/20.20.2/x64/bin/node /usr/local/bin/node
+          sudo ln -sf /opt/hostedtoolcache/node/20.20.2/x64/bin/npm /usr/local/bin/npm
+          sudo ln -sf /opt/hostedtoolcache/node/20.20.2/x64/bin/npx /usr/local/bin/npx
+
+          echo "After:"
+          which node || true
+          node -v || true
+          sudo -n which node || true
+          sudo -n node -v || true
+          
       - name: Run Codex coding agent
         uses: openai/codex-action@v1
         with:
