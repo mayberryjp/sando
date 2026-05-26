@@ -12,7 +12,7 @@ permissions:
 jobs:
   sando-backend-agent:
     if: github.event.label.name == 'sando_backend_agent_delegated'
-    runs-on: [sando_backend_agent_delegated, self_hosted]
+    runs-on: [sando_backend_agent_delegated, self-hosted]
 
     steps:
       - name: Checkout repo
