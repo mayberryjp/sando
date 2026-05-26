@@ -52,37 +52,32 @@ jobs:
           ${{ github.event.issue.body }}
           EOF
 
-      - name: Make Node 20 visible to sudo
+      - name: Make Node 20 visible to sudo and runner user
         run: |
-          echo "Before:"
-          which node || true
-          node -v || true
-          sudo -n which node || true
-          sudo -n node -v || true
-
           sudo ln -sf /opt/hostedtoolcache/node/20.20.2/x64/bin/node /usr/local/bin/node
           sudo ln -sf /opt/hostedtoolcache/node/20.20.2/x64/bin/npm /usr/local/bin/npm
           sudo ln -sf /opt/hostedtoolcache/node/20.20.2/x64/bin/npx /usr/local/bin/npx
+          hash -r
+          sudo -u runner -- node -v
 
-          echo "After:"
-          which node || true
-          node -v || true
-          sudo -n which node || true
-          sudo -n node -v || true
-          
       - name: Prepare clean Codex home
         run: |
+          rm -rf "$RUNNER_TEMP/codex-home"
           mkdir -p "$RUNNER_TEMP/codex-home"
           chown -R runner:runner "$RUNNER_TEMP/codex-home"
 
+          # Also remove the stale default config that Codex is still reading
+          rm -f /home/runner/.codex/config.toml || true
+          mkdir -p /home/runner/.codex
+          chown -R runner:runner /home/runner/.codex
+
       - name: Run Codex coding agent
         uses: openai/codex-action@v1
-        env:
-          CODEX_HOME: ${{ runner.temp }}/codex-home
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           prompt-file: .agent/issue.md
           output-file: .agent/codex-output.md
+          codex-home: ${{ runner.temp }}/codex-home
           safety-strategy: unprivileged-user
           codex-user: runner
           sandbox: workspace-write
