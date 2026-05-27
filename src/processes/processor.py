@@ -4,6 +4,7 @@ import time
 
 from src.const import CONST_REINITIALIZE_DB, IS_CONTAINER
 from src.database.configuration import get_config_settings
+from src.notifications.discord import send_test_discord_message
 from src.notifications.telegram import (
     send_test_telegram_message,
 )  # Import send_test_telegram_message from src.notifications.py
@@ -30,6 +31,7 @@ if __name__ == "__main__":
     log_info(logger, "[INFO] Processor started.")
 
     send_test_telegram_message()
+    send_test_discord_message()
 
     while True:
 

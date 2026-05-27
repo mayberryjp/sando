@@ -2,6 +2,7 @@ import logging
 
 from src.database.alerts import log_alert_to_db
 from src.database.localhosts import get_localhost_by_ip
+from src.notifications.discord import send_discord_message
 from src.notifications.telegram import send_telegram_message
 from src.utils.locallogging import log_info, log_warn
 
@@ -67,28 +68,31 @@ def handle_alert(
             False,
         )
 
-        # Only send Telegram notifications if alerts are enabled for this IP
+        # Only send notifications if alerts are enabled for this IP
         if alerts_enabled and detection_level >= 2:
             if insert_or_update == "insert":
                 log_info(
-                    logger, f"[INFO] Sending Telegram alert for {local_ip} (new alert)"
+                    logger,
+                    f"[INFO] Sending alert notifications for {local_ip} (new alert)",
                 )
                 send_telegram_message(telegram_message, original_flow)
+                send_discord_message(telegram_message, original_flow)
             elif insert_or_update == "update" and detection_level == 3:
                 log_info(
                     logger,
-                    f"[INFO] Sending Telegram alert for {local_ip} (updated alert)",
+                    f"[INFO] Sending alert notifications for {local_ip} (updated alert)",
                 )
                 send_telegram_message(telegram_message, original_flow)
+                send_discord_message(telegram_message, original_flow)
             elif not insert_or_update:
                 log_warn(
                     logger,
-                    f"[WARN] Failed to log alert for {local_ip}, Telegram message not sent",
+                    f"[WARN] Failed to log alert for {local_ip}, notifications not sent",
                 )
         elif not alerts_enabled and detection_level >= 2:
             log_info(
                 logger,
-                f"[INFO] Telegram alert suppressed for {local_ip} (alerts_enabled=False)",
+                f"[INFO] Alert notifications suppressed for {local_ip} (alerts_enabled=False)",
             )
 
         return insert_or_update
