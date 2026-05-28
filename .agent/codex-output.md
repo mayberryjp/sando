@@ -1,15 +1,13 @@
-Implemented Discord notifications.
+Implemented issue #33.
 
-Changed:
-- Added `DiscordWebhookUrl` and `DiscordEnabled` defaults in [src/const.py](/tmp/runner/work/sando/sando/src/const.py:330).
-- Added `send_discord_message()` and `send_test_discord_message()` in [src/notifications/discord.py](/tmp/runner/work/sando/sando/src/notifications/discord.py:30).
-- Wired Discord alert sends into [src/notifications/core.py](/tmp/runner/work/sando/sando/src/notifications/core.py:78) and made Telegram-specific log messages generic.
-- Added startup Discord test notification in [src/processes/processor.py](/tmp/runner/work/sando/sando/src/processes/processor.py:33).
-- Sanitized `DiscordWebhookUrl` during config upload in [src/utils/client.py](/tmp/runner/work/sando/sando/src/utils/client.py:249).
-- Added unit tests and unignored Python test files in `.gitignore`.
+Changed [docker_config_examples/Dockerfile](/tmp/runner/work/sando/sando/docker_config_examples/Dockerfile:1) to use `python:3.14.5-alpine` instead of `python:3.14.2-alpine`.
 
-Verification:
-- `python3 -m unittest discover -s tests` passed: 8 tests.
-- `python3 -m compileall src tests` passed.
+Added required agent summaries:
+- [.agent/change-summaries/issue-33-backend.md](/tmp/runner/work/sando/sando/.agent/change-summaries/issue-33-backend.md:1)
+- [.agent/change-summary.md](/tmp/runner/work/sando/sando/.agent/change-summary.md:1)
 
-Note: existing untracked `.agent/issue.md` was left untouched.
+Validation:
+- `docker manifest inspect python:3.14.5-alpine` passed.
+- Python tests could not run: `python` is missing, and `python3` exists but `pytest` is not installed.
+
+Note: `.agent/issue.md` was already modified before my changes; I left it untouched.
