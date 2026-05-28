@@ -196,6 +196,43 @@ jobs:
           codex-user: runner
           sandbox: danger-full-access
 
+      - name: Verify agent change summary
+        if: always()
+        run: |
+          mkdir -p .agent
+
+          if [ ! -f .agent/change-summary.md ]; then
+            echo "Codex did not create .agent/change-summary.md. Creating fallback summary."
+
+            cat > .agent/change-summary.md <<'EOF'
+          ## Agent Change Summary
+
+          ### What changed
+          - No structured change summary was produced by the coding agent.
+
+          ### User-facing impact
+          - Unknown.
+
+          ### Files changed
+          - Unknown. Review the PR diff.
+
+          ### README impact
+          - Unknown. A docs agent or human reviewer should inspect the changes.
+
+          ### Announcement impact
+          - Unknown. A docs agent or human reviewer should inspect the changes.
+
+          ### Testing / validation
+          - Unknown. Review Codex output and workflow logs.
+
+          ### Open questions
+          - The coding agent did not create the required .agent/change-summary.md file.
+          EOF
+          fi
+
+          echo "=== Agent change summary ==="
+          cat .agent/change-summary.md
+
       - name: Show Codex output
         if: always()
         run: |
