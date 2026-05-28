@@ -14,4 +14,3 @@ tests/
 !tests/
 !tests/*.py
 .sme
-.agent
