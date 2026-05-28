@@ -130,6 +130,7 @@ jobs:
           Definition of done:
           - The requested change is implemented.
           - Relevant tests pass, or you clearly document why tests could not be run.
+          - .agent/change-summary.md exists and follows the required format.
           - The change is ready for human review.
 
           Full GitHub issue context follows.
