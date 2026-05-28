@@ -322,6 +322,8 @@ jobs:
           git commit -m "Sando backend agent work for issue #${{ github.event.issue.number }}"
           git push origin "$BRANCH"
 
+          SUMMARY_FILE=".agent/change-summaries/issue-${{ github.event.issue.number }}-backend.md"
+
           {
             echo "## Codex Output"
             echo
@@ -337,8 +339,8 @@ jobs:
             echo "## Agent Change Summary"
             echo
 
-            if [ -f .agent/change-summary.md ]; then
-              cat .agent/change-summary.md
+            if [ -f "$SUMMARY_FILE" ]; then
+              cat "$SUMMARY_FILE"
             else
               echo "No agent change summary was produced."
             fi
