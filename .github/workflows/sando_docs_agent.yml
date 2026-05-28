@@ -36,7 +36,6 @@ jobs:
           repository: mayberryjp/sando-website
           ref: ${{ github.event.inputs.frontend_ref }}
           path: frontend
-          token: ${{ secrets.CROSS_REPO_PAT }}
 
       - name: Show checked out refs
         run: |
