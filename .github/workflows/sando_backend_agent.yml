@@ -314,8 +314,31 @@ jobs:
           git commit -m "Sando backend agent work for issue #${{ github.event.issue.number }}"
           git push origin "$BRANCH"
 
+          {
+            echo "## Codex Output"
+            echo
+            if [ -f .agent/codex-output.md ]; then
+              cat .agent/codex-output.md
+            else
+              echo "No Codex output file was produced."
+            fi
+
+            echo
+            echo "---"
+            echo
+            echo "## Agent Change Summary"
+            echo
+
+            if [ -f .agent/change-summary.md ]; then
+              cat .agent/change-summary.md
+            else
+              echo "No agent change summary was produced."
+            fi
+          } > .agent/pr-body.md
+
+
           gh pr create \
             --title "Sando backend agent work for issue #${{ github.event.issue.number }}" \
-            --body-file .agent/codex-output.md \
+            --body-file .agent/pr-body.md \
             --base main \
             --head "$BRANCH"
