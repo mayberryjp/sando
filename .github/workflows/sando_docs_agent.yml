@@ -1,0 +1,284 @@
+name: Sando Docs Agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      backend_ref:
+        description: "Backend branch/ref to read from"
+        required: true
+        default: "main"
+      frontend_ref:
+        description: "Frontend branch/ref to read from"
+        required: true
+        default: "main"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  sando-docs-agent:
+    runs-on: [sando_docs_agent_delegated, self-hosted]
+
+    steps:
+      - name: Checkout backend repo
+        uses: actions/checkout@v4
+        with:
+          repository: mayberryjp/sando
+          ref: ${{ github.event.inputs.backend_ref }}
+          path: backend
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout frontend repo
+        uses: actions/checkout@v4
+        with:
+          repository: mayberryjp/sando-website
+          ref: ${{ github.event.inputs.frontend_ref }}
+          path: frontend
+          token: ${{ secrets.CROSS_REPO_PAT }}
+
+      - name: Show checked out refs
+        run: |
+          echo "=== Backend ==="
+          cd backend
+          git branch --show-current || true
+          git rev-parse --short HEAD
+
+          echo
+          echo "=== Frontend ==="
+          cd ../frontend
+          git branch --show-current || true
+          git rev-parse --short HEAD
+
+      - name: Make Node 20 visible to sudo and runner user
+        run: |
+          sudo ln -sf /opt/hostedtoolcache/node/20.20.2/x64/bin/node /usr/local/bin/node
+          sudo ln -sf /opt/hostedtoolcache/node/20.20.2/x64/bin/npm /usr/local/bin/npm
+          sudo ln -sf /opt/hostedtoolcache/node/20.20.2/x64/bin/npx /usr/local/bin/npx
+          hash -r
+          sudo -u runner -- node -v
+
+      - name: Prepare clean Codex home
+        run: |
+          rm -rf "$RUNNER_TEMP/codex-home"
+          mkdir -p "$RUNNER_TEMP/codex-home"
+          chown -R runner:runner "$RUNNER_TEMP/codex-home"
+
+          rm -f /home/runner/.codex/config.toml || true
+          mkdir -p /home/runner/.codex
+          chown -R runner:runner /home/runner/.codex
+
+      - name: Build docs agent prompt
+        run: |
+          mkdir -p .agent
+
+          cat > .agent/docs-prompt.md <<'EOF'
+          You are the Sando documentation and release-notes agent.
+
+          You have access to two repositories:
+
+          - Backend repo: ./backend
+          - Frontend repo: ./frontend
+
+          Your job:
+          Review recent agent change summaries, current repo files, and implementation details, then update documentation and draft a user-facing announcement.
+
+          Important:
+          - You are a docs/release-notes agent, not a coding agent.
+          - Do not modify source code.
+          - Do not modify package files, lock files, workflow files, Dockerfiles, compose files, config files, or environment example files.
+          - Do not modify the frontend repo.
+          - Only modify the allowed backend docs files listed below.
+          - Do not invent behavior.
+          - Only document behavior verified from code, config files, README files, or agent summaries.
+          - If something is uncertain, put it in an "Open questions" section instead of stating it as fact.
+
+          Read these backend files first if they exist:
+          - ./backend/.agent/change-summaries/*.md
+          - ./backend/README.md
+          - ./backend/.env.example
+          - ./backend/docker-compose.yml
+          - ./backend/compose.yml
+          - ./backend/package.json
+          - ./backend/pyproject.toml
+          - ./backend/requirements.txt
+          - ./backend/src
+          - ./backend/app
+
+          Read these frontend files first if they exist:
+          - ./frontend/.agent/change-summaries/*.md
+          - ./frontend/README.md
+          - ./frontend/.env.example
+          - ./frontend/Dockerfile
+          - ./frontend/nginx.conf
+          - ./frontend/package.json
+          - ./frontend/src
+
+          Tasks:
+          1. Update ./backend/README.md so it accurately reflects recent backend and frontend changes.
+          2. Create or update ./backend/docs/announcement-draft.md with a user-facing announcement email draft.
+          3. The announcement draft should include:
+             - Subject
+             - Audience
+             - Email body
+             - What changed
+             - User-facing impact
+             - Action needed
+             - Breaking changes, if any
+             - Open questions, if any
+          4. Keep the README practical:
+             - setup/config instructions
+             - environment variables
+             - notification behavior
+             - frontend/backend relationship
+             - deployment notes
+             - migration/action-needed notes
+             - troubleshooting notes if relevant
+          5. Prefer concise, accurate documentation over broad marketing language.
+
+          Allowed files to modify:
+          - ./backend/README.md
+          - ./backend/docs/announcement-draft.md
+
+          Before finishing:
+          - Check that only allowed files changed.
+          - Summarize README changes.
+          - Summarize announcement draft changes.
+          - List any open questions.
+          EOF
+
+          echo "=== Docs agent prompt ==="
+          cat .agent/docs-prompt.md
+
+      - name: Verify OpenAI API key secret
+        env:
+          OPENAI_API_KEY_CHECK: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY_CHECK" ]; then
+            echo "OPENAI_API_KEY is empty or unavailable"
+            exit 1
+          fi
+
+          echo "OPENAI_API_KEY is present"
+          echo "Length: ${#OPENAI_API_KEY_CHECK}"
+          echo "Prefix: $(printf '%s' "$OPENAI_API_KEY_CHECK" | cut -c1-7)"
+
+      - name: Run Codex docs agent
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: .agent/docs-prompt.md
+          output-file: .agent/codex-docs-output.md
+          codex-home: ${{ runner.temp }}/codex-home
+          safety-strategy: unsafe
+          codex-user: runner
+          sandbox: danger-full-access
+
+      - name: Show Codex docs output
+        if: always()
+        run: |
+          echo "=== Codex docs output ==="
+          if [ -f .agent/codex-docs-output.md ]; then
+            cat .agent/codex-docs-output.md
+          else
+            echo "No .agent/codex-docs-output.md found"
+          fi
+
+          echo
+          echo "=== Backend git status ==="
+          cd backend
+          git status --short
+          git diff --stat || true
+
+          echo
+          echo "=== Frontend git status ==="
+          cd ../frontend
+          git status --short
+
+      - name: Block unauthorized docs-agent changes
+        run: |
+          set -e
+
+          echo "Checking frontend repo was not modified..."
+          cd frontend
+
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Docs agent modified the frontend repo. Refusing to continue."
+            git status --short
+            exit 1
+          fi
+
+          cd ../backend
+
+          echo "Checking backend changed files..."
+          CHANGED="$(git status --porcelain | awk '{print $2}')"
+
+          echo "$CHANGED"
+
+          if [ -z "$CHANGED" ]; then
+            echo "No backend docs changes found."
+            exit 0
+          fi
+
+          BAD="$(echo "$CHANGED" | grep -vE '^(README\.md|docs/announcement-draft\.md)$' || true)"
+
+          if [ -n "$BAD" ]; then
+            echo "Docs agent changed files outside the allowed docs files:"
+            echo "$BAD"
+            exit 1
+          fi
+
+      - name: Create docs branch and PR if changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+
+          cd backend
+
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No docs changes made by agent."
+            exit 0
+          fi
+
+          BRANCH="sando-docs-agent/${{ github.run_id }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git checkout -b "$BRANCH"
+
+          git add README.md docs/announcement-draft.md
+
+          git commit -m "Update Sando README and announcement draft"
+          git push origin "$BRANCH"
+
+          cd ..
+
+          {
+            echo "## Sando Docs Agent Output"
+            echo
+
+            if [ -f .agent/codex-docs-output.md ]; then
+              cat .agent/codex-docs-output.md
+            else
+              echo "No Codex docs output file was produced."
+            fi
+
+            echo
+            echo "---"
+            echo
+            echo "## Inputs"
+            echo
+            echo "- Backend ref: ${{ github.event.inputs.backend_ref }}"
+            echo "- Frontend ref: ${{ github.event.inputs.frontend_ref }}"
+          } > .agent/docs-pr-body.md
+
+          cd backend
+
+          gh pr create \
+            --title "Update Sando README and announcement draft" \
+            --body-file ../.agent/docs-pr-body.md \
+            --base main \
+            --head "$BRANCH"
