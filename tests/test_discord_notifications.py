@@ -55,7 +55,9 @@ class DiscordNotificationTests(unittest.TestCase):
                 "DiscordWebhookUrl": "https://discord.example/webhook",
                 "DiscordEnabled": "1",
             },
-        ), patch("src.notifications.discord.requests.post", return_value=response), patch(
+        ), patch(
+            "src.notifications.discord.requests.post", return_value=response
+        ), patch(
             "src.notifications.discord.log_error"
         ) as mock_log_error:
             send_discord_message("alert", {})

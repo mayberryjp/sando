@@ -8,7 +8,9 @@ class CoreNotificationTests(unittest.TestCase):
     def test_handle_alert_sends_discord_for_new_alerts(self):
         with patch(
             "src.notifications.core.get_localhost_by_ip", return_value=None
-        ), patch("src.notifications.core.log_alert_to_db", return_value="insert"), patch(
+        ), patch(
+            "src.notifications.core.log_alert_to_db", return_value="insert"
+        ), patch(
             "src.notifications.core.send_telegram_message"
         ) as mock_telegram, patch(
             "src.notifications.core.send_discord_message"
@@ -32,7 +34,9 @@ class CoreNotificationTests(unittest.TestCase):
     def test_handle_alert_sends_discord_for_level_three_updates(self):
         with patch(
             "src.notifications.core.get_localhost_by_ip", return_value=None
-        ), patch("src.notifications.core.log_alert_to_db", return_value="update"), patch(
+        ), patch(
+            "src.notifications.core.log_alert_to_db", return_value="update"
+        ), patch(
             "src.notifications.core.send_telegram_message"
         ) as mock_telegram, patch(
             "src.notifications.core.send_discord_message"
@@ -56,7 +60,9 @@ class CoreNotificationTests(unittest.TestCase):
     def test_handle_alert_does_not_send_update_notifications_at_level_two(self):
         with patch(
             "src.notifications.core.get_localhost_by_ip", return_value=None
-        ), patch("src.notifications.core.log_alert_to_db", return_value="update"), patch(
+        ), patch(
+            "src.notifications.core.log_alert_to_db", return_value="update"
+        ), patch(
             "src.notifications.core.send_telegram_message"
         ) as mock_telegram, patch(
             "src.notifications.core.send_discord_message"
