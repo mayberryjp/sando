@@ -4,13 +4,14 @@
 
 # Sando - Know your network
 
-Sando is a lightweight network monitoring and security platform for home labs and small networks.
+**Sando** is a lightweight, customizable, and powerful **network monitoring solution**. Sando helps you inventory the devices on your network, monitor, detect, and respond to suspicious activity in your network with ease.
+
 It helps answer:
 
 - What hosts are on my network?
 - What internet destinations are they connecting to?
 - What DNS lookups are they doing?
-- Which flows, hosts, countries, ports, or services deserve attention?
+- Which flows, hosts, countries, ports, or services are they talking to?
 
 Videos:
 
@@ -19,16 +20,55 @@ Videos:
 
 ---
 
-## What Sando Does
+## 🌟 **Features**
 
-- Builds an inventory of local hosts from NetFlow, DHCP, Pi-hole, reverse DNS, and optional nmap discovery.
-- Collects NetFlow v5 records from firewalls and routers such as pfSense and OPNsense.
-- Tracks local, router, foreign, new outbound, high-bandwidth, high-risk-port, port-scan, Tor, VPN, reputation-list, and geolocation-related flows.
-- Stores flow, host, DNS, alert, reputation, ASN, traffic-stat, and configuration data in SQLite databases under `/database`.
-- Sends optional notifications to Telegram and Discord.
-- Integrates with Pi-hole, AdGuard Home, Home Assistant, Homepage.dev, MaxMind, IP2ASN, Tor node lists, and reputation feeds.
-- Provides optional DHCP server, passive DHCP monitoring, rogue DHCP detection, and sinkhole DNS features.
-- Exposes a Vue dashboard and a local API for exploring hosts, alerts, traffic, and settings.
+### 🔍 **Network Host Inventorying**
+- Integrated DHCP Server **won't respond to unknown hosts**.
+- DHCP Relay support **supports multiple VLANs** from one DHCP Server.
+- Maintains **network host inventory** and **easily classify hosts on your network**.
+
+### 🔍 **Network Flow Monitoring**
+- Detect **new hosts** joining your network.
+- Monitor **local, router, and foreign flows**.
+- Identify **new outbound connections** and **high-bandwidth flows**.
+
+### 🌍 **Geolocation and Reputation**
+- Detect traffic to **banned countries**.
+- Integrate with **reputation lists** to detect malicious IPs.
+- Detect traffic bypassing **local DNS** or **NTP servers**.
+
+### 📊 **Real-Time Alerts**
+- Get instant alerts via **Telegram** for critical events.
+- Log all detections in a centralized database for easy analysis.
+
+### 🛠️ **Customizable Configurations**
+- Fine-tune detection thresholds and approved lists.
+- Enable or disable specific detection mechanisms.
+- Integrate with **Pi-hole** and **AdGuard** for DNS query monitoring.
+
+### 📊 **Integrations**
+- Works with Home Assistant and Homepage.dev dashboard and potentially more
+- Works with Pihole and PfSense, OPNSense
+- Works with various reputation and geolist providers like MaxMind, IPASN, Tor list, etc
+
+### ⚡ **Lightweight and Efficient**
+- Designed to run on minimal hardware.
+- Perfect for Raspberry Pi, home servers, or virtual machines.
+
+---
+
+## 🎯 **Why Choose Sando?**
+
+- **Simple Setup**: Easy to install and configure.
+- **Customizable**: Tailor the system to your specific needs.
+- **Open Source**: Fully transparent and community-driven.
+
+---
+
+## 🚀 **Get Started Today!**
+
+Take control of your home network with **Sando**. Start monitoring, detecting, and protecting your network today!
+
 
 ---
 
@@ -145,8 +185,6 @@ http://YOUR_SANDO_HOST:3030
 ### Published images vs local builds
 
 Use the `mayberry4477/sando:latest` and `mayberry4477/sando-website:latest` images if you want to pull published containers.
-
-If you build locally from the Dockerfiles, tag the images as `sando:latest` and `sando-website:latest`, or update your compose files to match the local tags you choose.
 
 ---
 
