@@ -4,7 +4,7 @@
       widget:
         type: customapi
         url: http://192.168.230.236:8044/api/homepage
-        refreshInterval: 60000
+        refreshInterval: 600000
         method: GET
         mappings:
           - field: unacknowledged_alerts
