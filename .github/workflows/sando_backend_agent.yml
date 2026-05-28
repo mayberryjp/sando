@@ -199,39 +199,47 @@ jobs:
       - name: Verify agent change summary
         if: always()
         run: |
-          mkdir -p .agent
+          mkdir -p .agent/change-summaries
 
-          if [ ! -f .agent/change-summary.md ]; then
-            echo "Codex did not create .agent/change-summary.md. Creating fallback summary."
+          SUMMARY_FILE=".agent/change-summaries/issue-${{ github.event.issue.number }}-backend.md"
 
-            cat > .agent/change-summary.md <<'EOF'
-          ## Agent Change Summary
+          if [ ! -f "$SUMMARY_FILE" ]; then
+            echo "Codex did not create $SUMMARY_FILE. Creating fallback summary."
 
-          ### What changed
-          - No structured change summary was produced by the coding agent.
-
-          ### User-facing impact
-          - Unknown.
-
-          ### Files changed
-          - Unknown. Review the PR diff.
-
-          ### README impact
-          - Unknown. A docs agent or human reviewer should inspect the changes.
-
-          ### Announcement impact
-          - Unknown. A docs agent or human reviewer should inspect the changes.
-
-          ### Testing / validation
-          - Unknown. Review Codex output and workflow logs.
-
-          ### Open questions
-          - The coding agent did not create the required .agent/change-summary.md file.
-          EOF
+            {
+              echo "## Agent Change Summary"
+              echo
+              echo "### Agent"
+              echo "- Backend"
+              echo
+              echo "### GitHub issue"
+              echo "- #${{ github.event.issue.number }}"
+              echo
+              echo "### What changed"
+              echo "- No structured change summary was produced by the coding agent."
+              echo
+              echo "### User-facing impact"
+              echo "- Unknown."
+              echo
+              echo "### Files changed"
+              echo "- Unknown. Review the PR diff."
+              echo
+              echo "### README impact"
+              echo "- Unknown. A docs agent or human reviewer should inspect the changes."
+              echo
+              echo "### Announcement impact"
+              echo "- Unknown. A docs agent or human reviewer should inspect the changes."
+              echo
+              echo "### Testing / validation"
+              echo "- Unknown. Review Codex output and workflow logs."
+              echo
+              echo "### Open questions"
+              echo "- The coding agent did not create the required summary file."
+            } > "$SUMMARY_FILE"
           fi
 
           echo "=== Agent change summary ==="
-          cat .agent/change-summary.md
+          cat "$SUMMARY_FILE"
 
       - name: Show Codex output
         if: always()
