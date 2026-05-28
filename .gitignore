@@ -13,3 +13,4 @@ __pycache__/
 tests/
 !tests/
 !tests/*.py
+.sme
