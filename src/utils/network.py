@@ -1,8 +1,5 @@
 import ipaddress
 import logging
-import socket
-import struct
-from ipaddress import IPv4Network
 
 from src.utils.locallogging import log_error, log_info, log_warn
 
@@ -23,20 +20,19 @@ def is_ip_in_range(ip, ranges):
 def ip_network_to_range(network):
     logger = logging.getLogger(__name__)
     """
-    Convert a CIDR network to start and end IP addresses as integers using inet_aton.
+    Convert a CIDR network to start and end IP addresses as integers.
 
     Args:
-        network (str): Network in CIDR notation (e.g., '192.168.1.0/24')
+        network (str): Network in CIDR notation (e.g., '192.168.1.0/24' or '2001:db8::/32')
 
     Returns:
         tuple: (start_ip, end_ip, netmask) as integers
     """
     try:
-        net = IPv4Network(network)
-        # Convert IP addresses to integers using inet_aton and struct.unpack
-        start_ip = struct.unpack("!L", socket.inet_aton(str(net.network_address)))[0]
-        end_ip = struct.unpack("!L", socket.inet_aton(str(net.broadcast_address)))[0]
-        netmask = struct.unpack("!L", socket.inet_aton(str(net.netmask)))[0]
+        net = ipaddress.ip_network(network, strict=False)
+        start_ip = int(net.network_address)
+        end_ip = int(net.broadcast_address)
+        netmask = int(net.netmask)
 
         return start_ip, end_ip, netmask
     except Exception as e:
@@ -45,10 +41,10 @@ def ip_network_to_range(network):
 
 
 def ip_to_int(ip_addr):
-    """Convert an IP address to an integer using inet_aton."""
+    """Convert an IP address to an integer."""
     try:
-        return struct.unpack("!L", socket.inet_aton(ip_addr))[0]
-    except:
+        return int(ipaddress.ip_address(ip_addr))
+    except (ValueError, TypeError):
         return None
 
 
@@ -67,7 +63,7 @@ def get_usable_ips(networks):
 
     for network in networks:
         try:
-            net = IPv4Network(network, strict=False)
+            net = ipaddress.ip_network(network, strict=False)
             # Exclude the network address and broadcast address
             usable_ips = [str(ip) for ip in net.hosts()]
             results[network] = usable_ips
@@ -101,7 +97,7 @@ def calculate_broadcast(network_cidr):
     logger = logging.getLogger(__name__)
     try:
         # Parse CIDR notation
-        network = ipaddress.IPv4Network(network_cidr, strict=False)
+        network = ipaddress.ip_network(network_cidr, strict=False)
         broadcast = str(network.broadcast_address)
 
         # log_info(logger, f"[INFO] Calculated broadcast {broadcast} for network {network_cidr}")

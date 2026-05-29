@@ -20,7 +20,7 @@ def setup_explore_routes(app):
         """
         Returns the latest master flows with pagination.
         Query params:
-            limit (int): Number of rows per page (default 1000)
+            limit (int): Number of rows per page (default 100)
             page (int): Page number (default 0)
         """
         try:

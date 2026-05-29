@@ -267,16 +267,14 @@ def get_latest_master_flows(limit=100, page=0):
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
-        # Get total count of grouped results
-        total_query = """
+        # Get total count of grouped results for pagination
+        count_query = """
             SELECT COUNT(*) FROM (
                 SELECT 1 FROM explore
                 WHERE src_port > dst_port
                 GROUP BY
                     src_ip,
                     dst_ip,
-                    src_ip_int,
-                    dst_ip_int,
                     dst_port,
                     protocol,
                     tags,
@@ -292,7 +290,7 @@ def get_latest_master_flows(limit=100, page=0):
                     dst_sandoname
             )
         """
-        cursor.execute(total_query)
+        cursor.execute(count_query)
         total = cursor.fetchone()[0]
 
         query = """
@@ -324,8 +322,6 @@ def get_latest_master_flows(limit=100, page=0):
                 GROUP BY
                     src_ip,
                     dst_ip,
-                    src_ip_int,
-                    dst_ip_int,
                     dst_port,
                     protocol,
                     tags,
@@ -416,8 +412,6 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
         GROUP BY
             src_ip,
             dst_ip,
-            src_ip_int,
-            dst_ip_int,
             dst_port,
             protocol,
             tags,
@@ -443,8 +437,6 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
                 GROUP BY
                     src_ip,
                     dst_ip,
-                    src_ip_int,
-                    dst_ip_int,
                     dst_port,
                     protocol,
                     tags,

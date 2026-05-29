@@ -59,7 +59,10 @@ CONST_CREATE_DBPERFORMANCE_SQL = """
                 execution_time REAL,
                 rows_returned INTEGER,
                 run_timestamp TEXT
-            )"""
+            );
+            CREATE INDEX IF NOT EXISTS idx_dbperformance_run_timestamp ON dbperformance (run_timestamp);
+            CREATE INDEX IF NOT EXISTS idx_dbperformance_function ON dbperformance (function, execution_time);
+    """
 CONST_CREATE_DNSKEYVALUE_SQL = """
             CREATE TABLE IF NOT EXISTS dnskeyvalue (
                 ip TEXT PRIMARY KEY,
@@ -92,7 +95,18 @@ CONST_CREATE_EXPLORE_SQL = """
                 concat TEXT,
                 dst_sandoname TEXT,
                 src_sandoname TEXT
-            )"""
+            );
+            CREATE INDEX IF NOT EXISTS idx_explore_ports ON explore (src_port, dst_port);
+            CREATE INDEX IF NOT EXISTS idx_explore_src_ip ON explore (src_ip);
+            CREATE INDEX IF NOT EXISTS idx_explore_dst_ip ON explore (dst_ip);
+            CREATE INDEX IF NOT EXISTS idx_explore_dst_port ON explore (dst_port);
+            CREATE INDEX IF NOT EXISTS idx_explore_packets ON explore (packets);
+            CREATE INDEX IF NOT EXISTS idx_explore_bytes ON explore (bytes);
+            CREATE INDEX IF NOT EXISTS idx_explore_src_country ON explore (src_country);
+            CREATE INDEX IF NOT EXISTS idx_explore_dst_country ON explore (dst_country);
+            CREATE INDEX IF NOT EXISTS idx_explore_tags ON explore (tags);
+            CREATE INDEX IF NOT EXISTS idx_explore_concat ON explore (concat);
+    """
 CONST_CREATE_NEWFLOWS_SQL = """
     CREATE TABLE IF NOT EXISTS newflows (
         src_ip TEXT,
@@ -170,7 +184,9 @@ CONST_CREATE_IGNORELIST_SQL = """
         ignorelist_enabled INTEGER DEFAULT 1,
         ignorelist_description TEXT,
         ignorelist_added TEXT
-    )"""
+    );
+    CREATE INDEX IF NOT EXISTS idx_ignorelist_enabled ON ignorelist (ignorelist_enabled);
+"""
 
 CONST_CREATE_CUSTOMTAGS_SQL = """
     CREATE TABLE IF NOT EXISTS customtags (
@@ -183,7 +199,9 @@ CONST_CREATE_CUSTOMTAGS_SQL = """
         enabled INTEGER DEFAULT 1,
         added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )"""
+    );
+    CREATE INDEX IF NOT EXISTS idx_customtags_enabled ON customtags (enabled);
+"""
 
 CONST_CREATE_CONFIG_SQL = """
     CREATE TABLE IF NOT EXISTS configuration (
@@ -199,7 +217,9 @@ CONST_CREATE_GEOLOCATION_SQL = """
         end_ip INTEGER,
         netmask INTEGER,
         country_name TEXT
-    )"""
+    );
+    CREATE INDEX IF NOT EXISTS idx_geolocation_ip_range ON geolocation (start_ip, end_ip);
+"""
 
 CONST_CREATE_LOCALHOSTS_SQL = """
     CREATE TABLE IF NOT EXISTS localhosts (
@@ -229,7 +249,8 @@ CONST_CREATE_LOCALHOSTS_SQL = """
         total_bytes_src INTEGER DEFAULT 0,
         total_bytes_dst INTEGER DEFAULT 0,
         ip6_address TEXT
-    )
+    );
+    CREATE INDEX IF NOT EXISTS idx_localhosts_mac_address ON localhosts (mac_address);
 """
 
 CONST_CREATE_IPASN_SQL = """
@@ -260,7 +281,8 @@ CONST_CREATE_REPUTATIONLIST_SQL = """
         start_ip INTEGER,
         end_ip INTEGER,
         netmask INTEGER
-    )
+    );
+    CREATE INDEX IF NOT EXISTS idx_reputationlist_ip_range ON reputationlist (start_ip, end_ip);
 """
 
 CONST_CREATE_TORNODES_SQL = """
