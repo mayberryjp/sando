@@ -1,5 +1,6 @@
-import requests
 import time
+
+import requests
 
 
 def test_explore_endpoint():
@@ -24,7 +25,9 @@ def test_explore_endpoint():
 
                 size = len(response.content)
                 results.append((elapsed, size))
-                print(f"Request {i + 1:2d}: {elapsed:.3f}s | {size:,} bytes | HTTP {response.status_code}")
+                print(
+                    f"Request {i + 1:2d}: {elapsed:.3f}s | {size:,} bytes | HTTP {response.status_code}"
+                )
             except requests.exceptions.Timeout:
                 print(f"Request {i + 1:2d}: TIMEOUT (>5s)")
             except requests.exceptions.ConnectionError:

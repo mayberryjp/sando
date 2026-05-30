@@ -2,8 +2,13 @@ import bisect
 import logging
 import sqlite3
 
-from src.const import CONST_EXPLORE_DB
-from src.database.core import connect_to_db, delete_all_records, disconnect_from_db
+from src.const import CONST_CREATE_EXPLORE_SQL, CONST_EXPLORE_DB
+from src.database.core import (
+    connect_to_db,
+    create_table,
+    delete_all_records,
+    disconnect_from_db,
+)
 from src.database.dnsqueries import get_ip_to_domain_mapping
 from src.utils.locallogging import log_error, log_info
 from src.utils.network import ip_to_int
@@ -135,10 +140,23 @@ def bulk_populate_master_flow_view():
 
             # Aggregate by group key
             group_key = (
-                src_ip, dst_ip, src_ip_int, dst_ip_int, dst_port, protocol, tags,
-                src_dns, dst_dns, src_country, dst_country,
-                src_asn, dst_asn, src_isp, dst_isp,
-                src_sandoname, dst_sandoname,
+                src_ip,
+                dst_ip,
+                src_ip_int,
+                dst_ip_int,
+                dst_port,
+                protocol,
+                tags,
+                src_dns,
+                dst_dns,
+                src_country,
+                dst_country,
+                src_asn,
+                dst_asn,
+                src_isp,
+                dst_isp,
+                src_sandoname,
+                dst_sandoname,
             )
             if group_key in aggregated:
                 agg = aggregated[group_key]
@@ -152,31 +170,75 @@ def bulk_populate_master_flow_view():
                 aggregated[group_key] = [packets, bytes_, times_seen, 1, last_seen]
 
         # Build final rows with concat
-        log_info(logger, f"[INFO] Aggregated {len(allflows_rows)} raw flows into {len(aggregated)} summary rows.")
+        log_info(
+            logger,
+            f"[INFO] Aggregated {len(allflows_rows)} raw flows into {len(aggregated)} summary rows.",
+        )
         master_rows = []
         for group_key, agg in aggregated.items():
             (
-                src_ip, dst_ip, src_ip_int, dst_ip_int, dst_port, protocol, tags,
-                src_dns, dst_dns, src_country, dst_country,
-                src_asn, dst_asn, src_isp, dst_isp,
-                src_sandoname, dst_sandoname,
+                src_ip,
+                dst_ip,
+                src_ip_int,
+                dst_ip_int,
+                dst_port,
+                protocol,
+                tags,
+                src_dns,
+                dst_dns,
+                src_country,
+                dst_country,
+                src_asn,
+                dst_asn,
+                src_isp,
+                dst_isp,
+                src_sandoname,
+                dst_sandoname,
             ) = group_key
             sum_packets, sum_bytes, sum_times_seen, row_count, max_last_seen = agg
-            concat_values = [
-                str(v) for v in group_key
-            ] + [str(sum_packets), str(sum_bytes), str(sum_times_seen), str(max_last_seen)]
+            concat_values = [str(v) for v in group_key] + [
+                str(sum_packets),
+                str(sum_bytes),
+                str(sum_times_seen),
+                str(max_last_seen),
+            ]
             concat = "_".join(concat_values)
-            master_rows.append((
-                src_ip, dst_ip, src_ip_int, dst_ip_int, dst_port, protocol, tags,
-                max_last_seen, sum_packets, sum_bytes, sum_times_seen, row_count,
-                src_dns, dst_dns, src_country, dst_country,
-                src_asn, dst_asn, src_isp, dst_isp,
-                src_sandoname, dst_sandoname, concat,
-            ))
+            master_rows.append(
+                (
+                    src_ip,
+                    dst_ip,
+                    src_ip_int,
+                    dst_ip_int,
+                    dst_port,
+                    protocol,
+                    tags,
+                    max_last_seen,
+                    sum_packets,
+                    sum_bytes,
+                    sum_times_seen,
+                    row_count,
+                    src_dns,
+                    dst_dns,
+                    src_country,
+                    dst_country,
+                    src_asn,
+                    dst_asn,
+                    src_isp,
+                    dst_isp,
+                    src_sandoname,
+                    dst_sandoname,
+                    concat,
+                )
+            )
         # if idx % progress_step == 0 or idx == total_flows:
         # log_info(logger, f"[PROGRESS] Joined {idx}/{total_flows} flows in memory...")
 
-        delete_all_records("explore")
+        # Drop and recreate explore table to ensure schema is up to date
+        tgt_conn = connect_to_db("explore")
+        tgt_conn.execute("DROP TABLE IF EXISTS explore")
+        disconnect_from_db(tgt_conn)
+        create_table(CONST_CREATE_EXPLORE_SQL, "explore")
+
         log_info(
             logger,
             f"[INFO] Inserting {len(master_rows)} summary rows into explore in {CONST_EXPLORE_DB}...",

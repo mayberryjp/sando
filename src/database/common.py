@@ -205,6 +205,14 @@ def update_database_schema(current_version, target_version):
             )
             migrate_configurations_schema17_to_schema18()
 
+        if current_version_int < 19:
+            log_info(
+                logger,
+                "[INFO] Version is less than 19, recreating explore table with aggregated schema",
+            )
+            delete_table("explore")
+            create_table(CONST_CREATE_EXPLORE_SQL, "explore")
+
         # Removed migration for firewall_interface_name column in localhosts table
 
         return True
