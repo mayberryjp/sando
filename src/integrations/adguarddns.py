@@ -56,7 +56,7 @@ def get_adguard_dns_logs(page_size, config_dict):
     adguard_url = config_dict.get("AdGuardUrl", None)
     username = config_dict.get("AdGuardUsername", None)
     password = config_dict.get("AdGuardPassword", None)
-    fetch_interval = config_dict.get("IntegrationFetchInterval", 3660)
+    fetch_interval = config_dict.get("PiholeFetchInterval", 3660)
 
     if not adguard_url or not username or not password:
         log_error(

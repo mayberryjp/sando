@@ -70,20 +70,18 @@ CONST_CREATE_DNSKEYVALUE_SQL = """
             )"""
 CONST_CREATE_EXPLORE_SQL = """
             CREATE TABLE IF NOT EXISTS explore (
-                flow_id INTEGER PRIMARY KEY,
                 src_ip TEXT,
                 dst_ip TEXT,
                 src_ip_int INTEGER,
                 dst_ip_int INTEGER,
-                src_port INTEGER,
                 dst_port INTEGER,
                 protocol TEXT,
                 tags TEXT,
-                flow_start TEXT,
-                last_seen TEXT,
-                packets INTEGER,
-                bytes INTEGER,
-                times_seen INTEGER,
+                max_last_seen TEXT,
+                sum_packets INTEGER,
+                sum_bytes INTEGER,
+                sum_times_seen INTEGER,
+                row_count INTEGER,
                 src_dns TEXT,
                 dst_dns TEXT,
                 src_country TEXT,
@@ -92,16 +90,15 @@ CONST_CREATE_EXPLORE_SQL = """
                 dst_asn TEXT,
                 src_isp TEXT,
                 dst_isp TEXT,
-                concat TEXT,
+                src_sandoname TEXT,
                 dst_sandoname TEXT,
-                src_sandoname TEXT
+                concat TEXT
             );
-            CREATE INDEX IF NOT EXISTS idx_explore_ports ON explore (src_port, dst_port);
             CREATE INDEX IF NOT EXISTS idx_explore_src_ip ON explore (src_ip);
             CREATE INDEX IF NOT EXISTS idx_explore_dst_ip ON explore (dst_ip);
             CREATE INDEX IF NOT EXISTS idx_explore_dst_port ON explore (dst_port);
-            CREATE INDEX IF NOT EXISTS idx_explore_packets ON explore (packets);
-            CREATE INDEX IF NOT EXISTS idx_explore_bytes ON explore (bytes);
+            CREATE INDEX IF NOT EXISTS idx_explore_sum_packets ON explore (sum_packets);
+            CREATE INDEX IF NOT EXISTS idx_explore_sum_bytes ON explore (sum_bytes);
             CREATE INDEX IF NOT EXISTS idx_explore_src_country ON explore (src_country);
             CREATE INDEX IF NOT EXISTS idx_explore_dst_country ON explore (dst_country);
             CREATE INDEX IF NOT EXISTS idx_explore_tags ON explore (tags);

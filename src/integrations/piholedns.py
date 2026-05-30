@@ -70,7 +70,7 @@ def get_pihole_ftl_logs(page_size, config_dict):
 
     pihole_url = config_dict.get("PiholeUrl", None)
     api_token = config_dict.get("PiholeApiKey", None)
-    fetch_interval = config_dict.get("IntegrationFetchInterval", 3660)
+    fetch_interval = config_dict.get("PiholeFetchInterval", 3660)
 
     if not pihole_url or not api_token:
         log_error(

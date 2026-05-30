@@ -78,7 +78,7 @@ def bulk_populate_master_flow_view():
             return None, None
 
         log_info(logger, "[INFO] Joining data in memory and preparing for insert...")
-        master_rows = []
+        aggregated = {}
         # Load localhosts DNS hostnames
         tgt_conn = connect_to_db("localhosts")
         tgt_cursor = tgt_conn.cursor()
@@ -109,6 +109,11 @@ def bulk_populate_master_flow_view():
                 bytes_,
                 times_seen,
             ) = row
+
+            # Skip rows where src_port <= dst_port (pre-filter)
+            if src_port <= dst_port:
+                continue
+
             src_ip_int = ip_to_int(src_ip)
             dst_ip_int = ip_to_int(dst_ip)
             src_dns = dnskeyvalue.get(src_ip) or localhosts.get(src_ip, {}).get(
@@ -127,69 +132,54 @@ def bulk_populate_master_flow_view():
             )
             src_sandoname = localhosts.get(src_ip, {}).get("description", "")
             dst_sandoname = localhosts.get(dst_ip, {}).get("description", "")
-            concat_values = [
-                str(flow_id),
-                str(src_ip),
-                str(dst_ip),
-                str(src_ip_int),
-                str(dst_ip_int),
-                str(src_port),
-                str(dst_port),
-                str(protocol),
-                str(tags),
-                str(flow_start),
-                str(last_seen),
-                str(packets),
-                str(bytes_),
-                str(times_seen),
-                str(src_dns),
-                str(dst_dns),
-                str(src_country),
-                str(dst_country),
-                str(src_asn),
-                str(dst_asn),
-                str(src_isp),
-                str(dst_isp),
-                str(src_sandoname),
-                str(dst_sandoname),
-            ]
-            concat = "_".join(concat_values)
-            master_rows.append(
-                (
-                    flow_id,
-                    src_ip,
-                    dst_ip,
-                    src_ip_int,
-                    dst_ip_int,
-                    src_port,
-                    dst_port,
-                    protocol,
-                    tags,
-                    flow_start,
-                    last_seen,
-                    packets,
-                    bytes_,
-                    times_seen,
-                    src_dns,
-                    dst_dns,
-                    src_country,
-                    dst_country,
-                    src_asn,
-                    dst_asn,
-                    src_isp,
-                    dst_isp,
-                    src_sandoname,
-                    dst_sandoname,
-                    concat,
-                )
+
+            # Aggregate by group key
+            group_key = (
+                src_ip, dst_ip, src_ip_int, dst_ip_int, dst_port, protocol, tags,
+                src_dns, dst_dns, src_country, dst_country,
+                src_asn, dst_asn, src_isp, dst_isp,
+                src_sandoname, dst_sandoname,
             )
+            if group_key in aggregated:
+                agg = aggregated[group_key]
+                agg[0] += packets
+                agg[1] += bytes_
+                agg[2] += times_seen
+                agg[3] += 1
+                if last_seen and (agg[4] is None or last_seen > agg[4]):
+                    agg[4] = last_seen
+            else:
+                aggregated[group_key] = [packets, bytes_, times_seen, 1, last_seen]
+
+        # Build final rows with concat
+        log_info(logger, f"[INFO] Aggregated {len(allflows_rows)} raw flows into {len(aggregated)} summary rows.")
+        master_rows = []
+        for group_key, agg in aggregated.items():
+            (
+                src_ip, dst_ip, src_ip_int, dst_ip_int, dst_port, protocol, tags,
+                src_dns, dst_dns, src_country, dst_country,
+                src_asn, dst_asn, src_isp, dst_isp,
+                src_sandoname, dst_sandoname,
+            ) = group_key
+            sum_packets, sum_bytes, sum_times_seen, row_count, max_last_seen = agg
+            concat_values = [
+                str(v) for v in group_key
+            ] + [str(sum_packets), str(sum_bytes), str(sum_times_seen), str(max_last_seen)]
+            concat = "_".join(concat_values)
+            master_rows.append((
+                src_ip, dst_ip, src_ip_int, dst_ip_int, dst_port, protocol, tags,
+                max_last_seen, sum_packets, sum_bytes, sum_times_seen, row_count,
+                src_dns, dst_dns, src_country, dst_country,
+                src_asn, dst_asn, src_isp, dst_isp,
+                src_sandoname, dst_sandoname, concat,
+            ))
         # if idx % progress_step == 0 or idx == total_flows:
         # log_info(logger, f"[PROGRESS] Joined {idx}/{total_flows} flows in memory...")
 
         delete_all_records("explore")
         log_info(
             logger,
-            f"[INFO] Inserting {len(master_rows)} rows into master_flow_view in {CONST_EXPLORE_DB}...",
+            f"[INFO] Inserting {len(master_rows)} summary rows into explore in {CONST_EXPLORE_DB}...",
         )
 
         # Batch insert with progress counter
@@ -203,21 +193,22 @@ def bulk_populate_master_flow_view():
             batch = master_rows[i : i + batch_size]
             tgt_cursor.executemany(
                 """
-                INSERT OR REPLACE INTO explore (
-                    flow_id, src_ip, dst_ip, src_ip_int, dst_ip_int, src_port, dst_port, protocol, tags, flow_start, last_seen,
-                    packets, bytes, times_seen,
-                    src_dns, dst_dns, src_country, dst_country, src_asn, dst_asn, src_isp, dst_isp, src_sandoname, dst_sandoname, concat
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO explore (
+                    src_ip, dst_ip, src_ip_int, dst_ip_int, dst_port, protocol, tags,
+                    max_last_seen, sum_packets, sum_bytes, sum_times_seen, row_count,
+                    src_dns, dst_dns, src_country, dst_country,
+                    src_asn, dst_asn, src_isp, dst_isp,
+                    src_sandoname, dst_sandoname, concat
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 batch,
             )
             tgt_conn.commit()
-            # log_info(logger, f"[PROGRESS] Inserted {min(i+batch_size, total)}/{total} rows into master_flow_view...")
 
         disconnect_from_db(tgt_conn)
         log_info(
             logger,
-            f"[INFO] Inserted {total} records into master_flow_view in {CONST_EXPLORE_DB}.",
+            f"[INFO] Inserted {total} summary records into explore in {CONST_EXPLORE_DB}.",
         )
     except Exception as e:
         log_error(logger, f"[ERROR] Failed to bulk populate master_flow_view: {e}")
@@ -267,81 +258,21 @@ def get_latest_master_flows(limit=100, page=0):
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
-        # Get total count of grouped results for pagination
-        count_query = """
-            SELECT COUNT(*) FROM (
-                SELECT 1 FROM explore
-                WHERE src_port > dst_port
-                GROUP BY
-                    src_ip,
-                    dst_ip,
-                    dst_port,
-                    protocol,
-                    tags,
-                    src_dns,
-                    dst_dns,
-                    src_country,
-                    dst_country,
-                    src_asn,
-                    dst_asn,
-                    src_isp,
-                    dst_isp,
-                    src_sandoname,
-                    dst_sandoname
-            )
-        """
-        cursor.execute(count_query)
+        cursor.execute("SELECT COUNT(*) FROM explore")
         total = cursor.fetchone()[0]
 
-        query = """
-                SELECT
-                    src_ip,
-                    dst_ip,
-                    src_ip_int,
-                    dst_ip_int,
-                    dst_port,
-                    protocol,
-                    tags,
-                    src_dns,
-                    dst_dns,
-                    src_country,
-                    dst_country,
-                    src_asn,
-                    dst_asn,
-                    src_isp,
-                    dst_isp,
-                    src_sandoname,
-                    dst_sandoname,
-                    SUM(packets)    AS sum_packets,
-                    SUM(bytes)      AS sum_bytes,
-                    SUM(times_seen) AS sum_times_seen,
-                    MAX(last_seen)  AS max_last_seen,
-                    COUNT(*)        AS row_count
-                FROM explore
-                WHERE src_port > dst_port
-                GROUP BY
-                    src_ip,
-                    dst_ip,
-                    dst_port,
-                    protocol,
-                    tags,
-                    src_dns,
-                    dst_dns,
-                    src_country,
-                    dst_country,
-                    src_asn,
-                    dst_asn,
-                    src_isp,
-                    dst_isp,
-                    src_sandoname,
-                    dst_sandoname
-                ORDER BY sum_packets DESC
-                LIMIT ? OFFSET ?
-                """
-
-        # Get paginated results
         cursor.execute(
-            query,
+            """
+            SELECT
+                src_ip, dst_ip, src_ip_int, dst_ip_int, dst_port, protocol, tags,
+                src_dns, dst_dns, src_country, dst_country,
+                src_asn, dst_asn, src_isp, dst_isp,
+                src_sandoname, dst_sandoname,
+                sum_packets, sum_bytes, sum_times_seen, max_last_seen, row_count
+            FROM explore
+            ORDER BY sum_packets DESC
+            LIMIT ? OFFSET ?
+            """,
             (limit, offset),
         )
         rows = cursor.fetchall()
@@ -382,87 +313,29 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
-        query = """
-        SELECT
-            src_ip,
-            dst_ip,
-            src_ip_int,
-            dst_ip_int,
-            dst_port,
-            protocol,
-            tags,
-            src_dns,
-            dst_dns,
-            src_country,
-            dst_country,
-            src_asn,
-            dst_asn,
-            src_isp,
-            dst_isp,
-            src_sandoname,
-            dst_sandoname,
-            SUM(packets)    AS sum_packets,
-            SUM(bytes)      AS sum_bytes,
-            SUM(times_seen) AS sum_times_seen,
-            MAX(last_seen)  AS max_last_seen,
-            COUNT(*)        AS row_count
-        FROM explore
-        WHERE concat LIKE ? COLLATE NOCASE AND
-        src_port > dst_port
-        GROUP BY
-            src_ip,
-            dst_ip,
-            dst_port,
-            protocol,
-            tags,
-            src_dns,
-            dst_dns,
-            src_country,
-            dst_country,
-            src_asn,
-            dst_asn,
-            src_isp,
-            dst_isp,
-            src_sandoname,
-            dst_sandoname
-        ORDER BY sum_packets DESC
-        LIMIT ? OFFSET ?
-        """
-        # Get total count of grouped results
         like_pattern = f"%{search_string}%"
-        count_query = """
-            SELECT COUNT(*) FROM (
-                SELECT 1 FROM explore
-                WHERE concat LIKE ? COLLATE NOCASE AND src_port > dst_port
-                GROUP BY
-                    src_ip,
-                    dst_ip,
-                    dst_port,
-                    protocol,
-                    tags,
-                    src_dns,
-                    dst_dns,
-                    src_country,
-                    dst_country,
-                    src_asn,
-                    dst_asn,
-                    src_isp,
-                    dst_isp,
-                    src_sandoname,
-                    dst_sandoname
-            )
-        """
-        cursor.execute(count_query, (like_pattern,))
+
+        cursor.execute(
+            "SELECT COUNT(*) FROM explore WHERE concat LIKE ? COLLATE NOCASE",
+            (like_pattern,),
+        )
         total = cursor.fetchone()[0]
 
-        # Get paginated results
-        # query = """
-        #     SELECT * FROM explore
-        #     WHERE concat LIKE ? COLLATE NOCASE
-        #     ORDER BY packets DESC
-        #     LIMIT ? OFFSET ?
-        # """
-        cursor.execute(query, (like_pattern, page_size, offset))
+        cursor.execute(
+            """
+            SELECT
+                src_ip, dst_ip, src_ip_int, dst_ip_int, dst_port, protocol, tags,
+                src_dns, dst_dns, src_country, dst_country,
+                src_asn, dst_asn, src_isp, dst_isp,
+                src_sandoname, dst_sandoname,
+                sum_packets, sum_bytes, sum_times_seen, max_last_seen, row_count
+            FROM explore
+            WHERE concat LIKE ? COLLATE NOCASE
+            ORDER BY sum_packets DESC
+            LIMIT ? OFFSET ?
+            """,
+            (like_pattern, page_size, offset),
+        )
         rows = cursor.fetchall()
         disconnect_from_db(conn)
         results = [dict(row) for row in rows]
@@ -490,8 +363,8 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
 
 
 _FLOW_COLUMNS = """
-    src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes,
-    times_seen, flow_start, last_seen, tags,
+    src_ip, dst_ip, dst_port, protocol, sum_packets, sum_bytes,
+    sum_times_seen, max_last_seen, tags,
     src_dns, dst_dns, src_country, dst_country, src_asn, dst_asn,
     src_isp, dst_isp, src_sandoname, dst_sandoname
 """
@@ -499,7 +372,7 @@ _FLOW_COLUMNS = """
 
 def get_top_flows(limit=25, order_by="bytes"):
     """Return top flows across all hosts ordered by bytes or packets."""
-    order_col = "bytes" if order_by != "packets" else "packets"
+    order_col = "sum_bytes" if order_by != "packets" else "sum_packets"
     try:
         conn = connect_to_db("explore")
         conn.row_factory = sqlite3.Row
@@ -518,7 +391,7 @@ def get_top_flows(limit=25, order_by="bytes"):
 
 def get_flows_for_ip(ip_address, limit=25, order_by="bytes"):
     """Return flows where src_ip or dst_ip matches, ordered by bytes or packets."""
-    order_col = "bytes" if order_by != "packets" else "packets"
+    order_col = "sum_bytes" if order_by != "packets" else "sum_packets"
     try:
         conn = connect_to_db("explore")
         conn.row_factory = sqlite3.Row
@@ -542,7 +415,7 @@ def get_flows_for_country(country, limit=50):
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
-            f"SELECT {_FLOW_COLUMNS} FROM explore WHERE src_country LIKE ? OR dst_country LIKE ? ORDER BY bytes DESC LIMIT ?",
+            f"SELECT {_FLOW_COLUMNS} FROM explore WHERE src_country LIKE ? OR dst_country LIKE ? ORDER BY sum_bytes DESC LIMIT ?",
             (f"%{country}%", f"%{country}%", limit),
         )
         rows = cursor.fetchall()
@@ -562,7 +435,7 @@ def get_flows_for_port(port, limit=50):
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
-            f"SELECT {_FLOW_COLUMNS} FROM explore WHERE dst_port = ? ORDER BY bytes DESC LIMIT ?",
+            f"SELECT {_FLOW_COLUMNS} FROM explore WHERE dst_port = ? ORDER BY sum_bytes DESC LIMIT ?",
             (port, limit),
         )
         rows = cursor.fetchall()
@@ -582,7 +455,7 @@ def get_flows_for_tag(tag, limit=50):
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
-            f"SELECT {_FLOW_COLUMNS} FROM explore WHERE tags LIKE ? ORDER BY bytes DESC LIMIT ?",
+            f"SELECT {_FLOW_COLUMNS} FROM explore WHERE tags LIKE ? ORDER BY sum_bytes DESC LIMIT ?",
             (f"%{tag}%", limit),
         )
         rows = cursor.fetchall()
@@ -621,7 +494,7 @@ def search_flows(
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
-            f"SELECT {_FLOW_COLUMNS} FROM explore {where} ORDER BY bytes DESC LIMIT ?",
+            f"SELECT {_FLOW_COLUMNS} FROM explore {where} ORDER BY sum_bytes DESC LIMIT ?",
             params,
         )
         rows = cursor.fetchall()
