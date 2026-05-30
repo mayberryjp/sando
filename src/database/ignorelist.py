@@ -205,13 +205,9 @@ def insert_ignorelist_entry(
         log_info(logger, f"[DEBUG] {src_port}")
 
         if "NewOutboundDetection_Port" in ignorelist_id:
-            ignorelist_id = (
-                f"AllowSourceOutbound_Destination:*_Port:{dst_port}_Protocol:{protocol}_Source:{src_ip}"
-            )
+            ignorelist_id = f"AllowSourceOutbound_Destination:*_Port:{dst_port}_Protocol:{protocol}_Source:{src_ip}"
         elif "NewOutboundDetection_Destination" in ignorelist_id:
-            ignorelist_id = (
-                f"AllowSourceOutbound_Destination:{dst_ip}_Port:*_Protocol:{protocol}_Source:{src_ip}"
-            )
+            ignorelist_id = f"AllowSourceOutbound_Destination:{dst_ip}_Port:*_Protocol:{protocol}_Source:{src_ip}"
         elif "LocalServerExposed" in ignorelist_id:
             log_info(
                 logger,
