@@ -1,4 +1,5 @@
 import csv
+import ipaddress
 import logging
 import os
 import zipfile
@@ -211,6 +212,11 @@ def create_geolocation_db():
                     site_name, network = pair.split("=", 1)
                     site_name = site_name.strip()
                     network = network.strip()
+                    try:
+                        if ipaddress.ip_network(network, strict=False).version != 4:
+                            continue
+                    except ValueError:
+                        continue
                     start_ip, end_ip, netmask = ip_network_to_range(network)
                     if start_ip is not None:
                         local_networks_batch.append(
@@ -221,6 +227,11 @@ def create_geolocation_db():
         for network in LOCAL_NETWORKS:
             if network in other_networks_set:
                 continue  # Skip if already in other_networks
+            try:
+                if ipaddress.ip_network(network, strict=False).version != 4:
+                    continue
+            except ValueError:
+                continue
             start_ip, end_ip, netmask = ip_network_to_range(network)
             if start_ip is None:
                 continue
