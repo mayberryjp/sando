@@ -18,6 +18,7 @@ from src.detect.detect_incorrect_authoritative_dns import (
 from src.detect.detect_incorrect_ntp_stratum import detect_incorrect_ntp_stratum
 from src.detect.detect_many_destinations import detect_many_destinations
 from src.detect.detect_new_outbound_connections import detect_new_outbound_connections
+from src.detect.detect_offline_hosts import detect_offline_hosts
 from src.detect.detect_port_scanning import detect_port_scanning
 from src.detect.detect_reputation_flows import detect_reputation_flows
 from src.detect.detect_rogue_dhcp import detect_rogue_dhcp
@@ -176,4 +177,7 @@ def process_data():
 
         except sqlite3.Error as e:
             log_error(logger, f"[ERROR] Error reading from src.database: {e}")
+
+        if config_dict.get("OfflineHostDetection", 0) > 0:
+            detect_offline_hosts(config_dict)
     log_info(logger, "[INFO] Processing finished.")

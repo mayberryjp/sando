@@ -223,6 +223,14 @@ def update_database_schema(current_version, target_version):
                 log_warn(logger, f"[WARN] Could not delete old explore table: {e}")
             create_table(CONST_CREATE_EXPLORE_SQL, "explore")
 
+        if current_version_int < 21:
+            log_info(
+                logger,
+                "[INFO] Version is less than 21, adding alert_if_offline column to localhosts table",
+            )
+            if not migrate_configurations_schema20_to_schema21():
+                return False
+
         # Removed migration for firewall_interface_name column in localhosts table
 
         return True
@@ -570,6 +578,53 @@ def migrate_configurations_schema18_to_schema19():
         log_error(
             logger, f"[ERROR] Failed to add 'firewall_interface_name' column: {e}"
         )
+        return False
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
+
+
+def migrate_configurations_schema20_to_schema21():
+    """
+    Adds an 'alert_if_offline' column (int, default 1) to the localhosts table if it does not exist.
+    """
+    logger = logging.getLogger(__name__)
+    log_info(
+        logger,
+        "[INFO] Adding 'alert_if_offline' column to localhosts table (default 1)",
+    )
+
+    try:
+        conn = connect_to_db("localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Failed to connect to LOCALHOSTS_DB")
+            return False
+
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA table_info(localhosts)")
+        columns = [row[1] for row in cursor.fetchall()]
+        if "alert_if_offline" not in columns:
+            cursor.execute(
+                "ALTER TABLE localhosts ADD COLUMN alert_if_offline INTEGER DEFAULT 1"
+            )
+            log_info(
+                logger,
+                "[INFO] 'alert_if_offline' column added to localhosts table",
+            )
+        else:
+            log_info(
+                logger,
+                "[INFO] 'alert_if_offline' column already exists in localhosts table",
+            )
+
+        cursor.execute(
+            "UPDATE localhosts SET alert_if_offline = 1 WHERE alert_if_offline IS NULL"
+        )
+        conn.commit()
+        return True
+
+    except Exception as e:
+        log_error(logger, f"[ERROR] Failed to add 'alert_if_offline' column: {e}")
         return False
     finally:
         if "conn" in locals() and conn:
