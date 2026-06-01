@@ -51,8 +51,6 @@ def process_data():
 
     if config_dict["ScheduleProcessor"] == 1:
         try:
-            if config_dict.get("OfflineHostDetection", 0) > 0:
-                detect_offline_hosts(config_dict)
 
             if len(newflows) > 0:
                 # delete newflows so collector can write clean to it again as quickly as possible
@@ -67,6 +65,9 @@ def process_data():
                 # Pass the rows to update_all_flows
                 update_all_flows(newflows, config_dict)
                 update_traffic_stats(newflows, config_dict)
+
+                if config_dict.get("OfflineHostDetection", 0) > 0:
+                    detect_offline_hosts(config_dict)
 
                 if config_dict.get("BandwidthAnomalyDetection", 0) > 0:
                     detect_bandwidth_anomaly(config_dict)
