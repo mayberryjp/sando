@@ -18,6 +18,7 @@ from src.detect.detect_incorrect_authoritative_dns import (
 from src.detect.detect_incorrect_ntp_stratum import detect_incorrect_ntp_stratum
 from src.detect.detect_many_destinations import detect_many_destinations
 from src.detect.detect_new_outbound_connections import detect_new_outbound_connections
+from src.detect.detect_offline_hosts import detect_offline_hosts
 from src.detect.detect_port_scanning import detect_port_scanning
 from src.detect.detect_reputation_flows import detect_reputation_flows
 from src.detect.detect_rogue_dhcp import detect_rogue_dhcp
@@ -50,6 +51,8 @@ def process_data():
 
     if config_dict["ScheduleProcessor"] == 1:
         try:
+            if config_dict.get("OfflineHostDetection", 0) > 0:
+                detect_offline_hosts(config_dict)
 
             if len(newflows) > 0:
                 # delete newflows so collector can write clean to it again as quickly as possible

@@ -8,6 +8,7 @@ from src.database.localhosts import (
     delete_localhost_database,
     get_localhost_by_ip,
     get_localhosts_all,
+    update_localhost_alert_if_offline,
     update_localhost_ip6_address,
 )
 from src.utils.locallogging import log_error, log_info, log_warn
@@ -123,13 +124,15 @@ def setup_localhosts_routes(app):
         logger = logging.getLogger(__name__)
 
         if request.method == "PUT":
+            identifier = ip_address
             data = request.json
             local_description = data.get("local_description")
             icon = data.get("icon")
             management_link = data.get("management_link")
             mac_address = data.get("mac_address")  # <-- Accept mac_address
-            ip_address = data.get("ip_address")  # Allow updating IP address if provided
+            ip_address = data.get("ip_address", identifier)  # Allow updating IP address if provided
             ip6_address = data.get("ip6_address")
+            alert_if_offline = data.get("alert_if_offline")
 
             try:
                 # Update the localhost classification in the database
@@ -140,6 +143,9 @@ def setup_localhosts_routes(app):
 
                 if ip6_address is not None:
                     update_localhost_ip6_address(ip_address, ip6_address)
+
+                if alert_if_offline is not None:
+                    update_localhost_alert_if_offline(ip_address, alert_if_offline)
 
                 response.content_type = "application/json"
                 log_info(
@@ -233,6 +239,7 @@ def setup_localhosts_routes(app):
                     "total_bytes_src": host_record[23],
                     "total_bytes_dst": host_record[24],
                     "ip6_address": host_record[25],
+                    "alert_if_offline": host_record[26],
                 }
 
                 response.content_type = "application/json"
@@ -318,6 +325,66 @@ def setup_localhosts_routes(app):
             log_error(
                 logger,
                 f"[ERROR] Failed to update alerts_enabled for IP address {ip_address}: {e}",
+            )
+            response.status = 500
+            return {"success": False, "error": str(e)}
+
+    @app.route("/api/localhosts/<ip_address>/alert-if-offline", method=["PUT"])
+    def toggle_localhost_alert_if_offline(ip_address):
+        """
+        API endpoint to toggle offline host alerting for a specific local host.
+
+        Args:
+            ip_address: The IP address of the local host to update.
+
+        Request body:
+            {
+                "alert_if_offline": true|false
+            }
+
+        Returns:
+            JSON object indicating success or failure.
+        """
+        logger = logging.getLogger(__name__)
+
+        try:
+            data = request.json
+            if not data or "alert_if_offline" not in data:
+                response.status = 400
+                return {
+                    "success": False,
+                    "error": "Missing required field: alert_if_offline",
+                }
+
+            alert_if_offline = bool(data["alert_if_offline"])
+            success = update_localhost_alert_if_offline(ip_address, alert_if_offline)
+
+            if success:
+                response.content_type = "application/json"
+                log_info(
+                    logger,
+                    f"[INFO] Updated alert_if_offline to {alert_if_offline} for IP address: {ip_address}",
+                )
+                return {
+                    "success": True,
+                    "ip_address": ip_address,
+                    "alert_if_offline": alert_if_offline,
+                }
+
+            log_warn(
+                logger,
+                f"[WARN] Failed to update alert_if_offline for IP address: {ip_address}",
+            )
+            response.status = 404
+            return {
+                "success": False,
+                "error": f"No local host found with IP address: {ip_address}",
+            }
+
+        except Exception as e:
+            log_error(
+                logger,
+                f"[ERROR] Failed to update alert_if_offline for IP address {ip_address}: {e}",
             )
             response.status = 500
             return {"success": False, "error": str(e)}
