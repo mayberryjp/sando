@@ -5,7 +5,9 @@ from src.detect.detect_offline_hosts import detect_offline_hosts
 
 
 class OfflineHostDetectionTests(unittest.TestCase):
-    def test_detect_offline_hosts_alerts_only_enabled_hosts_without_recent_traffic(self):
+    def test_detect_offline_hosts_alerts_only_enabled_hosts_without_recent_traffic(
+        self,
+    ):
         localhosts = [
             {"ip_address": "192.0.2.10", "alert_if_offline": 1},
             {"ip_address": "192.0.2.11", "alert_if_offline": 1},

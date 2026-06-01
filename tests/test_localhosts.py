@@ -1,9 +1,8 @@
-import unittest
 import sqlite3
+import unittest
 from unittest.mock import patch
 
-from src.database import localhosts
-from src.database import common
+from src.database import common, localhosts
 
 
 class LocalhostsDatabaseTests(unittest.TestCase):
