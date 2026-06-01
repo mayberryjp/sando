@@ -83,7 +83,7 @@ def insert_tor_node(ip_address):
         conn.commit()
         return True
     except sqlite3.Error as e:
-        logger.error(f"[ERROR] Error inserting Tor node into database: {e}")
+        log_error(logger, f"[ERROR] Error inserting Tor node into database: {e}")
         return False
     finally:
         # Properly disconnect from the database

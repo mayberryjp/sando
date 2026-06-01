@@ -15,6 +15,7 @@ def get_routers(config_dict, ip_version=None):
     Returns:
         set: Set of router IP addresses.
     """
+    logger = logging.getLogger(__name__)
     raw = config_dict.get("LocalNetworks", "[]")
     try:
         scopes = json.loads(raw)
@@ -29,8 +30,8 @@ def get_routers(config_dict, ip_version=None):
                 result.add(scope["router"])
         return result
     except Exception as e:
-        logging.getLogger(__name__).error(
-            f"[ERROR] Could not parse LocalNetworks for routers: {e}"
+        log_error(
+            logger, f"[ERROR] Could not parse LocalNetworks for routers: {e}"
         )
         return set()
 
@@ -44,6 +45,7 @@ def get_local_network_cidrs(config_dict):
     Returns:
         set: Set of CIDR strings.
     """
+    logger = logging.getLogger(__name__)
     raw = config_dict.get("LocalNetworks", "[]")
     try:
         scopes = json.loads(raw)
@@ -60,7 +62,7 @@ def get_local_network_cidrs(config_dict):
                 result.add(scope["cidr"])
         return result
     except Exception as e:
-        logging.getLogger(__name__).error(f"[ERROR] Could not parse LocalNetworks: {e}")
+        log_error(logger, f"[ERROR] Could not parse LocalNetworks: {e}")
         return set()
 
 
@@ -73,12 +75,13 @@ def get_local_networks(config_dict):
     Returns:
         list: Local network scope dictionaries with normalized ip_version values.
     """
+    logger = logging.getLogger(__name__)
     raw = config_dict.get("LocalNetworks", "[]")
     try:
         scopes = json.loads(raw)
         if not isinstance(scopes, list):
-            logging.getLogger(__name__).error(
-                "[ERROR] Could not parse LocalNetworks: expected a JSON array"
+            log_error(
+                logger, "[ERROR] Could not parse LocalNetworks: expected a JSON array"
             )
             return []
 
@@ -95,7 +98,7 @@ def get_local_networks(config_dict):
             result.append(network)
         return result
     except Exception as e:
-        logging.getLogger(__name__).error(f"[ERROR] Could not parse LocalNetworks: {e}")
+        log_error(logger, f"[ERROR] Could not parse LocalNetworks: {e}")
         return []
 
 

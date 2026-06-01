@@ -2,6 +2,7 @@ import logging
 import sqlite3
 
 from src.database.core import connect_to_db, disconnect_from_db, run_timed_query
+from src.utils.locallogging import log_error
 
 
 def insert_geolocation(rows):
@@ -41,8 +42,8 @@ def insert_geolocation(rows):
                 )
                 success_count += 1
             except sqlite3.Error as e:
-                logger.error(
-                    f"[ERROR] Error inserting geolocation record {network}: {e}"
+                log_error(
+                    logger, f"[ERROR] Error inserting geolocation record {network}: {e}"
                 )
 
         conn.commit()
@@ -51,7 +52,7 @@ def insert_geolocation(rows):
         )
         return (success_count, len(rows))
     except sqlite3.Error as e:
-        logger.error(f"[ERROR] Database error during bulk geolocation insert: {e}")
+        log_error(logger, f"[ERROR] Database error during bulk geolocation insert: {e}")
         return (0, len(rows))
     finally:
         # Properly disconnect from the database
@@ -84,7 +85,7 @@ def get_all_geolocations():
         results = cursor.fetchall()
         return results
     except sqlite3.Error as e:
-        logger.error(f"[ERROR] Error retrieving geolocation records: {e}")
+        log_error(logger, f"[ERROR] Error retrieving geolocation records: {e}")
         return None
     finally:
         # Properly disconnect from the database
@@ -107,7 +108,7 @@ def get_country_by_ip_int(ip_int):
     # Connect to database
     conn = connect_to_db(table_name)
     if not conn:
-        logger.error("[ERROR] Failed to connect to the geolocation database")
+        log_error(logger, "[ERROR] Failed to connect to the geolocation database")
         return None
 
     try:
@@ -130,7 +131,7 @@ def get_country_by_ip_int(ip_int):
             return rows[0][0]
         return None
     except sqlite3.Error as e:
-        logger.error(f"[ERROR] Error looking up country for IP integer {ip_int}: {e}")
+        log_error(logger, f"[ERROR] Error looking up country for IP integer {ip_int}: {e}")
         return None
     finally:
         disconnect_from_db(conn)

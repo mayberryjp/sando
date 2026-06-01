@@ -2,6 +2,8 @@ import logging
 
 from bottle import Bottle, request, response
 
+from src.utils.locallogging import log_error
+
 app = Bottle()
 
 
@@ -92,6 +94,6 @@ def setup_customtags_routes(app):
             response.status = 400
             return {"success": False, "error": f"Invalid JSON data: {str(e)}"}
         except Exception as e:
-            logger.error(f"Error inserting custom tag: {str(e)}")
+            log_error(logger, f"Error inserting custom tag: {str(e)}")
             response.status = 500
             return {"success": False, "error": f"Server error: {str(e)}"}
