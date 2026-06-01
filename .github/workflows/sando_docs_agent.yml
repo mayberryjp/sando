@@ -3,6 +3,9 @@ name: Sando Docs Agent
 on:
   workflow_dispatch:
     inputs:
+      issue_number:
+        description: "GitHub issue number these docs updates are for"
+        required: true
       backend_ref:
         description: "Backend branch/ref to read from"
         required: true
@@ -36,6 +39,7 @@ jobs:
           repository: mayberryjp/sando-website
           ref: ${{ github.event.inputs.frontend_ref }}
           path: frontend
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Show checked out refs
         run: |
@@ -58,22 +62,44 @@ jobs:
           hash -r
           sudo -u runner -- node -v
 
-      - name: Prepare clean Codex home
+      - name: Prepare clean Codex home and temp agent folder
+        env:
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
+          RUN_ID: ${{ github.run_id }}
         run: |
+          set -e
+
           rm -rf "$RUNNER_TEMP/codex-home"
           mkdir -p "$RUNNER_TEMP/codex-home"
           chown -R runner:runner "$RUNNER_TEMP/codex-home"
+
+          rm -rf "$RUNNER_TEMP/agent"
+          mkdir -p "$RUNNER_TEMP/agent"
 
           rm -f /home/runner/.codex/config.toml || true
           mkdir -p /home/runner/.codex
           chown -R runner:runner /home/runner/.codex
 
-      - name: Build docs agent prompt
-        run: |
-          mkdir -p .agent
+          echo "PROMPT_FILE=$RUNNER_TEMP/agent/issue-${ISSUE_NUMBER}-run-${RUN_ID}-docs-prompt.md" >> "$GITHUB_ENV"
+          echo "OUTPUT_FILE=$RUNNER_TEMP/agent/issue-${ISSUE_NUMBER}-run-${RUN_ID}-codex-docs-output.md" >> "$GITHUB_ENV"
+          echo "PR_BODY_FILE=$RUNNER_TEMP/agent/issue-${ISSUE_NUMBER}-run-${RUN_ID}-docs-pr-body.md" >> "$GITHUB_ENV"
 
-          cat > .agent/docs-prompt.md <<'EOF'
+      - name: Build docs agent prompt
+        env:
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
+          BACKEND_REF: ${{ github.event.inputs.backend_ref }}
+          FRONTEND_REF: ${{ github.event.inputs.frontend_ref }}
+        run: |
+          set -e
+
+          cat > "$PROMPT_FILE" <<EOF
           You are the Sando documentation and release-notes agent.
+
+          You are working on documentation for GitHub issue #${ISSUE_NUMBER}.
+
+          Input refs:
+          - Backend ref: ${BACKEND_REF}
+          - Frontend ref: ${FRONTEND_REF}
 
           You have access to two repositories:
 
@@ -91,9 +117,11 @@ jobs:
           - Only modify the allowed backend docs files listed below.
           - Do not invent behavior.
           - Only document behavior verified from code, config files, README files, or agent summaries.
+          - Prefer issue-specific change summaries when available.
           - If something is uncertain, put it in an "Open questions" section instead of stating it as fact.
 
           Read these backend files first if they exist:
+          - ./backend/.agent/change-summaries/issue-${ISSUE_NUMBER}-backend.md
           - ./backend/.agent/change-summaries/*.md
           - ./backend/README.md
           - ./backend/.env.example
@@ -106,6 +134,7 @@ jobs:
           - ./backend/app
 
           Read these frontend files first if they exist:
+          - ./frontend/.agent/change-summaries/issue-${ISSUE_NUMBER}-frontend.md
           - ./frontend/.agent/change-summaries/*.md
           - ./frontend/README.md
           - ./frontend/.env.example
@@ -115,8 +144,8 @@ jobs:
           - ./frontend/src
 
           Tasks:
-          1. Update ./backend/README.md so it accurately reflects recent backend and frontend changes.
-          2. Create or update ./backend/docs/announcement-draft.md with a user-facing announcement email draft.
+          1. Update ./backend/README.md so it accurately reflects recent backend and frontend changes for issue #${ISSUE_NUMBER}.
+          2. Create or update ./backend/docs/announcement-draft.md with a user-facing announcement email draft for issue #${ISSUE_NUMBER}.
           3. The announcement draft should include:
              - Subject
              - Audience
@@ -148,7 +177,7 @@ jobs:
           EOF
 
           echo "=== Docs agent prompt ==="
-          cat .agent/docs-prompt.md
+          cat "$PROMPT_FILE"
 
       - name: Verify OpenAI API key secret
         env:
@@ -167,8 +196,8 @@ jobs:
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          prompt-file: .agent/docs-prompt.md
-          output-file: .agent/codex-docs-output.md
+          prompt-file: ${{ env.PROMPT_FILE }}
+          output-file: ${{ env.OUTPUT_FILE }}
           codex-home: ${{ runner.temp }}/codex-home
           safety-strategy: unsafe
           codex-user: runner
@@ -178,10 +207,11 @@ jobs:
         if: always()
         run: |
           echo "=== Codex docs output ==="
-          if [ -f .agent/codex-docs-output.md ]; then
-            cat .agent/codex-docs-output.md
+
+          if [ -f "$OUTPUT_FILE" ]; then
+            cat "$OUTPUT_FILE"
           else
-            echo "No .agent/codex-docs-output.md found"
+            echo "No Codex docs output found at $OUTPUT_FILE"
           fi
 
           echo
@@ -231,6 +261,9 @@ jobs:
       - name: Create docs branch and PR if changed
         env:
           GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
+          BACKEND_REF: ${{ github.event.inputs.backend_ref }}
+          FRONTEND_REF: ${{ github.event.inputs.frontend_ref }}
         run: |
           set -e
 
@@ -241,16 +274,27 @@ jobs:
             exit 0
           fi
 
-          BRANCH="sando-docs-agent/${{ github.run_id }}"
+          BRANCH="sando-docs-agent/issue-${ISSUE_NUMBER}-${{ github.run_id }}"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           git checkout -b "$BRANCH"
 
-          git add README.md docs/announcement-draft.md
+          if [ -f README.md ]; then
+            git add README.md
+          fi
 
-          git commit -m "Update Sando README and announcement draft"
+          if [ -f docs/announcement-draft.md ]; then
+            git add docs/announcement-draft.md
+          fi
+
+          if git diff --cached --quiet; then
+            echo "No allowed docs files were staged. No PR needed."
+            exit 0
+          fi
+
+          git commit -m "Update Sando docs for issue #${ISSUE_NUMBER}"
           git push origin "$BRANCH"
 
           cd ..
@@ -258,9 +302,10 @@ jobs:
           {
             echo "## Sando Docs Agent Output"
             echo
-
-            if [ -f .agent/codex-docs-output.md ]; then
-              cat .agent/codex-docs-output.md
+            echo "Issue: #${ISSUE_NUMBER}"
+            echo
+            if [ -f "$OUTPUT_FILE" ]; then
+              cat "$OUTPUT_FILE"
             else
               echo "No Codex docs output file was produced."
             fi
@@ -270,14 +315,16 @@ jobs:
             echo
             echo "## Inputs"
             echo
-            echo "- Backend ref: ${{ github.event.inputs.backend_ref }}"
-            echo "- Frontend ref: ${{ github.event.inputs.frontend_ref }}"
-          } > .agent/docs-pr-body.md
+            echo "- Issue: #${ISSUE_NUMBER}"
+            echo "- Backend ref: ${BACKEND_REF}"
+            echo "- Frontend ref: ${FRONTEND_REF}"
+            echo "- Workflow run: ${{ github.run_id }}"
+          } > "$PR_BODY_FILE"
 
           cd backend
 
           gh pr create \
-            --title "Update Sando README and announcement draft" \
-            --body-file ../.agent/docs-pr-body.md \
+            --title "Update Sando docs for issue #${ISSUE_NUMBER}" \
+            --body-file "$PR_BODY_FILE" \
             --base main \
             --head "$BRANCH"
