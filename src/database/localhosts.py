@@ -35,7 +35,7 @@ def get_localhost_by_ip(ip_address):
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
                    lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon,
                    tags, threat_score, alerts_enabled, management_link, last_seen, last_dhcp_discover, whitelisted,
-                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address
+                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address, alert_if_offline
             FROM localhosts
             WHERE ip_address = ? OR mac_address = ?
         """
@@ -91,7 +91,7 @@ def get_localhosts_all():
             SELECT ip_address, first_seen, original_flow,
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
                    lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, last_seen, last_dhcp_discover, whitelisted,
-                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address
+                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address, alert_if_offline
             FROM localhosts
         """
         cursor.execute(query)
@@ -630,6 +630,64 @@ def update_localhost_alerts_enabled(identifier, alerts_enabled):
             disconnect_from_db(conn)
 
 
+def update_localhost_alert_if_offline(identifier, alert_if_offline):
+    """
+    Update the alert_if_offline flag for a localhost in the database by IP address or MAC address.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        conn = connect_to_db("localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to localhosts database.")
+            return False
+
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT 1 FROM localhosts WHERE ip_address = ? OR mac_address = ?",
+            (identifier, identifier),
+        )
+        if not cursor.fetchone():
+            log_warn(
+                logger,
+                f"[WARN] No localhost found with IP or MAC {identifier} to update alert_if_offline flag",
+            )
+            return False
+
+        alert_if_offline_int = 1 if alert_if_offline else 0
+
+        cursor.execute(
+            """
+            UPDATE localhosts
+            SET alert_if_offline = ?
+            WHERE ip_address = ? OR mac_address = ?
+        """,
+            (alert_if_offline_int, identifier, identifier),
+        )
+
+        conn.commit()
+        log_info(
+            logger,
+            f"[INFO] Successfully updated alert_if_offline for {identifier} to {alert_if_offline}",
+        )
+        return True
+
+    except sqlite3.Error as e:
+        log_error(
+            logger,
+            f"[ERROR] Database error while updating alert_if_offline for {identifier}: {e}",
+        )
+        return False
+    except Exception as e:
+        log_error(
+            logger,
+            f"[ERROR] Unexpected error while updating alert_if_offline for {identifier}: {e}",
+        )
+        return False
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
+
+
 def delete_alerts_by_ip(ip_address):
     """
     Delete all alerts for the specified IP address from the alerts database.
@@ -786,7 +844,7 @@ def get_localhost(identifier):
         query = """
             SELECT ip_address, first_seen, original_flow,
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
-                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, ip6_address
+                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, ip6_address, alert_if_offline
             FROM localhosts
             WHERE ip_address = ? OR mac_address = ?
         """
@@ -1056,6 +1114,7 @@ def get_localhost_as_dict(ip_address):
         "total_bytes_src",
         "total_bytes_dst",
         "ip6_address",
+        "alert_if_offline",
     ]
     return dict(zip(columns, row))
 
