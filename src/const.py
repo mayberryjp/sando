@@ -97,8 +97,6 @@ CONST_CREATE_EXPLORE_SQL = """
             CREATE INDEX IF NOT EXISTS idx_explore_src_ip ON explore (src_ip);
             CREATE INDEX IF NOT EXISTS idx_explore_dst_ip ON explore (dst_ip);
             CREATE INDEX IF NOT EXISTS idx_explore_dst_port ON explore (dst_port);
-            CREATE INDEX IF NOT EXISTS idx_explore_sum_packets ON explore (sum_packets);
-            CREATE INDEX IF NOT EXISTS idx_explore_sum_bytes ON explore (sum_bytes);
             CREATE INDEX IF NOT EXISTS idx_explore_src_country ON explore (src_country);
             CREATE INDEX IF NOT EXISTS idx_explore_dst_country ON explore (dst_country);
             CREATE INDEX IF NOT EXISTS idx_explore_tags ON explore (tags);
