@@ -55,6 +55,4 @@ def test_get_local_networks_skips_entries_without_cidr():
         )
     }
 
-    assert get_local_networks(config) == [
-        {"cidr": "2001:db8::/64", "ip_version": 6}
-    ]
+    assert get_local_networks(config) == [{"cidr": "2001:db8::/64", "ip_version": 6}]

@@ -6,10 +6,8 @@ import sys
 from bottle import Bottle, request, response, run  # noqa: E402
 
 from src.database.alerts import get_all_alerts, get_all_alerts_by_ip  # noqa: E402
-from src.database.configuration import (  # noqa: E402
-    get_all_configuration,
-    get_local_networks,
-)
+from src.database.configuration import get_all_configuration  # noqa: E402
+from src.database.configuration import get_local_networks
 from src.database.explore import (
     get_flows_for_country,
     get_flows_for_ip,
@@ -109,9 +107,7 @@ def list_configuration(arguments):
 def get_networks(arguments):
     log_info(logger, "[INFO] MCP get_networks called")
     config_rows = get_all_configuration()
-    config_dict = {
-        row["key"]: row.get("value") for row in config_rows if "key" in row
-    }
+    config_dict = {row["key"]: row.get("value") for row in config_rows if "key" in row}
     result = get_local_networks(config_dict)
     log_info(logger, f"[INFO] MCP get_networks returned {len(result)} networks")
     return result
