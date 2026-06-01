@@ -131,7 +131,9 @@ def get_country_by_ip_int(ip_int):
             return rows[0][0]
         return None
     except sqlite3.Error as e:
-        log_error(logger, f"[ERROR] Error looking up country for IP integer {ip_int}: {e}")
+        log_error(
+            logger, f"[ERROR] Error looking up country for IP integer {ip_int}: {e}"
+        )
         return None
     finally:
         disconnect_from_db(conn)

@@ -30,9 +30,7 @@ def get_routers(config_dict, ip_version=None):
                 result.add(scope["router"])
         return result
     except Exception as e:
-        log_error(
-            logger, f"[ERROR] Could not parse LocalNetworks for routers: {e}"
-        )
+        log_error(logger, f"[ERROR] Could not parse LocalNetworks for routers: {e}")
         return set()
 
 

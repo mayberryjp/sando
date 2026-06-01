@@ -1,6 +1,6 @@
-import unittest
 import sys
 import types
+import unittest
 from importlib import import_module
 from unittest.mock import patch
 
@@ -53,7 +53,9 @@ class McpToolTests(unittest.TestCase):
             }
         ]
 
-        with patch("src.processes.mcp.get_localhosts_all", return_value=hosts) as helper:
+        with patch(
+            "src.processes.mcp.get_localhosts_all", return_value=hosts
+        ) as helper:
             result = mcp.TOOLS["list_hosts"]["function"]({})
 
         helper.assert_called_once_with()

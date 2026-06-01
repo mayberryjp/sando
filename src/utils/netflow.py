@@ -328,4 +328,6 @@ def write_new_flow_to_csv(record, filename="/database/newflows.csv"):
         with open(filename, "a") as f:
             f.write(line)
     except Exception as e:
-        log_error(logging.getLogger(__name__), f"[ERROR] Failed to write flow to CSV: {e}")
+        log_error(
+            logging.getLogger(__name__), f"[ERROR] Failed to write flow to CSV: {e}"
+        )

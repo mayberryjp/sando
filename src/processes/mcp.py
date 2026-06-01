@@ -17,8 +17,11 @@ from src.database.explore import (
 from src.database.explore import get_top_flows as db_get_top_flows  # noqa: E402
 from src.database.explore import search_flows as db_search_flows
 from src.database.ignorelist import get_all_ignorelist_entries  # noqa: E402
-from src.database.localhosts import get_localhost_as_dict, get_localhosts_all  # noqa: E402
-from src.database.localhosts import get_whitelisted_localhosts
+from src.database.localhosts import (
+    get_localhost_as_dict,  # noqa: E402
+    get_localhosts_all,
+    get_whitelisted_localhosts,
+)
 from src.utils.locallogging import log_error, log_info  # noqa: E402
 
 os.environ["PYTHONUNBUFFERED"] = "1"
