@@ -16,7 +16,7 @@ from src.database.explore import (
 from src.database.explore import get_top_flows as db_get_top_flows  # noqa: E402
 from src.database.explore import search_flows as db_search_flows
 from src.database.ignorelist import get_all_ignorelist_entries  # noqa: E402
-from src.database.localhosts import get_localhost_as_dict  # noqa: E402
+from src.database.localhosts import get_localhost_as_dict, get_localhosts_all  # noqa: E402
 from src.database.localhosts import get_whitelisted_localhosts
 from src.utils.locallogging import log_error, log_info  # noqa: E402
 
@@ -32,6 +32,7 @@ Implements the MCP (Model Context Protocol) Streamable HTTP transport:
 
 Available tools:
   Host investigation:
+    list_hosts               - All known hosts with complete localhost details
     get_host                 - Full profile for a host (details + alerts + flow summary)
     get_host_alerts          - All alerts for a specific host
     get_host_flows           - Top flows originating from a host
@@ -123,6 +124,17 @@ def list_alerts(arguments):
         alerts = [a for a in alerts if not a.get("acknowledged")]
     log_info(logger, f"[INFO] MCP list_alerts returned {len(alerts)} items")
     return alerts
+
+
+@mcp_tool(
+    "list_hosts",
+    "Return all known hosts with complete localhost details.",
+)
+def list_hosts(arguments):
+    log_info(logger, "[INFO] MCP list_hosts called")
+    result = get_localhosts_all()
+    log_info(logger, f"[INFO] MCP list_hosts returned {len(result)} hosts")
+    return result
 
 
 @mcp_tool(
