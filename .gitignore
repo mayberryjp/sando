@@ -15,7 +15,6 @@ tests/
 !tests/*.py
 .sme
 # Agent/generated workspace files
-.agent/
 .sme/
 
 # Tests not tracked in this repo
