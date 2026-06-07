@@ -1,4 +1,4 @@
-VERSION = "v2026.6.20"
+VERSION = "v2026.6.25"
 # v3 is after consolidating database, v4 is moving to ORM, v5 is moving to constructor, v6 is integrating agent
 CONST_COLLECTOR_LISTEN_PORT = 2055
 CONST_COLLECTOR_LISTEN_ADDRESS = "0.0.0.0"

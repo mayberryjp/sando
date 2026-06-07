@@ -8,17 +8,17 @@ from bottle import Bottle, request, response, run  # noqa: E402
 from src.database.alerts import get_all_alerts, get_all_alerts_by_ip  # noqa: E402
 from src.database.configuration import get_all_configuration  # noqa: E402
 from src.database.configuration import get_local_networks
+from src.database.dnsqueries import search_dns_queries as db_search_dns_queries
 from src.database.explore import (
     get_flows_for_country,
     get_flows_for_ip,
     get_flows_for_port,
     get_flows_for_tag,
     get_latest_master_flows,
-    search_master_flows_by_concat,
 )
 from src.database.explore import get_top_flows as db_get_top_flows  # noqa: E402
 from src.database.explore import search_flows as db_search_flows
-from src.database.dnsqueries import search_dns_queries as db_search_dns_queries
+from src.database.explore import search_master_flows_by_concat
 from src.database.ignorelist import get_all_ignorelist_entries  # noqa: E402
 from src.database.localhosts import get_localhost_as_dict  # noqa: E402
 from src.database.localhosts import get_localhosts_all, get_whitelisted_localhosts
