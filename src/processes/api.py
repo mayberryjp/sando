@@ -119,7 +119,11 @@ if IS_CONTAINER:
 
 # Run the Bottle app
 if __name__ == "__main__":
+    import time
+
     logger = logging.getLogger(__name__)
+    log_info(logger, "Waiting 30 seconds for database initialization...")
+    time.sleep(30)
     log_info(logger, "Starting API server...")
     from waitress import serve
 
