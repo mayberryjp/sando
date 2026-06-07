@@ -42,8 +42,8 @@ Available tools:
     get_host_flows           - Top flows originating from a host
 
   Flow explorer / investigation:
-    list_explore_flows      - Paginated rows from the Explore database
-    search_explore_flows    - Search Explore rows by concat text
+    list_explore_flows       - All rows from the Explore database
+    search_explore_flows     - Search Explore rows by concat text
     get_top_flows            - Top flows across all hosts ordered by bytes or packets
     search_flows             - Flexible flow search (src_ip, dst_ip, port, country, tag)
     get_flows_by_country     - All flows to/from a specific country
