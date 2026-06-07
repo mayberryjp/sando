@@ -398,17 +398,14 @@ def get_ip_to_domain_mapping():
             disconnect_from_db(conn)
 
 
-def search_dns_queries(
-    client_ip=None, domain=None, response_ip=None, limit=100, page=0
-):
+def search_dns_queries(client_ip=None, domain=None, response_ip=None):
     """
     Search raw DNS query history with optional client, domain, and response filters.
-    Returns a dict with 'total', 'page', 'limit', and 'results'.
+    Returns a dict with 'results' and 'success'.
     """
     logger = logging.getLogger(__name__)
 
     try:
-        offset = page * limit
         clauses = []
         params = []
         if client_ip:
@@ -427,19 +424,12 @@ def search_dns_queries(
         if not conn:
             log_error(logger, "[ERROR] Unable to connect to dnsqueries database.")
             return {
-                "total": 0,
-                "page": page,
-                "limit": limit,
                 "results": [],
                 "success": False,
                 "error": "Unable to connect to dnsqueries database.",
             }
 
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-
-        cursor.execute(f"SELECT COUNT(*) FROM dnsqueries {where}", params)
-        total = cursor.fetchone()[0]
 
         cursor.execute(
             f"""
@@ -449,26 +439,20 @@ def search_dns_queries(
             FROM dnsqueries
             {where}
             ORDER BY last_seen DESC
-            LIMIT ? OFFSET ?
             """,
-            params + [limit, offset],
+            params,
         )
         rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
 
         return {
-            "total": total,
-            "page": page,
-            "limit": limit,
-            "results": [dict(row) for row in rows],
+            "results": [dict(zip(columns, row)) for row in rows],
             "success": True,
         }
 
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Database error while searching DNS queries: {e}")
         return {
-            "total": 0,
-            "page": page,
-            "limit": limit,
             "results": [],
             "success": False,
             "error": str(e),
@@ -476,9 +460,6 @@ def search_dns_queries(
     except Exception as e:
         log_error(logger, f"[ERROR] Unexpected error while searching DNS queries: {e}")
         return {
-            "total": 0,
-            "page": page,
-            "limit": limit,
             "results": [],
             "success": False,
             "error": str(e),

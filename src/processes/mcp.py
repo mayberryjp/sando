@@ -18,7 +18,6 @@ from src.database.explore import (
 )
 from src.database.explore import get_top_flows as db_get_top_flows  # noqa: E402
 from src.database.explore import search_flows as db_search_flows
-from src.database.explore import search_dns_keyvalue as db_search_dns_keyvalue
 from src.database.dnsqueries import search_dns_queries as db_search_dns_queries
 from src.database.ignorelist import get_all_ignorelist_entries  # noqa: E402
 from src.database.localhosts import get_localhost_as_dict  # noqa: E402
@@ -52,7 +51,6 @@ Available tools:
     get_flows_by_tag         - All flows carrying a specific tag
 
   DNS investigation:
-    search_dns_keyvalue      - Search IP-to-domain enrichment rows
     search_dns_queries       - Search raw DNS lookup history
 
   Allow / whitelist export:
@@ -259,30 +257,15 @@ def get_host_flows(arguments):
 
 @mcp_tool(
     "list_explore_flows",
-    "Return paginated rows from the Explore database, matching GET /api/explore.",
+    "Return all rows from the Explore database, matching GET /api/explore.",
     {
         "type": "object",
-        "properties": {
-            "limit": {
-                "type": "integer",
-                "description": "Rows per page.",
-                "default": 100,
-            },
-            "page": {
-                "type": "integer",
-                "description": "Zero-based page number.",
-                "default": 0,
-            },
-        },
+        "properties": {},
     },
 )
 def list_explore_flows(arguments):
-    limit = int(arguments.get("limit", 100))
-    page = int(arguments.get("page", 0))
-    log_info(
-        logger, f"[INFO] MCP list_explore_flows called (limit={limit}, page={page})"
-    )
-    result = get_latest_master_flows(limit=limit, page=page)
+    log_info(logger, "[INFO] MCP list_explore_flows called")
+    result = get_latest_master_flows(limit=10000, page=0)
     log_info(
         logger,
         f"[INFO] MCP list_explore_flows returned {len(result.get('results', []))} rows",
@@ -300,16 +283,6 @@ def list_explore_flows(arguments):
                 "type": "string",
                 "description": "Search text matched against the Explore concat column.",
             },
-            "page": {
-                "type": "integer",
-                "description": "Zero-based page number.",
-                "default": 0,
-            },
-            "page_size": {
-                "type": "integer",
-                "description": "Rows per page.",
-                "default": 100,
-            },
         },
         "required": ["query"],
     },
@@ -320,13 +293,11 @@ def search_explore_flows(arguments):
         query = query.replace("_", r"\_")
     if not query:
         raise ValueError("Missing required parameter: query")
-    page = int(arguments.get("page", 0))
-    page_size = int(arguments.get("page_size", 100))
     log_info(
         logger,
-        f"[INFO] MCP search_explore_flows called (query={query}, page={page}, page_size={page_size})",
+        f"[INFO] MCP search_explore_flows called (query={query})",
     )
-    result = search_master_flows_by_concat(query, page=page, page_size=page_size)
+    result = search_master_flows_by_concat(query, page=0, page_size=10000)
     log_info(
         logger,
         f"[INFO] MCP search_explore_flows returned {len(result.get('results', []))} rows",
@@ -416,50 +387,6 @@ def search_flows(arguments):
 
 
 @mcp_tool(
-    "search_dns_keyvalue",
-    "Search IP-to-domain rows from the dnskeyvalue enrichment table.",
-    {
-        "type": "object",
-        "properties": {
-            "ip": {
-                "type": "string",
-                "description": "Exact IP address to match.",
-            },
-            "domain": {
-                "type": "string",
-                "description": "Domain text to match case-insensitively.",
-            },
-            "limit": {
-                "type": "integer",
-                "description": "Rows per page.",
-                "default": 100,
-            },
-            "page": {
-                "type": "integer",
-                "description": "Zero-based page number.",
-                "default": 0,
-            },
-        },
-    },
-)
-def search_dns_keyvalue(arguments):
-    ip = arguments.get("ip")
-    domain = arguments.get("domain")
-    limit = int(arguments.get("limit", 100))
-    page = int(arguments.get("page", 0))
-    log_info(
-        logger,
-        f"[INFO] MCP search_dns_keyvalue called (ip={ip}, domain={domain}, limit={limit}, page={page})",
-    )
-    result = db_search_dns_keyvalue(ip=ip, domain=domain, limit=limit, page=page)
-    log_info(
-        logger,
-        f"[INFO] MCP search_dns_keyvalue returned {len(result.get('results', []))} rows",
-    )
-    return result
-
-
-@mcp_tool(
     "search_dns_queries",
     "Search raw DNS lookup history from the dnsqueries table.",
     {
@@ -477,16 +404,6 @@ def search_dns_keyvalue(arguments):
                 "type": "string",
                 "description": "IP address text to match in DNS responses.",
             },
-            "limit": {
-                "type": "integer",
-                "description": "Rows per page.",
-                "default": 100,
-            },
-            "page": {
-                "type": "integer",
-                "description": "Zero-based page number.",
-                "default": 0,
-            },
         },
     },
 )
@@ -494,18 +411,14 @@ def search_dns_queries(arguments):
     client_ip = arguments.get("client_ip")
     domain = arguments.get("domain")
     response_ip = arguments.get("response_ip")
-    limit = int(arguments.get("limit", 100))
-    page = int(arguments.get("page", 0))
     log_info(
         logger,
-        f"[INFO] MCP search_dns_queries called (client_ip={client_ip}, domain={domain}, response_ip={response_ip}, limit={limit}, page={page})",
+        f"[INFO] MCP search_dns_queries called (client_ip={client_ip}, domain={domain}, response_ip={response_ip})",
     )
     result = db_search_dns_queries(
         client_ip=client_ip,
         domain=domain,
         response_ip=response_ip,
-        limit=limit,
-        page=page,
     )
     log_info(
         logger,

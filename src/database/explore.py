@@ -1,6 +1,5 @@
 import bisect
 import logging
-import sqlite3
 
 from src.const import CONST_CREATE_EXPLORE_SQL, CONST_EXPLORE_DB
 from src.database.core import (
@@ -317,7 +316,6 @@ def get_latest_master_flows(limit=100, page=0):
     try:
         offset = page * limit
         conn = connect_to_db("explore")
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
         cursor.execute("SELECT COUNT(*) FROM explore")
@@ -338,8 +336,9 @@ def get_latest_master_flows(limit=100, page=0):
             (limit, offset),
         )
         rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
         disconnect_from_db(conn)
-        results = [dict(row) for row in rows]
+        results = [dict(zip(columns, row)) for row in rows]
 
         return {
             "total": total,
@@ -372,7 +371,6 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
     try:
         offset = page * page_size
         conn = connect_to_db("explore")
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
         like_pattern = f"%{search_string}%"
@@ -399,8 +397,9 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
             (like_pattern, page_size, offset),
         )
         rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
         disconnect_from_db(conn)
-        results = [dict(row) for row in rows]
+        results = [dict(zip(columns, row)) for row in rows]
 
         return {
             "total": total,
@@ -424,78 +423,6 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
         }
 
 
-def search_dns_keyvalue(ip=None, domain=None, limit=100, page=0):
-    """
-    Search the dnskeyvalue table with optional exact IP and partial domain filters.
-    Returns a dict with 'total', 'page', 'limit', and 'results'.
-    """
-    try:
-        offset = page * limit
-        clauses = []
-        params = []
-        if ip:
-            clauses.append("ip = ?")
-            params.append(ip)
-        if domain:
-            clauses.append("domain LIKE ? COLLATE NOCASE")
-            params.append(f"%{domain}%")
-
-        where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
-
-        conn = connect_to_db("dnskeyvalue")
-        if not conn:
-            return {
-                "total": 0,
-                "page": page,
-                "limit": limit,
-                "results": [],
-                "success": False,
-                "error": "Unable to connect to dnskeyvalue database.",
-            }
-
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-
-        cursor.execute(f"SELECT COUNT(*) FROM dnskeyvalue {where}", params)
-        total = cursor.fetchone()[0]
-
-        cursor.execute(
-            f"""
-            SELECT ip, domain
-            FROM dnskeyvalue
-            {where}
-            ORDER BY domain COLLATE NOCASE, ip
-            LIMIT ? OFFSET ?
-            """,
-            params + [limit, offset],
-        )
-        rows = cursor.fetchall()
-
-        return {
-            "total": total,
-            "page": page,
-            "limit": limit,
-            "results": [dict(row) for row in rows],
-            "success": True,
-        }
-    except Exception as e:
-        log_error(
-            logging.getLogger(__name__),
-            f"[ERROR] Failed to search dnskeyvalue: {e}",
-        )
-        return {
-            "total": 0,
-            "page": page,
-            "limit": limit,
-            "results": [],
-            "success": False,
-            "error": str(e),
-        }
-    finally:
-        if "conn" in locals() and conn:
-            disconnect_from_db(conn)
-
-
 _FLOW_COLUMNS = """
     src_ip, dst_ip, dst_port, protocol, sum_packets, sum_bytes,
     sum_times_seen, max_last_seen, tags,
@@ -509,15 +436,15 @@ def get_top_flows(limit=25, order_by="bytes"):
     order_col = "sum_bytes" if order_by != "packets" else "sum_packets"
     try:
         conn = connect_to_db("explore")
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
             f"SELECT {_FLOW_COLUMNS} FROM explore ORDER BY {order_col} DESC LIMIT ?",
             (limit,),
         )
         rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
         disconnect_from_db(conn)
-        return [dict(r) for r in rows]
+        return [dict(zip(columns, row)) for row in rows]
     except Exception as e:
         log_error(logging.getLogger(__name__), f"[ERROR] get_top_flows failed: {e}")
         return []
@@ -528,15 +455,15 @@ def get_flows_for_ip(ip_address, limit=25, order_by="bytes"):
     order_col = "sum_bytes" if order_by != "packets" else "sum_packets"
     try:
         conn = connect_to_db("explore")
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
             f"SELECT {_FLOW_COLUMNS} FROM explore WHERE src_ip = ? OR dst_ip = ? ORDER BY {order_col} DESC LIMIT ?",
             (ip_address, ip_address, limit),
         )
         rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
         disconnect_from_db(conn)
-        return [dict(r) for r in rows]
+        return [dict(zip(columns, row)) for row in rows]
     except Exception as e:
         log_error(logging.getLogger(__name__), f"[ERROR] get_flows_for_ip failed: {e}")
         return []
@@ -546,15 +473,15 @@ def get_flows_for_country(country, limit=50):
     """Return flows where src or dst country matches (partial, case-insensitive)."""
     try:
         conn = connect_to_db("explore")
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
             f"SELECT {_FLOW_COLUMNS} FROM explore WHERE src_country LIKE ? OR dst_country LIKE ? ORDER BY sum_bytes DESC LIMIT ?",
             (f"%{country}%", f"%{country}%", limit),
         )
         rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
         disconnect_from_db(conn)
-        return [dict(r) for r in rows]
+        return [dict(zip(columns, row)) for row in rows]
     except Exception as e:
         log_error(
             logging.getLogger(__name__), f"[ERROR] get_flows_for_country failed: {e}"
@@ -566,15 +493,15 @@ def get_flows_for_port(port, limit=50):
     """Return flows on a specific destination port."""
     try:
         conn = connect_to_db("explore")
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
             f"SELECT {_FLOW_COLUMNS} FROM explore WHERE dst_port = ? ORDER BY sum_bytes DESC LIMIT ?",
             (port, limit),
         )
         rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
         disconnect_from_db(conn)
-        return [dict(r) for r in rows]
+        return [dict(zip(columns, row)) for row in rows]
     except Exception as e:
         log_error(
             logging.getLogger(__name__), f"[ERROR] get_flows_for_port failed: {e}"
@@ -586,15 +513,15 @@ def get_flows_for_tag(tag, limit=50):
     """Return flows whose tags column contains the given tag string."""
     try:
         conn = connect_to_db("explore")
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
             f"SELECT {_FLOW_COLUMNS} FROM explore WHERE tags LIKE ? ORDER BY sum_bytes DESC LIMIT ?",
             (f"%{tag}%", limit),
         )
         rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
         disconnect_from_db(conn)
-        return [dict(r) for r in rows]
+        return [dict(zip(columns, row)) for row in rows]
     except Exception as e:
         log_error(logging.getLogger(__name__), f"[ERROR] get_flows_for_tag failed: {e}")
         return []
@@ -625,15 +552,15 @@ def search_flows(
     params.append(limit)
     try:
         conn = connect_to_db("explore")
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
             f"SELECT {_FLOW_COLUMNS} FROM explore {where} ORDER BY sum_bytes DESC LIMIT ?",
             params,
         )
         rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
         disconnect_from_db(conn)
-        return [dict(r) for r in rows]
+        return [dict(zip(columns, row)) for row in rows]
     except Exception as e:
         log_error(logging.getLogger(__name__), f"[ERROR] search_flows failed: {e}")
         return []
