@@ -93,7 +93,7 @@ if __name__ == "__main__":
         time.sleep(2)
 
         insert_action(
-            "If you just performed initial installation then detections are not enabled by default. Please navigate to Settings -> Processes and turn on Detection Processing and to Settings -> Detections to turn on New Host Detections. You m ust also configure local networks. You can then customize the system further."
+            "If you just performed initial installation then detections are not enabled by default. Please navigate to Settings -> Processes and turn on Detection Processing and to Settings -> Detections to turn on New Host Detections. You must also configure local networks. You can then customize the system further."
         )
 
     if os.path.exists(site_config_path):
