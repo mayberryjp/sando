@@ -85,12 +85,15 @@ if __name__ == "__main__":
             logger,
             f"[INFO] Actions database not found, creating at {CONST_ACTIONS_DB}. We assume this is a first time install. ",
         )
+
         create_table(CONST_CREATE_ACTIONS_SQL, "actions")
         os.makedirs(os.path.dirname(schema_file_path), exist_ok=True)
         with open(schema_file_path, "w") as f:
             f.write(str(CONST_DATABASE_SCHEMA_VERSION))
+        time.sleep(2)
+
         insert_action(
-            "If you just performed initial installation then detections are not enabled by default. Please navigate to Settings -> Processes and turn on Detection Processing and to Settings -> Detections to turn on New Host Detections. You can then customize the system further."
+            "If you just performed initial installation then detections are not enabled by default. Please navigate to Settings -> Processes and turn on Detection Processing and to Settings -> Detections to turn on New Host Detections. You m ust also configure local networks. You can then customize the system further."
         )
 
     if os.path.exists(site_config_path):

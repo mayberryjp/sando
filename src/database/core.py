@@ -79,20 +79,19 @@ def create_table(create_table_sql, table):
     if not db_name:
         raise ValueError(f"No database mapping found for table: {table}")
 
+    conn = None
     try:
-        conn = connect_to_db(table)
-        if not conn:
-            log_error(logger, f"[ERROR] Unable to connect to {db_name}")
-            return
-
+        conn = sqlite3.connect(db_name)
+        conn.execute("PRAGMA busy_timeout = 10000")
         cursor = conn.cursor()
         cursor.executescript(create_table_sql)
-        conn.commit()
         cursor.execute("PRAGMA journal_mode=WAL;")
         log_info(logger, f"[INFO] {db_name} table {table} initialized successfully.")
-        disconnect_from_db(conn)
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Error initializing {db_name}: {e}")
+    finally:
+        if conn:
+            disconnect_from_db(conn)
 
 
 def delete_all_records(table_name):
