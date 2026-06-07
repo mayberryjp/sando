@@ -115,7 +115,6 @@ def delete_all_records(table_name):
             )
         finally:
             disconnect_from_db(conn)
-    disconnect_from_db(conn)
 
 
 def get_row_count(table_name):

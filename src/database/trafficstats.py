@@ -125,7 +125,6 @@ def update_traffic_stats(rows, config_dict):
         log_error(logger, f"[ERROR] Error updating traffic statistics: {e}")
     finally:
         disconnect_from_db(conn)
-    disconnect_from_db(conn)
 
 
 def get_all_ips_traffic_status():

@@ -267,12 +267,18 @@ def bulk_populate_master_flow_view():
             tgt_conn.commit()
 
         disconnect_from_db(tgt_conn)
+        tgt_conn = None
         log_info(
             logger,
             f"[INFO] Inserted {total} summary records into explore in {CONST_EXPLORE_DB}.",
         )
     except Exception as e:
         log_error(logger, f"[ERROR] Failed to bulk populate master_flow_view: {e}")
+    finally:
+        for c in ("src_conn", "tgt_conn"):
+            obj = locals().get(c)
+            if obj:
+                disconnect_from_db(obj)
 
 
 def create_dns_key_value():
@@ -298,13 +304,15 @@ def create_dns_key_value():
             "INSERT OR REPLACE INTO dnskeyvalue (ip, domain) VALUES (?, ?)", rows
         )
         conn.commit()
-        disconnect_from_db(conn)
         log_info(
             logger,
             f"[INFO] Inserted {len(rows)} DNS key-value records into dnskeyvalue in {CONST_EXPLORE_DB}.",
         )
     except Exception as e:
         log_error(logger, f"[ERROR] Failed to create dnskeyvalue table: {e}")
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
 
 
 def get_latest_master_flows(limit=100, page=0):
@@ -337,7 +345,6 @@ def get_latest_master_flows(limit=100, page=0):
         )
         rows = cursor.fetchall()
         columns = [col[0] for col in cursor.description]
-        disconnect_from_db(conn)
         results = [dict(zip(columns, row)) for row in rows]
 
         return {
@@ -360,6 +367,9 @@ def get_latest_master_flows(limit=100, page=0):
             "success": False,
             "error": str(e),
         }
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
 
 
 def search_master_flows_by_concat(search_string, page=0, page_size=100):
@@ -398,7 +408,6 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
         )
         rows = cursor.fetchall()
         columns = [col[0] for col in cursor.description]
-        disconnect_from_db(conn)
         results = [dict(zip(columns, row)) for row in rows]
 
         return {
@@ -421,6 +430,9 @@ def search_master_flows_by_concat(search_string, page=0, page_size=100):
             "success": False,
             "error": str(e),
         }
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
 
 
 _FLOW_COLUMNS = """

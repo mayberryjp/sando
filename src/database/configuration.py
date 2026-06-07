@@ -119,7 +119,6 @@ def get_config_settings():
         return config_dict
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Error reading configuration database: {e}")
-        disconnect_from_db(conn)
         return None
     finally:
         if "conn" in locals() and conn:

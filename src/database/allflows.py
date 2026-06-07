@@ -71,8 +71,6 @@ def update_all_flows(rows, config_dict):
             f"[INFO] Latest collection results packets: {total_packets} for bytes {total_bytes}",
         )
 
-    disconnect_from_db(conn)
-
 
 def update_tag_to_allflows(table_name, tag, src_ip, dst_ip, dst_port):
     """
