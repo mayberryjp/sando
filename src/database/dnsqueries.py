@@ -396,3 +396,93 @@ def get_ip_to_domain_mapping():
     finally:
         if "conn" in locals() and conn:
             disconnect_from_db(conn)
+
+
+def search_dns_queries(
+    client_ip=None, domain=None, response_ip=None, limit=100, page=0
+):
+    """
+    Search raw DNS query history with optional client, domain, and response filters.
+    Returns a dict with 'total', 'page', 'limit', and 'results'.
+    """
+    logger = logging.getLogger(__name__)
+
+    try:
+        offset = page * limit
+        clauses = []
+        params = []
+        if client_ip:
+            clauses.append("client_ip = ?")
+            params.append(client_ip)
+        if domain:
+            clauses.append("domain LIKE ? COLLATE NOCASE")
+            params.append(f"%{domain}%")
+        if response_ip:
+            clauses.append("response LIKE ?")
+            params.append(f"%{response_ip}%")
+
+        where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
+
+        conn = connect_to_db("dnsqueries")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to dnsqueries database.")
+            return {
+                "total": 0,
+                "page": page,
+                "limit": limit,
+                "results": [],
+                "success": False,
+                "error": "Unable to connect to dnsqueries database.",
+            }
+
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        cursor.execute(f"SELECT COUNT(*) FROM dnsqueries {where}", params)
+        total = cursor.fetchone()[0]
+
+        cursor.execute(
+            f"""
+            SELECT
+                id, client_ip, domain, type, response, datasource,
+                times_seen, first_seen, last_seen, last_refresh
+            FROM dnsqueries
+            {where}
+            ORDER BY last_seen DESC
+            LIMIT ? OFFSET ?
+            """,
+            params + [limit, offset],
+        )
+        rows = cursor.fetchall()
+
+        return {
+            "total": total,
+            "page": page,
+            "limit": limit,
+            "results": [dict(row) for row in rows],
+            "success": True,
+        }
+
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Database error while searching DNS queries: {e}")
+        return {
+            "total": 0,
+            "page": page,
+            "limit": limit,
+            "results": [],
+            "success": False,
+            "error": str(e),
+        }
+    except Exception as e:
+        log_error(logger, f"[ERROR] Unexpected error while searching DNS queries: {e}")
+        return {
+            "total": 0,
+            "page": page,
+            "limit": limit,
+            "results": [],
+            "success": False,
+            "error": str(e),
+        }
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)

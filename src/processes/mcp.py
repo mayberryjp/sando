@@ -13,9 +13,13 @@ from src.database.explore import (
     get_flows_for_ip,
     get_flows_for_port,
     get_flows_for_tag,
+    get_latest_master_flows,
+    search_master_flows_by_concat,
 )
 from src.database.explore import get_top_flows as db_get_top_flows  # noqa: E402
 from src.database.explore import search_flows as db_search_flows
+from src.database.explore import search_dns_keyvalue as db_search_dns_keyvalue
+from src.database.dnsqueries import search_dns_queries as db_search_dns_queries
 from src.database.ignorelist import get_all_ignorelist_entries  # noqa: E402
 from src.database.localhosts import get_localhost_as_dict  # noqa: E402
 from src.database.localhosts import get_localhosts_all, get_whitelisted_localhosts
@@ -39,11 +43,17 @@ Available tools:
     get_host_flows           - Top flows originating from a host
 
   Flow explorer / investigation:
+    list_explore_flows      - Paginated rows from the Explore database
+    search_explore_flows    - Search Explore rows by concat text
     get_top_flows            - Top flows across all hosts ordered by bytes or packets
     search_flows             - Flexible flow search (src_ip, dst_ip, port, country, tag)
     get_flows_by_country     - All flows to/from a specific country
     get_flows_by_port        - All flows on a specific destination port
     get_flows_by_tag         - All flows carrying a specific tag
+
+  DNS investigation:
+    search_dns_keyvalue      - Search IP-to-domain enrichment rows
+    search_dns_queries       - Search raw DNS lookup history
 
   Allow / whitelist export:
     export_ignorelist        - Export all active ignore-list (allow-list) entries
@@ -248,6 +258,83 @@ def get_host_flows(arguments):
 
 
 @mcp_tool(
+    "list_explore_flows",
+    "Return paginated rows from the Explore database, matching GET /api/explore.",
+    {
+        "type": "object",
+        "properties": {
+            "limit": {
+                "type": "integer",
+                "description": "Rows per page.",
+                "default": 100,
+            },
+            "page": {
+                "type": "integer",
+                "description": "Zero-based page number.",
+                "default": 0,
+            },
+        },
+    },
+)
+def list_explore_flows(arguments):
+    limit = int(arguments.get("limit", 100))
+    page = int(arguments.get("page", 0))
+    log_info(
+        logger, f"[INFO] MCP list_explore_flows called (limit={limit}, page={page})"
+    )
+    result = get_latest_master_flows(limit=limit, page=page)
+    log_info(
+        logger,
+        f"[INFO] MCP list_explore_flows returned {len(result.get('results', []))} rows",
+    )
+    return result
+
+
+@mcp_tool(
+    "search_explore_flows",
+    "Search Explore rows by concat text, matching GET /api/explore/search.",
+    {
+        "type": "object",
+        "properties": {
+            "query": {
+                "type": "string",
+                "description": "Search text matched against the Explore concat column.",
+            },
+            "page": {
+                "type": "integer",
+                "description": "Zero-based page number.",
+                "default": 0,
+            },
+            "page_size": {
+                "type": "integer",
+                "description": "Rows per page.",
+                "default": 100,
+            },
+        },
+        "required": ["query"],
+    },
+)
+def search_explore_flows(arguments):
+    query = arguments["query"]
+    if "_" in query:
+        query = query.replace("_", r"\_")
+    if not query:
+        raise ValueError("Missing required parameter: query")
+    page = int(arguments.get("page", 0))
+    page_size = int(arguments.get("page_size", 100))
+    log_info(
+        logger,
+        f"[INFO] MCP search_explore_flows called (query={query}, page={page}, page_size={page_size})",
+    )
+    result = search_master_flows_by_concat(query, page=page, page_size=page_size)
+    log_info(
+        logger,
+        f"[INFO] MCP search_explore_flows returned {len(result.get('results', []))} rows",
+    )
+    return result
+
+
+@mcp_tool(
     "get_top_flows",
     "Return the top flows across all hosts, enriched with geo/ASN/DNS.",
     {
@@ -325,6 +412,105 @@ def search_flows(arguments):
         limit=limit,
     )
     log_info(logger, f"[INFO] MCP search_flows returned {len(result)} flows")
+    return result
+
+
+@mcp_tool(
+    "search_dns_keyvalue",
+    "Search IP-to-domain rows from the dnskeyvalue enrichment table.",
+    {
+        "type": "object",
+        "properties": {
+            "ip": {
+                "type": "string",
+                "description": "Exact IP address to match.",
+            },
+            "domain": {
+                "type": "string",
+                "description": "Domain text to match case-insensitively.",
+            },
+            "limit": {
+                "type": "integer",
+                "description": "Rows per page.",
+                "default": 100,
+            },
+            "page": {
+                "type": "integer",
+                "description": "Zero-based page number.",
+                "default": 0,
+            },
+        },
+    },
+)
+def search_dns_keyvalue(arguments):
+    ip = arguments.get("ip")
+    domain = arguments.get("domain")
+    limit = int(arguments.get("limit", 100))
+    page = int(arguments.get("page", 0))
+    log_info(
+        logger,
+        f"[INFO] MCP search_dns_keyvalue called (ip={ip}, domain={domain}, limit={limit}, page={page})",
+    )
+    result = db_search_dns_keyvalue(ip=ip, domain=domain, limit=limit, page=page)
+    log_info(
+        logger,
+        f"[INFO] MCP search_dns_keyvalue returned {len(result.get('results', []))} rows",
+    )
+    return result
+
+
+@mcp_tool(
+    "search_dns_queries",
+    "Search raw DNS lookup history from the dnsqueries table.",
+    {
+        "type": "object",
+        "properties": {
+            "client_ip": {
+                "type": "string",
+                "description": "Exact client IP address to match.",
+            },
+            "domain": {
+                "type": "string",
+                "description": "Domain text to match case-insensitively.",
+            },
+            "response_ip": {
+                "type": "string",
+                "description": "IP address text to match in DNS responses.",
+            },
+            "limit": {
+                "type": "integer",
+                "description": "Rows per page.",
+                "default": 100,
+            },
+            "page": {
+                "type": "integer",
+                "description": "Zero-based page number.",
+                "default": 0,
+            },
+        },
+    },
+)
+def search_dns_queries(arguments):
+    client_ip = arguments.get("client_ip")
+    domain = arguments.get("domain")
+    response_ip = arguments.get("response_ip")
+    limit = int(arguments.get("limit", 100))
+    page = int(arguments.get("page", 0))
+    log_info(
+        logger,
+        f"[INFO] MCP search_dns_queries called (client_ip={client_ip}, domain={domain}, response_ip={response_ip}, limit={limit}, page={page})",
+    )
+    result = db_search_dns_queries(
+        client_ip=client_ip,
+        domain=domain,
+        response_ip=response_ip,
+        limit=limit,
+        page=page,
+    )
+    log_info(
+        logger,
+        f"[INFO] MCP search_dns_queries returned {len(result.get('results', []))} rows",
+    )
     return result
 
 
