@@ -5,6 +5,7 @@ from bottle import Bottle, response
 
 from src.database.trafficstats import (
     get_all_ips_traffic_status,
+    get_aggregate_traffic_stats,
     get_traffic_stats_for_ip,
 )
 from src.utils.locallogging import log_error, log_info, log_warn
@@ -77,6 +78,35 @@ def setup_trafficstats_routes(app):
             log_error(
                 logger,
                 f"[ERROR] Failed to get traffic stats for IP address {ip_address}: {e}",
+            )
+            response.status = 500
+            return {"error": str(e)}
+
+    @app.route("/api/trafficstats", method=["GET"])
+    def get_aggregate_traffic_stats_route():
+        """
+        API endpoint to get aggregate site-wide traffic statistics.
+
+        Returns:
+            JSON object containing aggregate traffic statistics for the last 100 hours.
+        """
+        logger = logging.getLogger(__name__)
+        try:
+
+            # Call the function to get aggregate traffic stats
+            traffic_stats = get_aggregate_traffic_stats()
+
+            response.content_type = "application/json"
+            log_info(
+                logger,
+                "[INFO] Successfully retrieved aggregate traffic stats",
+            )
+            return json.dumps(traffic_stats, indent=2)
+
+        except Exception as e:
+            log_error(
+                logger,
+                f"[ERROR] Failed to get aggregate traffic stats: {e}",
             )
             response.status = 500
             return {"error": str(e)}
