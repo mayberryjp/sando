@@ -323,3 +323,139 @@ def get_traffic_stats_for_ip(ip_address):
             disconnect_from_db(conn_traffic)
         if "conn_alerts" in locals() and conn_alerts:
             disconnect_from_db(conn_alerts)
+
+
+def get_aggregate_traffic_stats():
+    """
+    Retrieve aggregate traffic statistics for all IP addresses for the last 100 hours,
+    including alert counts. Returns data for all hour intervals, even when no data
+    exists.
+
+    Returns:
+        list: A list of dictionaries containing aggregate traffic statistics for all
+              hour intervals in the last 100 hours.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        # Connect to the trafficstats database
+        conn_traffic = connect_to_db("trafficstats")
+        if not conn_traffic:
+            log_error(logger, "[ERROR] Unable to connect to trafficstats database.")
+            return []
+
+        cursor_traffic = conn_traffic.cursor()
+
+        # Query to retrieve aggregate traffic data within last 100 hours
+        traffic_query = """
+            SELECT
+                timestamp,
+                SUM(total_packets) AS total_packets,
+                SUM(total_bytes) AS total_bytes
+            FROM trafficstats
+            WHERE datetime(substr(timestamp, 1, 10) || ' ' || substr(timestamp, 12) || ':00:00') >= datetime('now', '-100 hours')
+            GROUP BY timestamp
+            ORDER BY timestamp DESC
+        """
+
+        traffic_rows, traffic_query_time = run_timed_query(
+            cursor_traffic,
+            traffic_query,
+            description="get_aggregate_traffic_stats_get_traffic_stats",
+        )
+        disconnect_from_db(conn_traffic)
+
+        # Connect to the alerts database
+        conn_alerts = connect_to_db("alerts")
+        if not conn_alerts:
+            log_error(logger, "[ERROR] Unable to connect to alerts database.")
+            return []
+
+        cursor_alerts = conn_alerts.cursor()
+        alerts_query = """
+            SELECT
+                strftime('%Y-%m-%d:%H', last_seen) AS hour,
+                COUNT(*) AS alert_count
+            FROM
+                alerts
+            WHERE
+                datetime(last_seen) >= datetime('now', '-100 hours')
+            GROUP BY
+                hour
+            ORDER BY
+                hour ASC
+        """
+
+        alert_rows, alerts_query_time = run_timed_query(
+            cursor_alerts,
+            alerts_query,
+            description="get_aggregate_traffic_stats_get_alert_counts",
+        )
+        disconnect_from_db(conn_alerts)
+
+        # Create mappings of timestamps to aggregate traffic data and alert counts
+        traffic_data = {}
+        for row in traffic_rows:
+            timestamp = row[0]
+            traffic_data[timestamp] = {"total_packets": row[1], "total_bytes": row[2]}
+
+        alert_counts = {row[0]: row[1] for row in alert_rows}
+
+        # Generate timestamps for the last 100 hours
+        end_time = datetime.now()
+        start_time = end_time - timedelta(hours=99)  # 100 hours including current hour
+
+        # Format the results as a list of dictionaries for all hour intervals
+        traffic_stats = []
+        current_time = start_time
+
+        while current_time <= end_time:
+            timestamp = current_time.strftime("%Y-%m-%d:%H")
+
+            traffic_for_hour = traffic_data.get(timestamp)
+            alert_count = alert_counts.get(timestamp, 0)
+
+            traffic_stats.append(
+                {
+                    "timestamp": timestamp,
+                    "total_packets": (
+                        traffic_for_hour["total_packets"] if traffic_for_hour else 0
+                    ),
+                    "total_bytes": (
+                        traffic_for_hour["total_bytes"] if traffic_for_hour else 0
+                    ),
+                    "alerts": alert_count,
+                }
+            )
+
+            # Move to the next hour
+            current_time += timedelta(hours=1)
+
+        # Sort by timestamp (most recent first)
+        traffic_stats.sort(key=lambda x: x["timestamp"], reverse=True)
+
+        total_query_time = traffic_query_time + alerts_query_time
+        log_info(
+            logger,
+            f"[INFO] Generated {len(traffic_stats)} aggregate traffic stats entries "
+            + f"(including zero entries) in {total_query_time:.2f} ms",
+        )
+
+        return traffic_stats
+
+    except sqlite3.Error as e:
+        log_error(
+            logger,
+            f"[ERROR] Database error while retrieving aggregate traffic stats: {e}",
+        )
+        return []
+    except Exception as e:
+        log_error(
+            logger,
+            f"[ERROR] Unexpected error while retrieving aggregate traffic stats: {e}",
+        )
+        return []
+    finally:
+        if "conn_traffic" in locals() and conn_traffic:
+            disconnect_from_db(conn_traffic)
+        if "conn_alerts" in locals() and conn_alerts:
+            disconnect_from_db(conn_alerts)
