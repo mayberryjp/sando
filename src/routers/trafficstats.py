@@ -4,8 +4,8 @@ import logging
 from bottle import Bottle, response
 
 from src.database.trafficstats import (
-    get_all_ips_traffic_status,
     get_aggregate_traffic_stats,
+    get_all_ips_traffic_status,
     get_traffic_stats_for_ip,
 )
 from src.utils.locallogging import log_error, log_info, log_warn

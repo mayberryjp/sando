@@ -76,14 +76,30 @@ def handle_alert(
                     f"[INFO] Sending alert notifications for {local_ip} (new alert)",
                 )
                 send_telegram_message(telegram_message, original_flow)
-                send_discord_message(telegram_message, original_flow)
+                local_description = (
+                    localhost_info[12] if localhost_info and len(localhost_info) > 12 else ""
+                )
+                send_discord_message(
+                    telegram_message,
+                    original_flow,
+                    local_ip=local_ip,
+                    local_description=local_description,
+                )
             elif insert_or_update == "update" and detection_level == 3:
                 log_info(
                     logger,
                     f"[INFO] Sending alert notifications for {local_ip} (updated alert)",
                 )
                 send_telegram_message(telegram_message, original_flow)
-                send_discord_message(telegram_message, original_flow)
+                local_description = (
+                    localhost_info[12] if localhost_info and len(localhost_info) > 12 else ""
+                )
+                send_discord_message(
+                    telegram_message,
+                    original_flow,
+                    local_ip=local_ip,
+                    local_description=local_description,
+                )
             elif not insert_or_update:
                 log_warn(
                     logger,
