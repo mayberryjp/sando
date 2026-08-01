@@ -34,7 +34,9 @@ def _load_host_lookups():
     try:
         conn = connect_to_db("localhosts")
         cursor = conn.cursor()
-        cursor.execute("SELECT ip_address, local_description, dns_hostname FROM localhosts")
+        cursor.execute(
+            "SELECT ip_address, local_description, dns_hostname FROM localhosts"
+        )
         localhosts = {
             ip: {"description": desc or "", "dns": dns or ""}
             for ip, desc, dns in cursor.fetchall()
@@ -56,12 +58,7 @@ def _load_host_lookups():
 def _resolve_host(ip, localhosts, dnskeyvalue):
     """Return the best human-readable name for an IP, falling back to the IP itself."""
     local = localhosts.get(ip, {})
-    return (
-        local.get("description")
-        or local.get("dns")
-        or dnskeyvalue.get(ip)
-        or ip
-    )
+    return local.get("description") or local.get("dns") or dnskeyvalue.get(ip) or ip
 
 
 def _enrich_flows(flows):
@@ -95,16 +92,18 @@ def get_live_snapshot(limit=200):
             disconnect_from_db(conn)
 
 
-def get_flows_since(since_timestamp, limit=500):
-    """Return newflows rows where last_seen > since_timestamp, oldest first."""
+def get_flows_since(seconds=60, limit=500):
+    """Return newflows rows active in the last N seconds, oldest first."""
     logger = logging.getLogger(__name__)
     conn = None
     try:
         conn = connect_to_db("newflows")
         cursor = conn.cursor()
         cursor.execute(
-            _BASE_SELECT + "WHERE last_seen > ? ORDER BY last_seen ASC LIMIT ?",
-            (since_timestamp, limit),
+            _BASE_SELECT
+            + f"WHERE last_seen > datetime('now', 'localtime', '-{int(seconds)} seconds') "
+            + "ORDER BY last_seen ASC LIMIT ?",
+            (limit,),
         )
         return _enrich_flows(_rows_to_dicts(cursor.fetchall()))
     except Exception as e:

@@ -1,6 +1,5 @@
 import json
 import logging
-from datetime import datetime, timedelta, timezone
 
 from bottle import Bottle, request, response
 
@@ -32,10 +31,9 @@ def setup_liveflows_routes(app):
                 _MAX_SNAPSHOT_LIMIT,
             )
             data = get_live_snapshot(limit=limit)
-            since = data[-1]["last_seen"] if data else _default_since(seconds=30)
             response.content_type = "application/json"
             return json.dumps(
-                {"success": True, "data": data, "count": len(data), "since": since}
+                {"success": True, "data": data, "count": len(data)}
             )
         except Exception as e:
             log_error(logger, f"[ERROR] api_liveflows_snapshot: {e}")
@@ -46,40 +44,23 @@ def setup_liveflows_routes(app):
     @app.get("/api/liveflows/poll")
     def api_liveflows_since():
         """
-        Returns newflows rows where last_seen > since, ordered oldest-first.
-        Used for polling-based real-time updates.
+        Returns newflows rows active in the last N seconds, oldest first.
 
         Query params:
-            since (str): ISO 8601 or SQLite datetime string (required).
-            limit (int): Max rows per poll (default 500).
+            seconds (int): Lookback window in seconds (default 60, max 3600).
+            limit   (int): Max rows per poll (default 500).
         """
         logger = logging.getLogger(__name__)
         try:
-            since = request.query.get("since", "")
-            if not since:
-                response.status = 400
-                return json.dumps(
-                    {"success": False, "error": "Missing required parameter: since"}
-                )
-
-            since = _normalize_timestamp(since)
+            seconds = min(int(request.query.get("seconds", 60)), 3600)
             limit = min(
                 int(request.query.get("limit", _DEFAULT_DELTA_LIMIT)),
                 _MAX_SNAPSHOT_LIMIT,
             )
-
-            data = get_flows_since(since, limit=limit)
-            next_since = data[-1]["last_seen"] if data else since
-
+            data = get_flows_since(seconds=seconds, limit=limit)
             response.content_type = "application/json"
             return json.dumps(
-                {
-                    "success": True,
-                    "data": data,
-                    "count": len(data),
-                    "since": since,
-                    "next_since": next_since,
-                }
+                {"success": True, "data": data, "count": len(data)}
             )
         except Exception as e:
             log_error(logger, f"[ERROR] api_liveflows_since: {e}")
@@ -104,17 +85,3 @@ def setup_liveflows_routes(app):
             log_error(logger, f"[ERROR] api_liveflows_stats: {e}")
             response.status = 500
             return json.dumps({"success": False, "error": str(e)})
-
-
-def _default_since(seconds=30):
-    return (datetime.now() - timedelta(seconds=seconds)).strftime("%Y-%m-%d %H:%M:%S")
-
-
-def _normalize_timestamp(ts):
-    """Convert ISO 8601 (e.g. 2026-08-01T06:45:21.000Z) to SQLite local datetime."""
-    try:
-        ts = ts.rstrip("Z").replace("T", " ").split(".")[0]
-        dt_utc = datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
-        return dt_utc.astimezone().strftime("%Y-%m-%d %H:%M:%S")
-    except (ValueError, AttributeError):
-        return ts
