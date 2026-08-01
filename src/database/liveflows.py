@@ -14,13 +14,12 @@ _FLOW_COLUMNS = (
     "flow_start",
     "flow_end",
     "last_seen",
-    "times_seen",
     "tags",
 )
 
 _BASE_SELECT = (
     "SELECT src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes, "
-    "flow_start, flow_end, last_seen, times_seen, tags FROM allflows "
+    "flow_start, flow_end, last_seen, tags FROM newflows "
 )
 
 
@@ -29,11 +28,11 @@ def _rows_to_dicts(rows):
 
 
 def get_live_snapshot(limit=200):
-    """Return the most recent flows ordered by last_seen DESC."""
+    """Return the most recent flows from newflows ordered by last_seen DESC."""
     logger = logging.getLogger(__name__)
     conn = None
     try:
-        conn = connect_to_db("allflows")
+        conn = connect_to_db("newflows")
         cursor = conn.cursor()
         cursor.execute(
             _BASE_SELECT + "ORDER BY last_seen DESC LIMIT ?",
@@ -49,11 +48,11 @@ def get_live_snapshot(limit=200):
 
 
 def get_flows_since(since_timestamp, limit=500):
-    """Return flows where last_seen > since_timestamp, oldest first."""
+    """Return newflows rows where last_seen > since_timestamp, oldest first."""
     logger = logging.getLogger(__name__)
     conn = None
     try:
-        conn = connect_to_db("allflows")
+        conn = connect_to_db("newflows")
         cursor = conn.cursor()
         cursor.execute(
             _BASE_SELECT + "WHERE last_seen > ? ORDER BY last_seen ASC LIMIT ?",
