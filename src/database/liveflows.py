@@ -27,6 +27,54 @@ def _rows_to_dicts(rows):
     return [dict(zip(_FLOW_COLUMNS, row)) for row in rows]
 
 
+def _load_host_lookups():
+    """Return (localhosts_dict, dnskeyvalue_dict) for host name enrichment."""
+    localhosts = {}
+    dnskeyvalue = {}
+    try:
+        conn = connect_to_db("localhosts")
+        cursor = conn.cursor()
+        cursor.execute("SELECT ip_address, local_description, dns_hostname FROM localhosts")
+        localhosts = {
+            ip: {"description": desc or "", "dns": dns or ""}
+            for ip, desc, dns in cursor.fetchall()
+        }
+        disconnect_from_db(conn)
+    except Exception:
+        pass
+    try:
+        conn = connect_to_db("dnskeyvalue")
+        cursor = conn.cursor()
+        cursor.execute("SELECT ip, domain FROM dnskeyvalue")
+        dnskeyvalue = dict(cursor.fetchall())
+        disconnect_from_db(conn)
+    except Exception:
+        pass
+    return localhosts, dnskeyvalue
+
+
+def _resolve_host(ip, localhosts, dnskeyvalue):
+    """Return the best human-readable name for an IP, falling back to the IP itself."""
+    local = localhosts.get(ip, {})
+    return (
+        local.get("description")
+        or local.get("dns")
+        or dnskeyvalue.get(ip)
+        or ip
+    )
+
+
+def _enrich_flows(flows):
+    """Add src_name and dst_name fields to each flow dict."""
+    if not flows:
+        return flows
+    localhosts, dnskeyvalue = _load_host_lookups()
+    for flow in flows:
+        flow["src_name"] = _resolve_host(flow["src_ip"], localhosts, dnskeyvalue)
+        flow["dst_name"] = _resolve_host(flow["dst_ip"], localhosts, dnskeyvalue)
+    return flows
+
+
 def get_live_snapshot(limit=200):
     """Return the most recent flows from newflows ordered by last_seen DESC."""
     logger = logging.getLogger(__name__)
@@ -38,7 +86,7 @@ def get_live_snapshot(limit=200):
             _BASE_SELECT + "ORDER BY last_seen DESC LIMIT ?",
             (limit,),
         )
-        return _rows_to_dicts(cursor.fetchall())
+        return _enrich_flows(_rows_to_dicts(cursor.fetchall()))
     except Exception as e:
         log_error(logger, f"[ERROR] get_live_snapshot failed: {e}")
         return []
@@ -58,7 +106,7 @@ def get_flows_since(since_timestamp, limit=500):
             _BASE_SELECT + "WHERE last_seen > ? ORDER BY last_seen ASC LIMIT ?",
             (since_timestamp, limit),
         )
-        return _rows_to_dicts(cursor.fetchall())
+        return _enrich_flows(_rows_to_dicts(cursor.fetchall()))
     except Exception as e:
         log_error(logger, f"[ERROR] get_flows_since failed: {e}")
         return []
