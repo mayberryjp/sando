@@ -779,7 +779,6 @@ def init_configurations_from_variable():
     finally:
         if "conn" in locals() and conn:
             disconnect_from_db(conn)
-    disconnect_from_db(conn)
     return config_dict
 
 

@@ -75,10 +75,7 @@ if __name__ == "__main__":
             logger,
             f"[INFO] Configuration database not found, creating at {CONST_CONFIGURATION_DB}. We assume this is a first time install. ",
         )
-        time.sleep(5)
         create_table(CONST_CREATE_CONFIG_SQL, "configuration")
-        time.sleep(5)
-        config_dict = init_configurations_from_variable()
 
     if not os.path.exists(CONST_ACTIONS_DB):
         log_info(
@@ -134,6 +131,11 @@ if __name__ == "__main__":
     create_table(CONST_CREATE_EXPLORE_SQL, "explore")
     create_table(CONST_CREATE_DNSKEYVALUE_SQL, "dnskeyvalue")
     create_table(CONST_CREATE_DBPERFORMANCE_SQL, "dbperformance")
+
+    # Seed default config values on every startup — INSERT OR IGNORE is safe for existing installs.
+    # This also backfills any new keys added in upgrades.
+    if not os.path.exists(site_config_path):
+        init_configurations_from_variable()
 
     store_machine_unique_identifier()
     store_version()

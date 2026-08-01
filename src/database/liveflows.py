@@ -19,6 +19,8 @@ _FLOW_COLUMNS = (
 
 # CTE query: aggregate all src_ports into one row per (src_ip, dst_ip, dst_port, protocol).
 # forward = client→server (src_port > dst_port), reverse = server→client (src_port < dst_port).
+
+
 def _flow_query(extra_where="", order="f.last_seen DESC"):
     return f"""
         WITH forward AS (
@@ -125,7 +127,9 @@ def get_flows_since(seconds=60, limit=500):
     try:
         conn = connect_to_db("newflows")
         cursor = conn.cursor()
-        time_filter = f"AND last_seen > datetime('now', 'localtime', '-{int(seconds)} seconds')"
+        time_filter = (
+            f"AND last_seen > datetime('now', 'localtime', '-{int(seconds)} seconds')"
+        )
         cursor.execute(
             _flow_query(extra_where=time_filter, order="f.last_seen ASC") + " LIMIT ?",
             (limit,),

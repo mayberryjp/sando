@@ -37,8 +37,9 @@ if __name__ == "__main__":
 
         config_dict = get_config_settings()
         if not config_dict:
-            log_error(logger, "[ERROR] Failed to load configuration settings")
-            exit(1)
+            log_error(logger, "[ERROR] Failed to load configuration settings, retrying in 30 seconds")
+            time.sleep(30)
+            continue
 
         PROCESS_RUN_INTERVAL = config_dict.get("ProcessRunInterval", 60)
         log_info(
