@@ -6,7 +6,6 @@ from src.utils.locallogging import log_error
 _FLOW_COLUMNS = (
     "src_ip",
     "dst_ip",
-    "src_port",
     "dst_port",
     "protocol",
     "src_packets",
@@ -14,27 +13,43 @@ _FLOW_COLUMNS = (
     "dst_packets",
     "dst_bytes",
     "flow_start",
-    "flow_end",
     "last_seen",
     "tags",
 )
 
-# Self-join to pair each outbound flow (src_port > dst_port) with its reverse.
-# f = client→server direction, r = server→client direction.
-_BASE_SELECT = """
-    SELECT
-        f.src_ip, f.dst_ip, f.src_port, f.dst_port, f.protocol,
-        f.packets  AS src_packets, f.bytes  AS src_bytes,
-        COALESCE(r.packets, 0) AS dst_packets, COALESCE(r.bytes, 0) AS dst_bytes,
-        f.flow_start, f.flow_end, f.last_seen, f.tags
-    FROM newflows f
-    LEFT JOIN newflows r ON (
-        r.src_ip = f.dst_ip AND r.dst_ip = f.src_ip
-        AND r.src_port = f.dst_port AND r.dst_port = f.src_port
-        AND r.protocol = f.protocol
-    )
-    WHERE f.src_port > f.dst_port
-"""
+# CTE query: aggregate all src_ports into one row per (src_ip, dst_ip, dst_port, protocol).
+# forward = client→server (src_port > dst_port), reverse = server→client (src_port < dst_port).
+def _flow_query(extra_where="", order="f.last_seen DESC"):
+    return f"""
+        WITH forward AS (
+            SELECT src_ip, dst_ip, dst_port, protocol,
+                   SUM(packets) AS src_packets, SUM(bytes) AS src_bytes,
+                   MIN(flow_start) AS flow_start, MAX(last_seen) AS last_seen,
+                   tags
+            FROM newflows
+            WHERE src_port > dst_port {extra_where}
+            GROUP BY src_ip, dst_ip, dst_port, protocol
+        ),
+        reverse AS (
+            SELECT dst_ip AS client_ip, src_ip AS server_ip, src_port AS service_port, protocol,
+                   SUM(packets) AS dst_packets, SUM(bytes) AS dst_bytes
+            FROM newflows
+            WHERE src_port < dst_port {extra_where}
+            GROUP BY dst_ip, src_ip, src_port, protocol
+        )
+        SELECT
+            f.src_ip, f.dst_ip, f.dst_port, f.protocol,
+            f.src_packets, f.src_bytes,
+            COALESCE(r.dst_packets, 0) AS dst_packets,
+            COALESCE(r.dst_bytes,   0) AS dst_bytes,
+            f.flow_start, f.last_seen, f.tags
+        FROM forward f
+        LEFT JOIN reverse r ON (
+            r.client_ip = f.src_ip AND r.server_ip = f.dst_ip
+            AND r.service_port = f.dst_port AND r.protocol = f.protocol
+        )
+        ORDER BY {order}
+    """
 
 
 def _rows_to_dicts(rows):
@@ -93,10 +108,7 @@ def get_live_snapshot(limit=200):
     try:
         conn = connect_to_db("newflows")
         cursor = conn.cursor()
-        cursor.execute(
-            _BASE_SELECT + "ORDER BY f.last_seen DESC LIMIT ?",
-            (limit,),
-        )
+        cursor.execute(_flow_query() + " LIMIT ?", (limit,))
         return _enrich_flows(_rows_to_dicts(cursor.fetchall()))
     except Exception as e:
         log_error(logger, f"[ERROR] get_live_snapshot failed: {e}")
@@ -113,10 +125,9 @@ def get_flows_since(seconds=60, limit=500):
     try:
         conn = connect_to_db("newflows")
         cursor = conn.cursor()
+        time_filter = f"AND last_seen > datetime('now', 'localtime', '-{int(seconds)} seconds')"
         cursor.execute(
-            _BASE_SELECT
-            + f"AND f.last_seen > datetime('now', 'localtime', '-{int(seconds)} seconds') "
-            + "ORDER BY f.last_seen ASC LIMIT ?",
+            _flow_query(extra_where=time_filter, order="f.last_seen ASC") + " LIMIT ?",
             (limit,),
         )
         return _enrich_flows(_rows_to_dicts(cursor.fetchall()))
