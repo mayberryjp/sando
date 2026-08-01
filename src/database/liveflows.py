@@ -9,18 +9,32 @@ _FLOW_COLUMNS = (
     "src_port",
     "dst_port",
     "protocol",
-    "packets",
-    "bytes",
+    "src_packets",
+    "src_bytes",
+    "dst_packets",
+    "dst_bytes",
     "flow_start",
     "flow_end",
     "last_seen",
     "tags",
 )
 
-_BASE_SELECT = (
-    "SELECT src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes, "
-    "flow_start, flow_end, last_seen, tags FROM newflows "
-)
+# Self-join to pair each outbound flow (src_port > dst_port) with its reverse.
+# f = client→server direction, r = server→client direction.
+_BASE_SELECT = """
+    SELECT
+        f.src_ip, f.dst_ip, f.src_port, f.dst_port, f.protocol,
+        f.packets  AS src_packets, f.bytes  AS src_bytes,
+        COALESCE(r.packets, 0) AS dst_packets, COALESCE(r.bytes, 0) AS dst_bytes,
+        f.flow_start, f.flow_end, f.last_seen, f.tags
+    FROM newflows f
+    LEFT JOIN newflows r ON (
+        r.src_ip = f.dst_ip AND r.dst_ip = f.src_ip
+        AND r.src_port = f.dst_port AND r.dst_port = f.src_port
+        AND r.protocol = f.protocol
+    )
+    WHERE f.src_port > f.dst_port
+"""
 
 
 def _rows_to_dicts(rows):
@@ -80,7 +94,7 @@ def get_live_snapshot(limit=200):
         conn = connect_to_db("newflows")
         cursor = conn.cursor()
         cursor.execute(
-            _BASE_SELECT + "ORDER BY last_seen DESC LIMIT ?",
+            _BASE_SELECT + "ORDER BY f.last_seen DESC LIMIT ?",
             (limit,),
         )
         return _enrich_flows(_rows_to_dicts(cursor.fetchall()))
@@ -101,8 +115,8 @@ def get_flows_since(seconds=60, limit=500):
         cursor = conn.cursor()
         cursor.execute(
             _BASE_SELECT
-            + f"WHERE last_seen > datetime('now', 'localtime', '-{int(seconds)} seconds') "
-            + "ORDER BY last_seen ASC LIMIT ?",
+            + f"AND f.last_seen > datetime('now', 'localtime', '-{int(seconds)} seconds') "
+            + "ORDER BY f.last_seen ASC LIMIT ?",
             (limit,),
         )
         return _enrich_flows(_rows_to_dicts(cursor.fetchall()))
@@ -132,10 +146,11 @@ def get_live_stats(window_seconds=60):
         cursor = conn.cursor()
 
         since = f"datetime('now', 'localtime', '-{window_seconds} seconds')"
+        filt = f"WHERE last_seen > {since} AND src_port > dst_port"
 
         cursor.execute(
             f"SELECT src_ip, SUM(bytes), SUM(packets), COUNT(*) FROM allflows "
-            f"WHERE last_seen > {since} GROUP BY src_ip ORDER BY SUM(bytes) DESC LIMIT 20"
+            f"{filt} GROUP BY src_ip ORDER BY SUM(bytes) DESC LIMIT 20"
         )
         top_src_ips = [
             {"ip": r[0], "bytes": r[1], "packets": r[2], "flow_count": r[3]}
@@ -144,7 +159,7 @@ def get_live_stats(window_seconds=60):
 
         cursor.execute(
             f"SELECT dst_ip, SUM(bytes), SUM(packets), COUNT(*) FROM allflows "
-            f"WHERE last_seen > {since} GROUP BY dst_ip ORDER BY SUM(bytes) DESC LIMIT 20"
+            f"{filt} GROUP BY dst_ip ORDER BY SUM(bytes) DESC LIMIT 20"
         )
         top_dst_ips = [
             {"ip": r[0], "bytes": r[1], "packets": r[2], "flow_count": r[3]}
@@ -153,7 +168,7 @@ def get_live_stats(window_seconds=60):
 
         cursor.execute(
             f"SELECT dst_port, protocol, SUM(bytes), COUNT(*) FROM allflows "
-            f"WHERE last_seen > {since} GROUP BY dst_port, protocol ORDER BY SUM(bytes) DESC LIMIT 20"
+            f"{filt} GROUP BY dst_port, protocol ORDER BY SUM(bytes) DESC LIMIT 20"
         )
         top_dst_ports = [
             {"port": r[0], "protocol": r[1], "bytes": r[2], "flow_count": r[3]}
@@ -162,7 +177,7 @@ def get_live_stats(window_seconds=60):
 
         cursor.execute(
             f"SELECT protocol, SUM(bytes), SUM(packets), COUNT(*) FROM allflows "
-            f"WHERE last_seen > {since} GROUP BY protocol ORDER BY SUM(bytes) DESC"
+            f"{filt} GROUP BY protocol ORDER BY SUM(bytes) DESC"
         )
         top_protocols = [
             {"protocol": r[0], "bytes": r[1], "packets": r[2], "flow_count": r[3]}
@@ -170,7 +185,7 @@ def get_live_stats(window_seconds=60):
         ]
 
         cursor.execute(
-            f"SELECT COUNT(*), SUM(bytes), SUM(packets) FROM allflows WHERE last_seen > {since}"
+            f"SELECT COUNT(*), SUM(bytes), SUM(packets) FROM allflows {filt}"
         )
         row = cursor.fetchone()
         totals = {

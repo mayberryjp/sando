@@ -32,9 +32,7 @@ def setup_liveflows_routes(app):
             )
             data = get_live_snapshot(limit=limit)
             response.content_type = "application/json"
-            return json.dumps(
-                {"success": True, "data": data, "count": len(data)}
-            )
+            return json.dumps({"success": True, "data": data, "count": len(data)})
         except Exception as e:
             log_error(logger, f"[ERROR] api_liveflows_snapshot: {e}")
             response.status = 500
@@ -59,9 +57,7 @@ def setup_liveflows_routes(app):
             )
             data = get_flows_since(seconds=seconds, limit=limit)
             response.content_type = "application/json"
-            return json.dumps(
-                {"success": True, "data": data, "count": len(data)}
-            )
+            return json.dumps({"success": True, "data": data, "count": len(data)})
         except Exception as e:
             log_error(logger, f"[ERROR] api_liveflows_since: {e}")
             response.status = 500
