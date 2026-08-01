@@ -77,7 +77,9 @@ def handle_alert(
                 )
                 send_telegram_message(telegram_message, original_flow)
                 local_description = (
-                    localhost_info[12] if localhost_info and len(localhost_info) > 12 else ""
+                    localhost_info[12]
+                    if localhost_info and len(localhost_info) > 12
+                    else ""
                 )
                 send_discord_message(
                     telegram_message,
@@ -92,7 +94,9 @@ def handle_alert(
                 )
                 send_telegram_message(telegram_message, original_flow)
                 local_description = (
-                    localhost_info[12] if localhost_info and len(localhost_info) > 12 else ""
+                    localhost_info[12]
+                    if localhost_info and len(localhost_info) > 12
+                    else ""
                 )
                 send_discord_message(
                     telegram_message,
