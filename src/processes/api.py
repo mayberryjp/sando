@@ -21,8 +21,8 @@ from src.routers.devices import setup_devices_routes
 from src.routers.explore import setup_explore_routes
 from src.routers.ignorelist import setup_ignorelist_routes
 from src.routers.integrations import setup_integrations_routes
-from src.routers.localhosts import setup_localhosts_routes
 from src.routers.liveflows import setup_liveflows_routes
+from src.routers.localhosts import setup_localhosts_routes
 from src.routers.localhoststags import setup_localhoststags_routes
 from src.routers.services import setup_services_routes
 from src.routers.threatscore import setup_threatscore_routes

@@ -27,12 +27,17 @@ def setup_liveflows_routes(app):
         """
         logger = logging.getLogger(__name__)
         try:
-            limit = min(int(request.query.get("limit", _DEFAULT_SNAPSHOT_LIMIT)), _MAX_SNAPSHOT_LIMIT)
+            limit = min(
+                int(request.query.get("limit", _DEFAULT_SNAPSHOT_LIMIT)),
+                _MAX_SNAPSHOT_LIMIT,
+            )
             data = get_live_snapshot(limit=limit)
             # Provide the oldest last_seen so the client has a cursor to start polling from
             since = data[-1]["last_seen"] if data else _default_since(seconds=30)
             response.content_type = "application/json"
-            return json.dumps({"success": True, "data": data, "count": len(data), "since": since})
+            return json.dumps(
+                {"success": True, "data": data, "count": len(data), "since": since}
+            )
         except Exception as e:
             log_error(logger, f"[ERROR] api_liveflows_snapshot: {e}")
             response.status = 500
@@ -54,10 +59,15 @@ def setup_liveflows_routes(app):
             since = request.query.get("since", "")
             if not since:
                 response.status = 400
-                return json.dumps({"success": False, "error": "Missing required parameter: since"})
+                return json.dumps(
+                    {"success": False, "error": "Missing required parameter: since"}
+                )
 
             # Clamp limit to avoid overloading the client
-            limit = min(int(request.query.get("limit", _DEFAULT_DELTA_LIMIT)), _MAX_SNAPSHOT_LIMIT)
+            limit = min(
+                int(request.query.get("limit", _DEFAULT_DELTA_LIMIT)),
+                _MAX_SNAPSHOT_LIMIT,
+            )
 
             data = get_flows_since(since, limit=limit)
 
@@ -65,13 +75,15 @@ def setup_liveflows_routes(app):
             next_since = data[-1]["last_seen"] if data else since
 
             response.content_type = "application/json"
-            return json.dumps({
-                "success": True,
-                "data": data,
-                "count": len(data),
-                "since": since,
-                "next_since": next_since,
-            })
+            return json.dumps(
+                {
+                    "success": True,
+                    "data": data,
+                    "count": len(data),
+                    "since": since,
+                    "next_since": next_since,
+                }
+            )
         except Exception as e:
             log_error(logger, f"[ERROR] api_liveflows_since: {e}")
             response.status = 500
