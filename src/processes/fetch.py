@@ -5,6 +5,7 @@ import time
 
 from src.const import CONST_REINITIALIZE_DB, IS_CONTAINER
 from src.database.configuration import get_config_settings
+from src.database.core import delete_aged_dbperformance
 from src.database.explore import bulk_populate_master_flow_view, create_dns_key_value
 from src.database.trafficstats import delete_old_traffic_stats
 from src.integrations.adguarddns import get_adguard_dns_logs
@@ -115,6 +116,15 @@ def main():
             log_info(logger, "[INFO] Finished deleting old traffic stats.")
         except Exception as e:
             log_error(logger, f"[ERROR] Error during deleting old traffic stats: {e}")
+
+        try:
+            log_info(logger, "[INFO] Purging aged performance records...")
+            delete_aged_dbperformance(days=45)
+            log_info(logger, "[INFO] Finished purging aged performance records.")
+        except Exception as e:
+            log_error(
+                logger, f"[ERROR] Error during purging aged performance records: {e}"
+            )
 
         try:
             if config_dict.get("SendDeviceClassificationsToHomelabApi", 0) > 0:

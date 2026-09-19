@@ -1,16 +1,14 @@
-FROM python:3.14.5-alpine
+FROM python:3.14.5-slim
 
 RUN rm -rf /sando
 RUN rm -rf pyproject.toml
-# Install system and build dependencies
-RUN apk update && apk add --no-cache \
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     supervisor \
     nmap \
-    build-base \
-    libffi-dev \
-    openssl-dev \
-    ca-certificates
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 
 # Clone the repository (disable cache by adding a build arg that always changes)

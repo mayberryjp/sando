@@ -266,6 +266,8 @@ def delete_aged_dbperformance(days=30):
         )
         deleted = cursor.rowcount
         conn.commit()
+        # VACUUM reclaims freed pages back to the OS; it must run outside a transaction.
+        cursor.execute("VACUUM")
         log_info(
             logger,
             f"[INFO] Deleted {deleted} aged dbperformance entries older than {days} days.",

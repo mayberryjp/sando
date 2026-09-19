@@ -149,7 +149,7 @@ if __name__ == "__main__":
     )
 
     check_update_database_schema(config_dict)
-    delete_aged_dbperformance(days=180)
+    delete_aged_dbperformance(days=45)
 
     # Add NTP whitelists if bypass detection is enabled and servers are configured
     if (

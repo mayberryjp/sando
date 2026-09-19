@@ -333,7 +333,10 @@ CONST_INSTALL_CONFIGS = [
     ("BypassLocalDnsDetection", 0),
     ("IncorrectAuthoritativeDnsDetection", 0),
     ("BypassLocalNtpDetection", 0),
-    ("IncorrectNtpStratumDetection", "0"),  # was misspelled IncorrectNtpStratrumDetection
+    (
+        "IncorrectNtpStratumDetection",
+        "0",
+    ),  # was misspelled IncorrectNtpStratrumDetection
     ("ApprovedLocalNtpServersList", ""),
     ("ApprovedLocalDnsServersList", ""),
     ("ApprovedAuthoritativeDnsServersList", ""),
