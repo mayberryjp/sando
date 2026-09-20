@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 
 import nmap
 
@@ -17,6 +18,10 @@ def os_fingerprint(ip_addresses, config_dict):
         dict: A dictionary where the keys are IP addresses and the values are the operating system fingerprint information.
     """
     logger = logging.getLogger(__name__)
+
+    # Nmap binary may be absent from the image; skip fingerprinting if so
+    if shutil.which("nmap") is None:
+        return []
 
     log_info(logger, "[INFO] Nmap OS Fingerprinting starting")
 
