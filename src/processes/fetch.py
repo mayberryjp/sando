@@ -12,6 +12,7 @@ from src.integrations.adguarddns import get_adguard_dns_logs
 from src.integrations.dns import resolve_empty_dns_responses
 from src.integrations.geolocation import create_geolocation_db
 from src.integrations.ipasn import create_asn_database
+from src.integrations.mirendns import get_miren_dns_logs
 from src.integrations.piholedns import get_pihole_ftl_logs
 from src.integrations.reputation import import_reputation_list
 from src.integrations.services import create_services_db
@@ -64,6 +65,12 @@ def dns_logs_thread():
                 fetch_size = config_dict.get("PiHoleDnsFetchRecordSize", 10000)
                 get_adguard_dns_logs(fetch_size, config_dict)
                 log_info(logger, "[INFO] AdGuard DNS query history fetch completed")
+
+            if config_dict.get("StoreMirenDnsQueryHistory", 0) > 0:
+                log_info(logger, "[INFO] Fetching Miren DNS query history (hourly)...")
+                miren_seconds = config_dict.get("MirenFetchInterval", 3600)
+                get_miren_dns_logs(miren_seconds, config_dict)
+                log_info(logger, "[INFO] Miren DNS query history fetch completed")
 
             if config_dict.get(
                 "PerformDnsResponseLookupsForInvestigations", 0
