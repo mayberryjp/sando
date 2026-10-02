@@ -11,10 +11,11 @@ def get_miren_dns_logs(seconds, config_dict):
     """
     Fetch and parse DNS query logs from a Miren instance using the /queries API.
 
-    Miren exposes a single global endpoint that returns individual DNS queries
-    (newest first) for the last ``seconds`` window. Each query includes the client,
-    domain, qtype, rcode, and response. Only A-record queries are aggregated by
-    (client_ip, domain) and stored, matching the Pi-hole and AdGuard integrations.
+    Miren exposes a single global endpoint that returns DNS queries pre-aggregated
+    by (client, domain, qtype) for the last ``seconds`` window. Each entry includes
+    the client, domain, qtype, a ``count`` of occurrences, and the most recent
+    ``last_response``. Only A-record queries are stored, matching the Pi-hole and
+    AdGuard integrations, with the response saved alongside the query.
 
     Args:
         seconds (int): The "last X seconds" window to request from Miren.
@@ -58,11 +59,13 @@ def get_miren_dns_logs(seconds, config_dict):
             # Only store A-record lookups, matching the Pi-hole/AdGuard integrations
             if entry.get("qtype") != "A":
                 continue
-            if client_ip not in client_data:
-                client_data[client_ip] = {}
-            if domain not in client_data[client_ip]:
-                client_data[client_ip][domain] = 0
-            client_data[client_ip][domain] += 1
+            # Miren pre-aggregates, so "count" is the number of occurrences.
+            domains = client_data.setdefault(client_ip, {})
+            record = domains.setdefault(domain, {"times_seen": 0, "response": None})
+            record["times_seen"] += entry.get("count", 1)
+            last_response = entry.get("last_response")
+            if last_response:
+                record["response"] = last_response
         except Exception as e:
             log_error(logger, f"[ERROR] Failed to process entry: {entry}, Error: {e}")
     log_info(
@@ -70,9 +73,15 @@ def get_miren_dns_logs(seconds, config_dict):
         f"[INFO] Successfully processed DNS query logs for {len(client_data)} clients and {query_count} queries",
     )
     for client_ip, domains in client_data.items():
-        for domain, times_seen in domains.items():
+        for domain, record in domains.items():
             try:
-                insert_dns_query(client_ip, domain, times_seen, "miren")
+                insert_dns_query(
+                    client_ip,
+                    domain,
+                    record["times_seen"],
+                    "miren",
+                    response=record["response"],
+                )
             except sqlite3.Error as e:
                 log_error(
                     logger,

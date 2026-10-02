@@ -5,7 +5,7 @@ from src.database.core import connect_to_db, disconnect_from_db, run_timed_query
 from src.utils.locallogging import log_error, log_info
 
 
-def insert_dns_query(client_ip, domain, times_seen, datasource):
+def insert_dns_query(client_ip, domain, times_seen, datasource, response=None):
     """
     Insert or update a DNS query record in the dnsqueries database.
 
@@ -13,6 +13,9 @@ def insert_dns_query(client_ip, domain, times_seen, datasource):
         client_ip (str): The IP address of the client that made the DNS query
         domain (str): The domain name that was queried
         times_seen (int, optional): The number of times this query was seen (default: 1)
+        datasource (str): The source integration that produced the record
+        response (str, optional): The DNS response to store. Saved on insert and
+            refreshed on conflict; an existing response is preserved when None.
 
     Returns:
         bool: True if the insertion/update was successful, False otherwise
@@ -31,14 +34,15 @@ def insert_dns_query(client_ip, domain, times_seen, datasource):
         # Insert or update the DNS query record
         cursor.execute(
             """
-            INSERT INTO dnsqueries (client_ip, domain, type, times_seen, first_seen, last_seen, datasource, last_refresh)
-            VALUES (?, ?, 'A', ?, datetime('now', 'localtime'), datetime('now', 'localtime'), ?, datetime('now', 'localtime'))
+            INSERT INTO dnsqueries (client_ip, domain, type, times_seen, first_seen, last_seen, datasource, response, last_refresh)
+            VALUES (?, ?, 'A', ?, datetime('now', 'localtime'), datetime('now', 'localtime'), ?, ?, datetime('now', 'localtime'))
             ON CONFLICT(client_ip, domain, type, datasource)
             DO UPDATE SET
                 last_seen = datetime('now', 'localtime'),
-                times_seen = times_seen + excluded.times_seen
+                times_seen = times_seen + excluded.times_seen,
+                response = COALESCE(excluded.response, response)
         """,
-            (client_ip, domain, times_seen, datasource),
+            (client_ip, domain, times_seen, datasource, response),
         )
 
         # Commit the changes
