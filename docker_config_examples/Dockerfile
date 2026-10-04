@@ -1,34 +1,30 @@
-# Builder stage: only needs git to clone the repo, kept out of the final image
-FROM python:3.14.5-slim AS builder
+# Builder stage: clone the repo and build deps. The toolchain (needed to compile
+# psutil's C extension against musl) and git stay out of the final image.
+FROM python:3.14.5-alpine AS builder
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache git gcc musl-dev linux-headers
 
-# Clone the repository (disable cache by adding a build arg that always changes)
+# Shallow clone keeps the builder lean (disable cache via an always-changing arg)
 ARG CACHEBUST=1
-RUN git clone https://github.com/mayberryjp/sando.git /sando
+RUN git clone --depth 1 https://github.com/mayberryjp/sando.git /sando
 
+# Install supervisor + the project into an isolated prefix we can copy wholesale,
+# then drop the git history (never needed at runtime)
+RUN pip install --no-cache-dir --prefix=/install supervisor /sando \
+    && rm -rf /sando/.git
 
-# Final stage
-FROM python:3.14.5-slim
+# Final stage: runtime only — no toolchain, no git, no history
+FROM python:3.14.5-alpine
 
-# Bring in the cloned source from the builder stage
+# Bring in the compiled packages/binaries and the .git-free source
+COPY --from=builder /install /usr/local
 COPY --from=builder /sando /sando
 
 # Set the working directory
 WORKDIR /sando
 
-# Install supervisor (via pip, reusing the existing interpreter) and the project
-RUN pip install --no-cache-dir supervisor .
-
 # Expose the required ports
-EXPOSE 2055
-EXPOSE 8044
-EXPOSE 53
-EXPOSE 67
-EXPOSE 8030
+EXPOSE 2055 8044 53 67 8030
 
 # Ensure Python output is not buffered
 ENV PYTHONUNBUFFERED=1
