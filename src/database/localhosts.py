@@ -35,7 +35,7 @@ def get_localhost_by_ip(ip_address):
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
                    lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon,
                    tags, threat_score, alerts_enabled, management_link, last_seen, last_dhcp_discover, whitelisted,
-                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address, alert_if_offline
+                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address, alert_if_offline, domain_name
             FROM localhosts
             WHERE ip_address = ? OR mac_address = ?
         """
@@ -91,7 +91,7 @@ def get_localhosts_all():
             SELECT ip_address, first_seen, original_flow,
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
                    lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, last_seen, last_dhcp_discover, whitelisted,
-                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address, alert_if_offline
+                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address, alert_if_offline, domain_name
             FROM localhosts
         """
         cursor.execute(query)
@@ -1023,6 +1023,69 @@ def update_localhost_ip6_address(identifier, ip6_address):
         log_error(
             logger,
             f"[ERROR] Unexpected error while updating ip6_address for {identifier}: {e}",
+        )
+        return False
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
+
+
+def update_localhost_domain_name(identifier, domain_name):
+    """
+    Update the domain_name for a localhost in the database by IP address or MAC address.
+
+    Args:
+        identifier (str): The IPv4 address or MAC address of the localhost to update.
+        domain_name (str): The domain name to store (e.g. "server.example.com"),
+            or None to clear it.
+
+    Returns:
+        bool: True if the update was successful, False otherwise.
+    """
+    logger = logging.getLogger(__name__)
+    try:
+        conn = connect_to_db("localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Unable to connect to localhosts database.")
+            return False
+
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT 1 FROM localhosts WHERE ip_address = ? OR mac_address = ?",
+            (identifier, identifier),
+        )
+        if not cursor.fetchone():
+            log_warn(
+                logger,
+                f"[WARN] No localhost found with IP or MAC {identifier} to update domain_name",
+            )
+            return False
+
+        cursor.execute(
+            """
+            UPDATE localhosts
+            SET domain_name = ?
+            WHERE ip_address = ? OR mac_address = ?
+        """,
+            (domain_name, identifier, identifier),
+        )
+        conn.commit()
+        log_info(
+            logger,
+            f"[INFO] Successfully updated domain_name for {identifier} to {domain_name}",
+        )
+        return True
+
+    except sqlite3.Error as e:
+        log_error(
+            logger,
+            f"[ERROR] Database error while updating domain_name for {identifier}: {e}",
+        )
+        return False
+    except Exception as e:
+        log_error(
+            logger,
+            f"[ERROR] Unexpected error while updating domain_name for {identifier}: {e}",
         )
         return False
     finally:

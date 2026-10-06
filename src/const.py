@@ -49,7 +49,7 @@ CONST_TEST_SOURCE_DB = ["/database/test_source_1.db"]
 CONST_SITE = "TESTPPE"
 CONST_LINK_LOCAL_RANGE = ["169.254.0.0/16"]
 CONST_REINITIALIZE_DB = 0
-CONST_DATABASE_SCHEMA_VERSION = 21
+CONST_DATABASE_SCHEMA_VERSION = 22
 CONST_CREATE_DBPERFORMANCE_SQL = """
             CREATE TABLE IF NOT EXISTS dbperformance (
                 id INTEGER PRIMARY KEY,
@@ -244,7 +244,8 @@ CONST_CREATE_LOCALHOSTS_SQL = """
         total_bytes_src INTEGER DEFAULT 0,
         total_bytes_dst INTEGER DEFAULT 0,
         ip6_address TEXT,
-        alert_if_offline INTEGER DEFAULT 1
+        alert_if_offline INTEGER DEFAULT 1,
+        domain_name TEXT
     );
     CREATE INDEX IF NOT EXISTS idx_localhosts_mac_address ON localhosts (mac_address);
 """

@@ -230,6 +230,13 @@ def update_database_schema(current_version, target_version):
             )
             migrate_configurations_schema20_to_schema21()
 
+        if current_version_int < 22:
+            log_info(
+                logger,
+                "[INFO] Version is less than 22, adding domain_name column to localhosts table",
+            )
+            migrate_configurations_schema21_to_schema22()
+
         # Removed migration for firewall_interface_name column in localhosts table
 
         return True
@@ -625,6 +632,49 @@ def migrate_configurations_schema20_to_schema21():
 
     except Exception as e:
         log_error(logger, f"[ERROR] Failed to add 'alert_if_offline' column: {e}")
+        return False
+    finally:
+        if "conn" in locals() and conn:
+            disconnect_from_db(conn)
+
+
+def migrate_configurations_schema21_to_schema22():
+    """
+    Adds a 'domain_name' column (text) to the localhosts table if it does not exist.
+    """
+    logger = logging.getLogger(__name__)
+    log_info(
+        logger,
+        "[INFO] Adding 'domain_name' column to localhosts table if missing.",
+    )
+
+    try:
+        conn = connect_to_db("localhosts")
+        if not conn:
+            log_error(logger, "[ERROR] Failed to connect to LOCALHOSTS_DB")
+            return False
+
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA table_info(localhosts)")
+        columns = [row[1] for row in cursor.fetchall()]
+        if "domain_name" not in columns:
+            cursor.execute("ALTER TABLE localhosts ADD COLUMN domain_name TEXT")
+            conn.commit()
+            log_info(
+                logger,
+                "[INFO] 'domain_name' column added to localhosts table",
+            )
+        else:
+            log_info(
+                logger,
+                "[INFO] 'domain_name' column already exists in localhosts table",
+            )
+
+        disconnect_from_db(conn)
+        return True
+
+    except Exception as e:
+        log_error(logger, f"[ERROR] Failed to add 'domain_name' column: {e}")
         return False
     finally:
         if "conn" in locals() and conn:

@@ -1,0 +1,10 @@
+[console_scripts]
+api = src.processes.api:main
+collector = src.processes.collector:main
+dhcpserver = src.processes.dhcpserver:main
+discovery = src.processes.discovery:main
+fetch = src.processes.fetch:main
+mcp = src.processes.mcp:main
+processor = src.processes.processor:main
+sinkholedns = src.processes.sinkholedns:main
+watchdog = src.processes.watchdog:main

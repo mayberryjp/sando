@@ -1,0 +1,19 @@
+Metadata-Version: 2.4
+Name: sando
+Version: 0.0.0
+Summary: Network monitoring and analysis tool.
+Author-email: Sando <homelabids@gmail.com>
+License: GPL-3.0-or-later
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: schedule
+Requires-Dist: requests
+Requires-Dist: bottle
+Requires-Dist: dnspython
+Requires-Dist: python-nmap
+Requires-Dist: psutil
+Requires-Dist: dnslib
+Requires-Dist: waitress
+Requires-Dist: pytz
+Dynamic: license-file

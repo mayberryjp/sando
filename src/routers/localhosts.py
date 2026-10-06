@@ -9,6 +9,7 @@ from src.database.localhosts import (
     get_localhost_by_ip,
     get_localhosts_all,
     update_localhost_alert_if_offline,
+    update_localhost_domain_name,
     update_localhost_ip6_address,
 )
 from src.utils.locallogging import log_error, log_info, log_warn
@@ -135,6 +136,7 @@ def setup_localhosts_routes(app):
             )  # Allow updating IP address if provided
             ip6_address = data.get("ip6_address")
             alert_if_offline = data.get("alert_if_offline")
+            domain_name = data.get("domain_name")
 
             try:
                 # Update the localhost classification in the database
@@ -148,6 +150,9 @@ def setup_localhosts_routes(app):
 
                 if alert_if_offline is not None:
                     update_localhost_alert_if_offline(ip_address, alert_if_offline)
+
+                if domain_name is not None:
+                    update_localhost_domain_name(ip_address, domain_name)
 
                 response.content_type = "application/json"
                 log_info(
@@ -242,6 +247,7 @@ def setup_localhosts_routes(app):
                     "total_bytes_dst": host_record[24],
                     "ip6_address": host_record[25],
                     "alert_if_offline": host_record[26],
+                    "domain_name": host_record[27],
                 }
 
                 response.content_type = "application/json"
@@ -432,3 +438,39 @@ def setup_localhosts_routes(app):
             log_error(logger, f"[ERROR] Failed to dump localhosts table to CSV: {e}")
             response.status = 500
             return "Error generating CSV: " + str(e)
+
+    @app.route("/api/localhosts/domains", method=["GET"])
+    def dump_localhosts_domains():
+        """
+        API endpoint to export every site client that has a domain name assigned.
+
+        Returns plain text, one host per line, in the format:
+            ip_address,domain_name,86400
+
+        The trailing value is a fixed TTL (86400 seconds / 24 hours). Hosts without
+        a domain name set are omitted.
+        """
+        logger = logging.getLogger(__name__)
+        try:
+            localhosts_data = get_localhosts_all()
+
+            ttl = 86400
+            lines = []
+            for row in localhosts_data:
+                ip_address = row.get("ip_address")
+                domain_name = row.get("domain_name")
+                if not ip_address or not domain_name:
+                    continue
+                lines.append(f"{ip_address},{domain_name},{ttl}")
+
+            response.content_type = "text/plain"
+            log_info(
+                logger,
+                f"[INFO] Exported {len(lines)} localhost domain name mappings",
+            )
+            return "\n".join(lines)
+
+        except Exception as e:
+            log_error(logger, f"[ERROR] Failed to export localhost domain names: {e}")
+            response.status = 500
+            return "Error generating domain name list: " + str(e)

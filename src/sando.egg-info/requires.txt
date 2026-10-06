@@ -1,0 +1,9 @@
+schedule
+requests
+bottle
+dnspython
+python-nmap
+psutil
+dnslib
+waitress
+pytz
