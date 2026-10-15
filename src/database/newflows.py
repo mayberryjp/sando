@@ -1,12 +1,17 @@
 import logging
+import sqlite3
 
 from src.database.core import connect_to_db, disconnect_from_db
 from src.utils.locallogging import log_error, log_info
 
 
-def get_new_flows():
+def get_new_flows(clear=False):
     """
     Retrieve all records from the flows table in the newflows database.
+
+    Args:
+        clear (bool): If True, delete the returned rows in the same transaction
+            so flows written concurrently by the collector are never lost.
 
     Returns:
         list: A list of lists containing all flow records,
@@ -25,8 +30,20 @@ def get_new_flows():
 
         # Execute the query
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM newflows")
-        rows = cursor.fetchall()
+        if clear:
+            # Take the write lock up front; Python's implicit transactions would not.
+            conn.isolation_level = None
+            cursor.execute("BEGIN IMMEDIATE")
+        try:
+            cursor.execute("SELECT * FROM newflows")
+            rows = cursor.fetchall()
+            if clear:
+                cursor.execute("DELETE FROM newflows")
+                cursor.execute("COMMIT")
+        except Exception:
+            if clear:
+                cursor.execute("ROLLBACK")
+            raise
 
         # Convert tuple rows to lists
         rows = [list(row) for row in rows]
@@ -48,12 +65,19 @@ def get_new_flows():
             disconnect_from_db(conn)
 
 
-def update_new_flow(record):
-    conn = connect_to_db("newflows")
-    c = conn.cursor()
+def update_new_flows(records):
+    """Upsert all records in a single transaction."""
+    if not records:
+        return
 
-    c.execute(
-        """
+    conn = connect_to_db("newflows")
+    if not conn:
+        raise sqlite3.OperationalError("Failed to connect to newflows database")
+
+    try:
+        with conn:
+            conn.executemany(
+                """
         INSERT INTO newflows (
             src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes, flow_start, flow_end, last_seen, times_seen, tags
         ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'), datetime('now', 'localtime'), 1,?)
@@ -65,17 +89,19 @@ def update_new_flow(record):
             last_seen = excluded.last_seen,
             times_seen = times_seen + 1
     """,
-        (
-            record["src_ip"],
-            record["dst_ip"],
-            record["src_port"],
-            record["dst_port"],
-            record["protocol"],
-            record["packets"],
-            record["bytes"],
-            record["tags"],
-        ),
-    )
-
-    conn.commit()
-    disconnect_from_db(conn)
+                [
+                    (
+                        r["src_ip"],
+                        r["dst_ip"],
+                        r["src_port"],
+                        r["dst_port"],
+                        r["protocol"],
+                        r["packets"],
+                        r["bytes"],
+                        r["tags"],
+                    )
+                    for r in records
+                ],
+            )
+    finally:
+        disconnect_from_db(conn)

@@ -40,8 +40,10 @@ def connect_to_db(table):
         return None
 
     try:
-        conn = sqlite3.connect(DB_NAME)
-        conn.execute("PRAGMA busy_timeout = 10000")
+        # timeout= sets busy_timeout (seconds)
+        conn = sqlite3.connect(DB_NAME, timeout=30)
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA synchronous=NORMAL")
         # log_info(logger, f"[INFO] Connected to database: {DB_NAME} table {table}")
         return conn
     except sqlite3.Error as e:

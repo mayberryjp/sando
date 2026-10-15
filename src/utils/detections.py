@@ -3,7 +3,6 @@ import sqlite3
 
 from src.database.allflows import update_all_flows
 from src.database.configuration import get_config_settings
-from src.database.core import delete_all_records
 from src.database.newflows import get_new_flows
 from src.database.trafficstats import update_traffic_stats
 from src.detect.detect_bandwidth_anomaly import detect_bandwidth_anomaly
@@ -46,7 +45,10 @@ def process_data():
         log_error(logger, "[ERROR] Failed to load configuration settings")
         return
 
-    newflows = get_new_flows()
+    # Read and delete in one transaction so concurrent collector writes aren't lost.
+    newflows = get_new_flows(
+        clear=config_dict["ScheduleProcessor"] == 1 and config_dict["CleanNewFlows"] == 1
+    )
     """Read data from the database and process it."""
 
     if config_dict["ScheduleProcessor"] == 1:
@@ -57,8 +59,6 @@ def process_data():
                 log_info(
                     logger, f"[INFO] Fetched {len(newflows)} rows from the database."
                 )
-                if config_dict["CleanNewFlows"] == 1:
-                    delete_all_records("newflows")
 
                 log_info(logger, f"[INFO] Processing {len(newflows)} rows.")
 

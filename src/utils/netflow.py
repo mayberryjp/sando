@@ -22,7 +22,7 @@ from src.database.configuration import (
 )
 from src.database.ignorelist import get_ignorelist
 from src.database.localhosts import update_localhost_stats
-from src.database.newflows import update_new_flow
+from src.database.newflows import update_new_flows
 from src.utils.locallogging import log_error, log_info
 from src.utils.network import calculate_broadcast
 from src.utils.tags import apply_tags
@@ -159,7 +159,7 @@ def process_netflow_packets():
                 total_flows = 0
                 total_bytes = 0
                 total_packets = 0
-
+                new_flow_records = []
                 # Stats structure: {ip: {src_packets, dst_packets, src_bytes, dst_bytes}}
 
                 for data, addr in packets:
@@ -196,7 +196,7 @@ def process_netflow_packets():
                         if config_dict.get("WriteNewFlowsToCsv", 0) == 1:
                             write_new_flow_to_csv(record)
 
-                        update_new_flow(record)
+                        new_flow_records.append(record)
                         total_flows += 1
                         total_bytes += record.get("bytes", 0)
                         total_packets += record.get("packets", 0)
@@ -227,6 +227,8 @@ def process_netflow_packets():
                                 }
                             ip_stats[dst_ip]["dst_packets"] += pkt_count
                             ip_stats[dst_ip]["dst_bytes"] += bytes_
+
+                update_new_flows(new_flow_records)
 
                 log_info(
                     logger,
