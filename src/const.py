@@ -365,7 +365,6 @@ CONST_INSTALL_CONFIGS = [
     ("AdGuardPassword", ""),
     ("StoreAdGuardDnsQueryHistory", "0"),
     ("MirenUrl", ""),
-    ("MirenFetchInterval", "3600"),
     ("StoreMirenDnsQueryHistory", "0"),
     ("DiscoveryReverseDns", "0"),
     ("DiscoveryPiholeDhcp", "0"),

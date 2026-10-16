@@ -31,14 +31,11 @@ if IS_CONTAINER:
 
 def dns_logs_thread():
     """
-    Thread function to fetch Pihole DNS logs every hour.
+    Fetch DNS logs from enabled integrations at the shared DNS fetch interval.
     """
     logger = logging.getLogger(__name__)
     log_info(logger, "[INFO] Starting hourly DNS logs fetch thread")
-    config_dict = get_config_settings()
-
-    # Hourly interval in seconds
-    pihole_fetch_interval = config_dict.get("PiholeFetchInterval", 3600)
+    dns_fetch_interval = 3600
 
     while True:
         try:
@@ -47,10 +44,12 @@ def dns_logs_thread():
             if not config_dict:
                 log_error(
                     logger,
-                    "[ERROR] Failed to load configuration settings in Pihole fetch thread",
+                    "[ERROR] Failed to load configuration settings in DNS fetch thread",
                 )
                 time.sleep(60)  # Wait a minute before retrying
                 continue
+
+            dns_fetch_interval = config_dict.get("PiholeFetchInterval", 3600)
 
             if config_dict.get("StorePiHoleDnsQueryHistory", 0) > 0:
                 log_info(logger, "[INFO] Fetching Pihole DNS query history (hourly)...")
@@ -68,8 +67,7 @@ def dns_logs_thread():
 
             if config_dict.get("StoreMirenDnsQueryHistory", 0) > 0:
                 log_info(logger, "[INFO] Fetching Miren DNS query history (hourly)...")
-                miren_seconds = config_dict.get("MirenFetchInterval", 3600)
-                get_miren_dns_logs(miren_seconds, config_dict)
+                get_miren_dns_logs(dns_fetch_interval, config_dict)
                 log_info(logger, "[INFO] Miren DNS query history fetch completed")
 
             if config_dict.get(
@@ -87,9 +85,9 @@ def dns_logs_thread():
         # Wait for the next interval
         log_info(
             logger,
-            f"[INFO] DNS logs thread sleeping for {pihole_fetch_interval} seconds",
+            f"[INFO] DNS logs thread sleeping for {dns_fetch_interval} seconds",
         )
-        time.sleep(pihole_fetch_interval)
+        time.sleep(dns_fetch_interval)
 
 
 def main():

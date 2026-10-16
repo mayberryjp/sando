@@ -767,6 +767,7 @@ def init_configurations_from_sitepy():
             """,
                 (key, value),
             )
+        cursor.execute("DELETE FROM configuration WHERE key = ?", ("MirenFetchInterval",))
         conn.commit()
 
         # Fetch all configurations into a dictionary
@@ -814,6 +815,7 @@ def init_configurations_from_variable():
             """,
                 (key, value),
             )
+        cursor.execute("DELETE FROM configuration WHERE key = ?", ("MirenFetchInterval",))
         conn.commit()
 
         # Fetch all configurations into a dictionary

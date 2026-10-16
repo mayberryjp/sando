@@ -368,14 +368,20 @@ The backend also removes `dbperformance` records older than 180 days at startup.
 | `PiholeApiKey` | empty | Pi-hole API key. |
 | `PiHoleDnsFetchRecordSize` | `10000` | Number of Pi-hole DNS records to fetch. |
 | `PiHoleDnsFetchInterval` | `3600` | Pi-hole DNS fetch interval in seconds. |
+| `PiholeFetchInterval` | `3600` | Shared DNS fetch interval in seconds for Pi-hole, AdGuard Home, and Miren. Also sets Miren's query lookback window. |
 | `StoreAdGuardDnsQueryHistory` | `0` | Store AdGuard Home DNS query history. |
 | `AdGuardUrl` | empty | AdGuard Home URL. |
 | `AdGuardUsername` | empty | AdGuard Home username. |
 | `AdGuardPassword` | empty | AdGuard Home password. |
+| `StoreMirenDnsQueryHistory` | `0` | Store Miren DNS query history. |
+| `MirenUrl` | empty | Miren API URL. |
 | `DnsResponseLookupResolver` | empty | Resolver used to fill missing DNS response data. |
 | `PerformDnsResponseLookupsForInvestigations` | `0` | Enable DNS response lookups for investigations. |
 
 Some AdGuard keys may be created by the UI or integrations rather than seeded in the initial install configuration.
+
+The obsolete `MirenFetchInterval` setting is removed at startup. Miren uses
+`PiholeFetchInterval` (DNS Fetch Interval) instead, defaulting to 3600 seconds.
 
 ### Notifications
 
