@@ -852,6 +852,7 @@ def collect_database_counts():
         "total_localhosts_count": 0,
         "ignorelist_count": 0,
         "average_threat_score": 0,
+        "maximum_threat_score": 0,
         "total_packets": 0,
         "total_flows": 0,
         "total_bytes": 0,
@@ -918,6 +919,9 @@ def collect_database_counts():
 
             cursor.execute("SELECT COUNT(*) FROM localhosts WHERE acknowledged = 0")
             counts["unacknowledged_localhosts_count"] = cursor.fetchone()[0]
+
+            cursor.execute("SELECT COALESCE(MAX(threat_score), 0) FROM localhosts")
+            counts["maximum_threat_score"] = cursor.fetchone()[0]
 
             conn_localhosts.close()
         else:
