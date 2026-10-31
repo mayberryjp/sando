@@ -1,7 +1,9 @@
 import json
 import logging
 import sqlite3
+from pathlib import Path
 
+from src.const import TABLE_DB_MAP
 from src.database.alerts import delete_ignorelisted_alerts
 from src.database.allflows import apply_ignorelist_entry, get_tag_statistics
 from src.database.configuration import get_local_network_cidrs
@@ -172,6 +174,56 @@ def delete_ignorelist_entry(ignorelist_id):
         return False
     finally:
         if "conn" in locals() and conn:
+            disconnect_from_db(conn)
+
+
+def delete_stale_ignorelist_entries():
+    """Delete entries whose latest tagged flow was seen more than 30 days ago."""
+    logger = logging.getLogger(__name__)
+    conn = None
+    try:
+        conn = connect_to_db("ignorelist")
+        if not conn:
+            raise sqlite3.OperationalError("Unable to connect to ignorelist database")
+
+        flows_path = Path(TABLE_DB_MAP["allflows"]).resolve()
+        if not flows_path.is_file():
+            raise sqlite3.OperationalError("Flow history database does not exist")
+        conn.execute("ATTACH DATABASE ? AS flow_history", (str(flows_path),))
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            WITH RECURSIVE split_tags(last_seen, tag, rest) AS (
+                SELECT julianday(last_seen), '', tags || ';'
+                FROM flow_history.allflows
+                WHERE tags IS NOT NULL AND tags != ''
+                UNION ALL
+                SELECT last_seen, TRIM(substr(rest, 1, instr(rest, ';') - 1)),
+                       substr(rest, instr(rest, ';') + 1)
+                FROM split_tags
+                WHERE rest != ''
+            )
+            DELETE FROM ignorelist
+            WHERE 'IgnoreList_' || ignorelist_id IN (
+                SELECT tag FROM split_tags
+                WHERE tag != ''
+                GROUP BY tag
+                HAVING MAX(last_seen) < julianday(datetime('now', 'localtime', '-30 days'))
+                   AND COUNT(*) = COUNT(last_seen)
+            )
+            """
+        )
+        deleted_count = conn.execute("SELECT changes()").fetchone()[0]
+        conn.commit()
+        log_info(logger, f"[INFO] Deleted {deleted_count} stale ignorelist entries")
+        return deleted_count
+    except sqlite3.Error as error:
+        if conn:
+            conn.rollback()
+        log_error(logger, f"[ERROR] Failed to delete stale ignorelist entries: {error}")
+        raise
+    finally:
+        if conn:
             disconnect_from_db(conn)
 
 

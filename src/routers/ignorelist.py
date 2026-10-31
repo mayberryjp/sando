@@ -6,6 +6,7 @@ from bottle import Bottle, request, response
 
 from src.database.ignorelist import (
     delete_ignorelist_entry,
+    delete_stale_ignorelist_entries,
     get_ignorelist,
     get_ignorelist_for_ip,
     insert_ignorelist_entry,
@@ -107,6 +108,21 @@ def setup_ignorelist_routes(app):
                 log_error(logger, f"[ERROR] Error adding ignorelist entry: {e}")
                 response.status = 500
                 return {"error": str(e)}
+
+    @app.route("/api/ignorelist/stale", method=["DELETE"])
+    def delete_stale_ignorelist():
+        logger = logging.getLogger(__name__)
+        response.content_type = "application/json"
+        try:
+            deleted_count = delete_stale_ignorelist_entries()
+            return {
+                "message": "Stale ignorelist entries deleted successfully",
+                "deleted_count": deleted_count,
+            }
+        except Exception as error:
+            log_error(logger, f"[ERROR] Failed to delete stale ignorelist entries: {error}")
+            response.status = 500
+            return {"error": "Failed to delete stale ignorelist entries"}
 
     @app.route("/api/ignorelist/<id>", method=["DELETE"])
     def modify_ignorelist(id):
