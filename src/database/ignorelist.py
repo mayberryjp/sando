@@ -178,7 +178,11 @@ def delete_ignorelist_entry(ignorelist_id):
 
 
 def delete_stale_ignorelist_entries():
-    """Delete entries whose latest tagged flow was seen more than 30 days ago."""
+    """Delete entries with no tagged flows or with all tagged flows over 30 days old.
+
+    No tagged flows means times_seen is zero and last_seen is null. Entries with
+    tagged flows but unknown dates are preserved.
+    """
     logger = logging.getLogger(__name__)
     conn = None
     try:
@@ -210,6 +214,10 @@ def delete_stale_ignorelist_entries():
                 GROUP BY tag
                 HAVING MAX(last_seen) < julianday(datetime('now', 'localtime', '-30 days'))
                    AND COUNT(*) = COUNT(last_seen)
+            )
+            OR NOT EXISTS (
+                SELECT 1 FROM split_tags
+                WHERE tag = 'IgnoreList_' || ignorelist.ignorelist_id
             )
             """
         )
