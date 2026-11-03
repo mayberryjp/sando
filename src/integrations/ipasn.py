@@ -125,7 +125,9 @@ def create_asn_database():
         # Step 2: Skip if the remote file is unchanged since the last successful import
         remote_etag = _get_remote_etag(ASN_DOWNLOAD_URL)
         if remote_etag and remote_etag == _read_saved_etag(etag_path):
-            log_info(logger, "[INFO] ASN database unchanged on server, skipping download.")
+            log_info(
+                logger, "[INFO] ASN database unchanged on server, skipping download."
+            )
             return
 
         # Step 3: Download the ASN data file (resumable, streamed to disk)

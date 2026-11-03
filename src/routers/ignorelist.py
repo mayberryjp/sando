@@ -120,7 +120,9 @@ def setup_ignorelist_routes(app):
                 "deleted_count": deleted_count,
             }
         except Exception as error:
-            log_error(logger, f"[ERROR] Failed to delete stale ignorelist entries: {error}")
+            log_error(
+                logger, f"[ERROR] Failed to delete stale ignorelist entries: {error}"
+            )
             response.status = 500
             return {"error": "Failed to delete stale ignorelist entries"}
 

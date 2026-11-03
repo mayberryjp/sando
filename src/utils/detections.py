@@ -47,7 +47,8 @@ def process_data():
 
     # Read and delete in one transaction so concurrent collector writes aren't lost.
     newflows = get_new_flows(
-        clear=config_dict["ScheduleProcessor"] == 1 and config_dict["CleanNewFlows"] == 1
+        clear=config_dict["ScheduleProcessor"] == 1
+        and config_dict["CleanNewFlows"] == 1
     )
     """Read data from the database and process it."""
 

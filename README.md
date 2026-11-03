@@ -268,6 +268,14 @@ Common symptoms:
 
 Issues and feature requests can be submitted on GitHub.
 
+### Cleaning up host allow rules
+
+`DELETE /api/ignorelist/stale` removes allow rules with no tagged flow history,
+rules whose tagged flows all have a null `last_seen`, and rules whose tagged flows
+all have valid last-seen dates older than 30 days. Rules with recent activity,
+mixed known/unknown dates, or invalid non-null dates are preserved. The response
+includes `deleted_count`. Cleanup is requested explicitly, not run automatically.
+
 ---
 
 ## Configuration Reference
