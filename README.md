@@ -264,6 +264,7 @@ Common symptoms:
 - API is online but no flows appear: check NetFlow export target IP/port and firewall rules.
 - DNS sinkhole will not start: another DNS service may already be bound to port `53`.
 - DHCP server will not work: another DHCP service may already own port `67`, or relay/local network settings may be incomplete.
+- Multiple services exit immediately with status `0`, while DHCP/watchdog report a missing `insert_action` or sinkhole DNS reports a missing `insert_dns_queries_batch`: check for empty Python source modules. Commit `197c65e` accidentally emptied 37 modules. Use a corrected checkout or image, then rebuild/pull and recreate the backend container; restarting the same broken image will not fix it. Run `python -m pytest tests/test_process_startup.py` from the repository root to check source integrity and service imports without starting listeners.
 
 Issues and feature requests can be submitted on GitHub.
 
