@@ -6,11 +6,8 @@ from unittest.mock import patch
 
 from bottle import Bottle
 
-from src.const import (
-    CONST_CREATE_ACTIONS_SQL,
-    CONST_CREATE_CONFIG_SQL,
-    CONST_CREATE_CUSTOMTAGS_SQL,
-)
+from src.const import (CONST_CREATE_ACTIONS_SQL, CONST_CREATE_CONFIG_SQL,
+                       CONST_CREATE_CUSTOMTAGS_SQL)
 from src.database.actions import insert_action
 from src.routers.actions import setup_actions_routes
 

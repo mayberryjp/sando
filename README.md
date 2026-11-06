@@ -117,6 +117,28 @@ The backend is managed with supervisord and starts multiple processes. Most dete
 
 Do not expose these ports directly to the internet.
 
+### Available IP lookup
+
+`GET /api/localhosts/available-ip?network=192.168.1.0%2F24` returns:
+
+```json
+{"ip_address": "192.168.1.2"}
+```
+
+Supply an IPv4 subnet in CIDR notation using the `network` query parameter.
+Host bits are normalized (for example, `192.168.1.42/24` searches
+`192.168.1.0/24`). The lowest usable address not present in the host inventory
+or configured as a router in `LocalNetworks` is returned. Offline and
+unclassified hosts still count as occupied. Network and broadcast addresses
+are excluded for ordinary subnets; `/31` and `/32` use standard IPv4 host
+semantics (two hosts and one host, respectively).
+
+This is an inventory-only suggestion: no probing, saving, or reservation occurs.
+Devices Sando has never seen may still use the address. Repeated or concurrent
+requests can return the same address until the frontend saves an assignment.
+Responses are not cacheable. Missing/invalid CIDRs and IPv6 return HTTP `400`,
+exhausted subnets return `404`, and lookup failures return `500`.
+
 ---
 
 ## Security

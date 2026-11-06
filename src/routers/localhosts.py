@@ -1,11 +1,14 @@
+import ipaddress
 import json
 import logging
+import sqlite3
 
 from bottle import Bottle, request, response
 
 from src.database.localhosts import (
     classify_localhost,
     delete_localhost_database,
+    get_available_ip_address,
     get_localhost_by_ip,
     get_localhosts_all,
     update_localhost_alert_if_offline,
@@ -18,6 +21,36 @@ app = Bottle()
 
 
 def setup_localhosts_routes(app):
+
+    @app.route("/api/localhosts/available-ip", method=["GET"])
+    def available_ip():
+        """Suggest an unassigned IPv4 address without saving or reserving it."""
+        logger = logging.getLogger(__name__)
+        response.content_type = "application/json"
+        response.set_header("Cache-Control", "no-store")
+        network_input = request.query.get("network", "").strip()
+        try:
+            if "/" not in network_input:
+                raise ValueError("network must be an IPv4 subnet in CIDR notation")
+            network = ipaddress.IPv4Network(network_input, strict=False)
+        except ValueError as e:
+            log_warn(logger, f"[WARN] Invalid available-IP network: {e}")
+            response.status = 400
+            return {"error": "network must be an IPv4 subnet in CIDR notation"}
+
+        try:
+            address = get_available_ip_address(network)
+        except (sqlite3.Error, RuntimeError, ValueError, TypeError) as e:
+            log_error(logger, f"[ERROR] Failed to find an available IP: {e}")
+            response.status = 500
+            return {"error": "Unable to determine an available IP address"}
+
+        if address is None:
+            log_warn(logger, f"[WARN] No available IP addresses in {network}")
+            response.status = 404
+            return {"error": "No available IP addresses in this network"}
+
+        return {"ip_address": address}
 
     @app.route("/api/localhosts/<ip_address>/whitelisted-enabled", method=["PUT"])
     def toggle_localhost_whitelisted(ip_address):

@@ -1,10 +1,55 @@
+import ipaddress
 import json
 import logging
 import math
 import sqlite3
+from typing import Optional
 
+from src.database.configuration import get_config_settings, get_routers
 from src.database.core import connect_to_db, disconnect_from_db
 from src.utils.locallogging import log_error, log_info, log_warn
+
+
+def get_available_ip_address(network: ipaddress.IPv4Network) -> Optional[str]:
+    """Return the lowest IPv4 host absent from inventory and configured routers.
+
+    This is a read-only suggestion, not a reservation. Database/configuration
+    failures propagate so they cannot be mistaken for an empty inventory.
+    """
+    config = get_config_settings()
+    if config is None:
+        raise sqlite3.OperationalError("Unable to read network configuration")
+
+    raw_networks = config.get("LocalNetworks", "[]")
+    scopes = json.loads(raw_networks)
+    if not isinstance(scopes, list) or any(
+        not isinstance(scope, dict)
+        or (
+            scope.get("router") is not None
+            and not isinstance(scope["router"], str)
+        )
+        for scope in scopes
+    ):
+        raise ValueError("Invalid LocalNetworks configuration")
+
+    unavailable = get_routers({"LocalNetworks": raw_networks})
+    conn = connect_to_db("localhosts")
+    if conn is None:
+        raise sqlite3.OperationalError("Unable to connect to localhosts database")
+
+    try:
+        unavailable.update(
+            row[0] for row in conn.execute("SELECT ip_address FROM localhosts")
+        )
+    finally:
+        disconnect_from_db(conn)
+
+    # Iterate lazily: even a large subnet stops at the first available host.
+    for candidate in network.hosts():
+        address = str(candidate)
+        if address not in unavailable:
+            return address
+    return None
 
 
 def get_localhost_by_ip(ip_address):
