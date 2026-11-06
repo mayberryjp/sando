@@ -24,10 +24,7 @@ def get_available_ip_address(network: ipaddress.IPv4Network) -> Optional[str]:
     scopes = json.loads(raw_networks)
     if not isinstance(scopes, list) or any(
         not isinstance(scope, dict)
-        or (
-            scope.get("router") is not None
-            and not isinstance(scope["router"], str)
-        )
+        or (scope.get("router") is not None and not isinstance(scope["router"], str))
         for scope in scopes
     ):
         raise ValueError("Invalid LocalNetworks configuration")
