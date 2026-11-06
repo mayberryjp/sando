@@ -157,6 +157,12 @@ services:
 
 `SITE` is the site name shown in Sando. `/database` is the persistent volume for configuration and all SQLite databases.
 
+Timestamps returned by the API and MCP use the backend's local time, without
+conversion to UTC or the client's timezone. Set `TZ` to your local timezone
+(for example, `Asia/Tokyo`) in the backend container. Action timestamps use
+`YYYY-MM-DD HH:MM:SS` without a timezone suffix. Existing records are left
+unchanged, so actions saved by older versions may still contain UTC times.
+
 ### Dashboard container
 
 ```yaml

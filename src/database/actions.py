@@ -26,7 +26,7 @@ def insert_action(action_text):
         cursor = conn.cursor()
         start_time = time.time()
         cursor.execute(
-            "INSERT INTO actions (action_text, acknowledged, insert_date) VALUES (?, 0, datetime('now'))",
+            "INSERT INTO actions (action_text, acknowledged, insert_date) VALUES (?, 0, datetime('now', 'localtime'))",
             (action_text,),
         )
         conn.commit()

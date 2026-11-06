@@ -192,8 +192,8 @@ CONST_CREATE_CUSTOMTAGS_SQL = """
         protocol TEXT,
         tag_name TEXT,
         enabled INTEGER DEFAULT 1,
-        added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        added TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+        insert_date TIMESTAMP DEFAULT (datetime('now', 'localtime'))
     );
     CREATE INDEX IF NOT EXISTS idx_customtags_enabled ON customtags (enabled);
 """
@@ -202,7 +202,7 @@ CONST_CREATE_CONFIG_SQL = """
     CREATE TABLE IF NOT EXISTS configuration (
         key TEXT PRIMARY KEY,
         value INT,
-        last_changed TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        last_changed TIMESTAMP DEFAULT (datetime('now', 'localtime'))
     )"""
 
 CONST_CREATE_GEOLOCATION_SQL = """
