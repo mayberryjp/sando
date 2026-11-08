@@ -9,7 +9,8 @@ from src.utils.network import is_ip_in_range
 def detect_new_outbound_connections(rows, config_dict):
     """
     Detect new outbound connections from local clients to external servers.
-    A server is identified by having a lower port number than the client.
+    Destination ports lower than or equal to the source port are eligible.
+    Equal ports retain the observed flow direction.
 
     Args:
         rows: List of flow records
@@ -31,9 +32,9 @@ def detect_new_outbound_connections(rows, config_dict):
             if is_ip_in_range(src_ip, LOCAL_NETWORKS):
                 is_src_local = True
 
-            # If source is local and destination port is lower (indicating server),
+            # If source is local and destination port is lower or equal,
             # this might be a new outbound connection
-            if is_src_local and dst_port < src_port:
+            if is_src_local and dst_port <= src_port:
                 # Create a unique identifier for this connection
                 alert_id = (
                     f"{src_ip}_{dst_ip}_{protocol}_{dst_port}_NewOutboundDetection"
