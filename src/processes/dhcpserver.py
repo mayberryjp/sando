@@ -622,6 +622,8 @@ class DHCPServer:
 
         if packet["giaddr"] and packet["giaddr"] != "0.0.0.0":
             dest_addr = (packet["giaddr"], 67)
+        elif packet["ciaddr"] != "0.0.0.0":
+            dest_addr = (packet["ciaddr"], 68)
         else:
             mask = scope.get("subnet_mask")
             bcast = (
