@@ -17,6 +17,7 @@ tests/
 # Agent/generated workspace files
 .sme/
 
-# Tests not tracked in this repo
-tests/
+# Tests not tracked in this repo, except selected regression coverage
+tests/*
+!tests/test_ignorelist.py
 test/

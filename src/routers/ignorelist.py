@@ -69,6 +69,11 @@ def setup_ignorelist_routes(app):
         elif request.method == "POST":
             # Add a new ignorelist entry
             data = request.json
+            if not isinstance(data, dict):
+                message = "Request body must be a JSON object"
+                log_error(logger, f"[ERROR] {message}")
+                response.status = 400
+                return {"error": message}
 
             ignorelist_id = data.get("ignorelist_id")
             src_ip = data.get("src_ip")
@@ -83,13 +88,32 @@ def setup_ignorelist_routes(app):
                 not ignorelist_id
                 or not src_ip
                 or not dst_ip
-                or not dst_port
-                or not protocol
+                or dst_port is None
+                or dst_port == ""
+                or protocol is None
+                or protocol == ""
             ):
+                message = "Required fields missing (ignorelist_id, src_ip, dst_ip, dst_port, protocol)"
+                log_error(logger, f"[ERROR] {message}")
                 response.status = 400
-                return {
-                    "error": "Required fields missing (ignorelist_id, src_ip, dst_ip, dst_port, dst_protocol)"
-                }
+                return {"error": message}
+
+            if dst_port != "*":
+                try:
+                    if isinstance(dst_port, bool) or not isinstance(dst_port, (int, str)):
+                        raise ValueError
+                    if isinstance(dst_port, str) and (
+                        not dst_port.isascii() or not dst_port.isdecimal()
+                    ):
+                        raise ValueError
+                    dst_port = int(dst_port)
+                    if not 0 <= dst_port <= 65535:
+                        raise ValueError
+                except ValueError:
+                    message = "dst_port must be an integer between 0 and 65535 or '*'"
+                    log_error(logger, f"[ERROR] {message}")
+                    response.status = 400
+                    return {"error": message}
 
             try:
 

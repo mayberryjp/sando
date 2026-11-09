@@ -296,6 +296,16 @@ Common symptoms:
 
 Issues and feature requests can be submitted on GitHub.
 
+### Ignore-list port values
+
+`POST /api/ignorelist` accepts destination ports from `0` through `65535`,
+including numeric `0` for recorded ICMP flows. Decimal integer strings are
+normalized to integers; `"*"` still means any port. Missing, null, empty, or
+invalid ports return HTTP 400. The protocol field is named `protocol`.
+Frontends must preserve zero rather than converting it to an empty string or
+wildcard. See the [frontend handoff spec](docs/frontend-ignorelist-port-zero.md)
+for the request contract and acceptance tests.
+
 ### Cleaning up host allow rules
 
 `DELETE /api/ignorelist/stale` removes allow rules with no tagged flow history,
