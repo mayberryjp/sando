@@ -117,6 +117,22 @@ The backend is managed with supervisord and starts multiple processes. Most dete
 
 Do not expose these ports directly to the internet.
 
+### Alert history and pagination
+
+`GET /api/alerts/recent` returns all stored alerts by default, allowing the
+dashboard to paginate locally without a backend result cap. The response remains
+a JSON array with the existing alert fields.
+
+Clients can optionally request a slice with
+`GET /api/alerts/recent?limit=50&offset=100`. `limit` is the maximum row count;
+`offset` is the number of rows to skip (default `0`). Omitting `limit` returns
+all remaining rows, and `limit=0` returns an empty array. Both parameters must be
+non-negative integers; invalid values return HTTP `400`.
+
+Results are ordered by `first_seen` descending, then `id` descending for stable
+ordering when timestamps match. Offset-based pages may shift if alerts are
+inserted or deleted between requests.
+
 ### Available IP lookup
 
 `GET /api/localhosts/available-ip?network=192.168.1.0%2F24` returns:

@@ -100,7 +100,9 @@ def setup_ignorelist_routes(app):
 
             if dst_port != "*":
                 try:
-                    if isinstance(dst_port, bool) or not isinstance(dst_port, (int, str)):
+                    if isinstance(dst_port, bool) or not isinstance(
+                        dst_port, (int, str)
+                    ):
                         raise ValueError
                     if isinstance(dst_port, str) and (
                         not dst_port.isascii() or not dst_port.isdecimal()

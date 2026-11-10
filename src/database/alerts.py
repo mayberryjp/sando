@@ -353,13 +353,12 @@ def get_alert_count_by_id(alert_id):
             disconnect_from_db(conn)
 
 
-def get_recent_alerts_database():
+def get_recent_alerts_database(limit=None, offset=0):
     """
-    Retrieve the most recent 100 alerts from the alerts table.
+    Retrieve alerts with optional limit and offset (all alerts by default).
 
     Returns:
-        list: A list of dictionaries containing the most recent 100 alerts,
-              ordered by last_seen timestamp in descending order.
+        list: Alert rows ordered by first_seen and id in descending order.
               Returns an empty list if no data is found or an error occurs.
     """
     logger = logging.getLogger(__name__)
@@ -373,18 +372,20 @@ def get_recent_alerts_database():
 
         cursor = conn.cursor()
 
-        # Retrieve the most recent alerts, limited to 100
         recent_alerts_query = """
             SELECT id, ip_address, flow, category,
                 alert_enrichment_1, alert_enrichment_2,
                 times_seen, first_seen, last_seen, acknowledged
             FROM alerts
-            ORDER BY first_seen DESC
-            LIMIT 100
+            ORDER BY first_seen DESC, id DESC
+            LIMIT ? OFFSET ?
         """
 
         rows, query_time = run_timed_query(
-            cursor, recent_alerts_query, description="get_recent_alerts_database"
+            cursor,
+            recent_alerts_query,
+            (-1 if limit is None else limit, offset),
+            description="get_recent_alerts_database",
         )
 
         log_info(

@@ -365,10 +365,23 @@ def setup_alerts_routes(app):
     @app.route("/api/alerts/recent", method=["GET"])
     def get_recent_alerts():
         """
-        API endpoint to get the 100 most recent alerts.
-        Returns alerts sorted by last_seen timestamp in descending order.
+        Return all alerts unless optional limit and offset parameters are supplied.
+        Sort by first_seen descending, then id descending to break ties.
         """
         logger = logging.getLogger(__name__)
+
+        try:
+            limit_value = request.query.get("limit")
+            limit = int(limit_value) if limit_value is not None else None
+            offset = int(request.query.get("offset", "0"))
+            if (limit is not None and limit < 0) or offset < 0:
+                raise ValueError("Pagination values must be non-negative")
+        except ValueError:
+            message = "limit and offset must be non-negative integers"
+            log_warn(logger, f"[WARN] Invalid alerts pagination: {message}")
+            response.status = 400
+            response.content_type = "application/json"
+            return json.dumps({"error": message})
 
         # Get all localhost information
         localhosts = get_localhosts_all()
@@ -380,7 +393,7 @@ def setup_alerts_routes(app):
             if ip:
                 localhost_descriptions[ip] = localhost.get("local_description", "")
 
-        rows = get_recent_alerts_database()
+        rows = get_recent_alerts_database(limit=limit, offset=offset)
 
         # Format the response
         alerts = [
