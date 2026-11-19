@@ -133,6 +133,39 @@ Results are ordered by `first_seen` descending, then `id` descending for stable
 ordering when timestamps match. Offset-based pages may shift if alerts are
 inserted or deleted between requests.
 
+### Docker container hosts
+
+Device classifications use the existing `icon` field. Set `icon` to
+`DOCKER_CONTAINER` (`DOCKER CONTAINER` is also accepted and normalized).
+`PUT /api/localhosts/<ip_address>` accepts an optional `docker_host`: the
+`ip_address` of an existing local device classified as `LINUX_SERVER` or
+`WINDOWS_SERVER`, not free-form text. For example:
+
+```json
+{
+  "icon": "DOCKER_CONTAINER",
+  "local_description": "Application container",
+  "docker_host": "192.168.1.10"
+}
+```
+
+Populate the optional Docker host dropdown from
+`GET /api/localhosts/docker-hosts`. It returns an array of
+`{"ip_address": "...", "local_description": "...", "icon": "LINUX_SERVER"}`
+objects (including Windows servers), or `[]` if none are eligible.
+Only show this dropdown for containers; use the IP as its submitted value
+and the description/IP as its label.
+
+Host list/detail responses include nullable `docker_host`. Omit it on update
+to preserve a container's current reference, or send `null` to clear it.
+Switching a container to another classification clears its reference.
+Deleting a referenced server or changing it to a non-server classification
+clears dependent containers' references; changing its IP updates them.
+Invalid references, self-references, or a non-null `docker_host` on a
+non-container return HTTP `400` without changing the classification.
+Unknown devices return `404`; database failures return `500`.
+Schema version 23 adds the nullable column to existing installations.
+
 ### Available IP lookup
 
 `GET /api/localhosts/available-ip?network=192.168.1.0%2F24` returns:

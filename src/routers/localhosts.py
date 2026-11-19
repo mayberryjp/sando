@@ -9,6 +9,7 @@ from src.database.localhosts import (
     classify_localhost,
     delete_localhost_database,
     get_available_ip_address,
+    get_docker_hosts,
     get_localhost_by_ip,
     get_localhosts_all,
     update_localhost_alert_if_offline,
@@ -21,6 +22,17 @@ app = Bottle()
 
 
 def setup_localhosts_routes(app):
+
+    @app.route("/api/localhosts/docker-hosts", method=["GET"])
+    def docker_hosts():
+        logger = logging.getLogger(__name__)
+        response.content_type = "application/json"
+        try:
+            return json.dumps(get_docker_hosts())
+        except sqlite3.Error as e:
+            log_error(logger, f"[ERROR] Failed to retrieve Docker hosts: {e}")
+            response.status = 500
+            return {"error": "Unable to retrieve Docker hosts"}
 
     @app.route("/api/localhosts/available-ip", method=["GET"])
     def available_ip():
@@ -160,6 +172,10 @@ def setup_localhosts_routes(app):
         if request.method == "PUT":
             identifier = ip_address
             data = request.json
+            if not isinstance(data, dict):
+                log_warn(logger, "[WARN] Host update requires a JSON object")
+                response.status = 400
+                return {"error": "Request body must be a JSON object"}
             local_description = data.get("local_description")
             icon = data.get("icon")
             management_link = data.get("management_link")
@@ -172,10 +188,12 @@ def setup_localhosts_routes(app):
             domain_name = data.get("domain_name")
 
             try:
-                # Update the localhost classification in the database
-                # You need to update classify_localhost to accept mac_address if you want to store it
+                docker_fields = (
+                    {"docker_host": data["docker_host"]} if "docker_host" in data else {}
+                )
                 classify_localhost(
-                    ip_address, local_description, icon, management_link, mac_address
+                    ip_address, local_description, icon, management_link, mac_address,
+                    identifier=identifier, **docker_fields,
                 )
 
                 if ip6_address is not None:
@@ -192,6 +210,14 @@ def setup_localhosts_routes(app):
                     logger, f"Updated local host: {ip_address} (MAC: {mac_address})"
                 )
                 return {"message": "Local host updated successfully"}
+            except ValueError as e:
+                log_warn(logger, f"[WARN] Invalid host update: {e}")
+                response.status = 400
+                return {"error": str(e)}
+            except LookupError as e:
+                log_warn(logger, f"[WARN] Host update target not found: {e}")
+                response.status = 404
+                return {"error": str(e)}
             except Exception as e:
                 log_error(logger, f"Error updating local host: {e}")
                 response.status = 500
@@ -281,6 +307,7 @@ def setup_localhosts_routes(app):
                     "ip6_address": host_record[25],
                     "alert_if_offline": host_record[26],
                     "domain_name": host_record[27],
+                    "docker_host": host_record[28],
                 }
 
                 response.content_type = "application/json"

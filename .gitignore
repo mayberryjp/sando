@@ -21,4 +21,5 @@ tests/
 tests/*
 !tests/test_ignorelist.py
 !tests/test_alerts_pagination.py
+!tests/test_localhosts.py
 test/

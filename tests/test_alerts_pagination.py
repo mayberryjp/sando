@@ -24,10 +24,16 @@ class AlertsPaginationTests(unittest.TestCase):
             """,
             [
                 (
-                    f"alert-{i:03d}", "192.168.1.2", "flow", "Test",
-                    "enrichment-1", "enrichment-2", 3,
+                    f"alert-{i:03d}",
+                    "192.168.1.2",
+                    "flow",
+                    "Test",
+                    "enrichment-1",
+                    "enrichment-2",
+                    3,
                     f"2026-11-{1 + i // 10:02d} 00:00:00",
-                    "2026-11-30 00:00:00", i % 2,
+                    "2026-11-30 00:00:00",
+                    i % 2,
                 )
                 for i in range(235)
             ],
@@ -42,9 +48,11 @@ class AlertsPaginationTests(unittest.TestCase):
             ("src.routers.alerts.log_warn", {}),
             (
                 "src.routers.alerts.get_localhosts_all",
-                {"return_value": [
-                    {"ip_address": "192.168.1.2", "local_description": "Test host"}
-                ]},
+                {
+                    "return_value": [
+                        {"ip_address": "192.168.1.2", "local_description": "Test host"}
+                    ]
+                },
             ),
         ):
             patcher = patch(target, **kwargs)
@@ -56,17 +64,22 @@ class AlertsPaginationTests(unittest.TestCase):
 
     def get_alerts(self, query=""):
         statuses = []
-        body = b"".join(self.app({
-            "REQUEST_METHOD": "GET",
-            "PATH_INFO": "/api/alerts/recent",
-            "QUERY_STRING": query,
-            "SERVER_NAME": "localhost",
-            "SERVER_PORT": "80",
-            "SERVER_PROTOCOL": "HTTP/1.1",
-            "wsgi.url_scheme": "http",
-            "wsgi.input": BytesIO(),
-            "wsgi.errors": BytesIO(),
-        }, lambda status, headers, exc_info=None: statuses.append(status)))
+        body = b"".join(
+            self.app(
+                {
+                    "REQUEST_METHOD": "GET",
+                    "PATH_INFO": "/api/alerts/recent",
+                    "QUERY_STRING": query,
+                    "SERVER_NAME": "localhost",
+                    "SERVER_PORT": "80",
+                    "SERVER_PROTOCOL": "HTTP/1.1",
+                    "wsgi.url_scheme": "http",
+                    "wsgi.input": BytesIO(),
+                    "wsgi.errors": BytesIO(),
+                },
+                lambda status, headers, exc_info=None: statuses.append(status),
+            )
+        )
         return int(statuses[0].split()[0]), json.loads(body)
 
     def assert_page(self, query, expected_ids):
@@ -77,11 +90,22 @@ class AlertsPaginationTests(unittest.TestCase):
 
     def test_default_returns_all_alerts_and_preserves_response_shape(self):
         alerts = self.assert_page("", self.expected_ids)
-        self.assertEqual(set(alerts[0]), {
-            "id", "ip_address", "flow", "category", "alert_enrichment_1",
-            "alert_enrichment_2", "times_seen", "first_seen", "last_seen",
-            "acknowledged", "local_description",
-        })
+        self.assertEqual(
+            set(alerts[0]),
+            {
+                "id",
+                "ip_address",
+                "flow",
+                "category",
+                "alert_enrichment_1",
+                "alert_enrichment_2",
+                "times_seen",
+                "first_seen",
+                "last_seen",
+                "acknowledged",
+                "local_description",
+            },
+        )
         self.assertIs(alerts[0]["acknowledged"], False)
         self.assertEqual(alerts[0]["local_description"], "Test host")
 
@@ -113,14 +137,18 @@ class AlertsPaginationTests(unittest.TestCase):
 
     def test_invalid_pagination_returns_400_before_database_access(self):
         for query in (
-            "limit=-1", "offset=-1", "limit=abc", "offset=abc",
-            "limit=1.5", "offset=1.5", "limit=", "offset=",
+            "limit=-1",
+            "offset=-1",
+            "limit=abc",
+            "offset=abc",
+            "limit=1.5",
+            "offset=1.5",
+            "limit=",
+            "offset=",
         ):
             with self.subTest(query=query), patch(
                 "src.routers.alerts.get_recent_alerts_database"
-            ) as get_rows, patch(
-                "src.routers.alerts.get_localhosts_all"
-            ) as get_hosts:
+            ) as get_rows, patch("src.routers.alerts.get_localhosts_all") as get_hosts:
                 status, body = self.get_alerts(query)
                 self.assertEqual(status, 400)
                 self.assertIn("error", body)

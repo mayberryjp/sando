@@ -93,6 +93,7 @@ def export_client_definition(client_ip):
                 "lease_hostname": host_record[8],
                 "icon": host_record[13],
                 "local_description": host_record[12],
+                "docker_host": host_record[28],
             }
 
         dns_rows = get_client_dns_queries(client_ip)

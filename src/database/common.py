@@ -237,6 +237,10 @@ def update_database_schema(current_version, target_version):
             )
             migrate_configurations_schema21_to_schema22()
 
+        if current_version_int < 23:
+            if not migrate_configurations_schema22_to_schema23():
+                return False
+
         # Removed migration for firewall_interface_name column in localhosts table
 
         return True
@@ -679,6 +683,27 @@ def migrate_configurations_schema21_to_schema22():
     finally:
         if "conn" in locals() and conn:
             disconnect_from_db(conn)
+
+
+def migrate_configurations_schema22_to_schema23():
+    """Add the optional Docker host inventory reference."""
+    logger = logging.getLogger(__name__)
+    conn = connect_to_db("localhosts")
+    if conn is None:
+        log_error(logger, "[ERROR] Failed to connect to LOCALHOSTS_DB")
+        return False
+    try:
+        columns = [row[1] for row in conn.execute("PRAGMA table_info(localhosts)")]
+        if "docker_host" not in columns:
+            conn.execute("ALTER TABLE localhosts ADD COLUMN docker_host TEXT")
+            conn.commit()
+        log_info(logger, "[INFO] Docker host schema migration completed")
+        return True
+    except sqlite3.Error as e:
+        log_error(logger, f"[ERROR] Failed to add 'docker_host' column: {e}")
+        return False
+    finally:
+        disconnect_from_db(conn)
 
 
 def store_site_name(site_name):

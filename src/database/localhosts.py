@@ -10,6 +10,29 @@ from src.database.core import connect_to_db, disconnect_from_db
 from src.utils.locallogging import log_error, log_info, log_warn
 
 
+_UNSET = object()
+
+
+def get_docker_hosts():
+    """Return inventory devices eligible to host Docker containers."""
+    conn = connect_to_db("localhosts")
+    if conn is None:
+        raise sqlite3.OperationalError("Unable to connect to localhosts database")
+    try:
+        cursor = conn.execute(
+            """
+            SELECT ip_address, local_description, icon
+            FROM localhosts
+            WHERE icon IN ('LINUX_SERVER', 'WINDOWS_SERVER')
+            ORDER BY ip_address
+            """
+        )
+        columns = [column[0] for column in cursor.description]
+        return [dict(zip(columns, row)) for row in cursor.fetchall()]
+    finally:
+        disconnect_from_db(conn)
+
+
 def get_available_ip_address(network: ipaddress.IPv4Network) -> Optional[str]:
     """Return the lowest IPv4 host absent from inventory and configured routers.
 
@@ -77,7 +100,7 @@ def get_localhost_by_ip(ip_address):
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
                    lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon,
                    tags, threat_score, alerts_enabled, management_link, last_seen, last_dhcp_discover, whitelisted,
-                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address, alert_if_offline, domain_name
+                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address, alert_if_offline, domain_name, docker_host
             FROM localhosts
             WHERE ip_address = ? OR mac_address = ?
         """
@@ -133,7 +156,7 @@ def get_localhosts_all():
             SELECT ip_address, first_seen, original_flow,
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
                    lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, last_seen, last_dhcp_discover, whitelisted,
-                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address, alert_if_offline, domain_name
+                   total_packets_src, total_packets_dst, total_bytes_src, total_bytes_dst, ip6_address, alert_if_offline, domain_name, docker_host
             FROM localhosts
         """
         cursor.execute(query)
@@ -326,7 +349,10 @@ def insert_localhost_basic(ip_address, original_flow=None):
             disconnect_from_db(conn)
 
 
-def classify_localhost(ip_address, description, icon, management_link, mac_address):
+def classify_localhost(
+    ip_address, description, icon, management_link, mac_address,
+    *, docker_host=_UNSET, identifier=None,
+):
     """
     Classify a localhost by setting its description, icon, acknowledged status, management link, and optionally mac_address.
 
@@ -336,6 +362,8 @@ def classify_localhost(ip_address, description, icon, management_link, mac_addre
         icon (str): The icon identifier to use for this device
         management_link (str): Management link for the device
         mac_address (str, optional): The MAC address to update (if provided)
+        docker_host: Server inventory IP, None to clear, or omitted to preserve.
+        identifier: Original IP or MAC when changing the device's IP.
 
     Returns:
         bool: True if the classification was successful, False otherwise
@@ -345,62 +373,79 @@ def classify_localhost(ip_address, description, icon, management_link, mac_addre
     try:
         conn = connect_to_db("localhosts")
         if not conn:
-            log_error(logger, "[ERROR] Unable to connect to localhosts database.")
-            return False
+            raise sqlite3.OperationalError("Unable to connect to localhosts database")
 
         cursor = conn.cursor()
 
         # Ensure MAC address is saved as uppercase
         mac_address_upper = mac_address.upper() if mac_address else None
+        identifier = identifier or ip_address
+        with conn:
+            cursor.execute(
+                """
+                SELECT ip_address, icon, docker_host FROM localhosts
+                WHERE ip_address = ? OR mac_address = ? OR mac_address = ?
+                """,
+                (identifier, identifier, mac_address_upper),
+            )
+            current = cursor.fetchone()
+            if current is None:
+                raise LookupError(f"No local host found with IP or MAC: {identifier}")
+            old_ip, current_icon, current_docker_host = current
+            icon = current_icon if icon is None else icon
+            if icon == "DOCKER CONTAINER":
+                icon = "DOCKER_CONTAINER"
+            if docker_host is _UNSET:
+                docker_host = current_docker_host if icon == "DOCKER_CONTAINER" else None
+            if docker_host is not None:
+                if icon != "DOCKER_CONTAINER":
+                    raise ValueError("docker_host is only allowed for DOCKER_CONTAINER devices")
+                if not isinstance(docker_host, str) or not docker_host:
+                    raise ValueError("docker_host must be a server inventory IP or null")
+                if docker_host in (old_ip, ip_address):
+                    raise ValueError("A Docker container cannot host itself")
+                cursor.execute(
+                    """
+                    SELECT 1 FROM localhosts
+                    WHERE ip_address = ? AND icon IN ('LINUX_SERVER', 'WINDOWS_SERVER')
+                    """,
+                    (docker_host,),
+                )
+                if cursor.fetchone() is None:
+                    raise ValueError(
+                        "docker_host must reference a local LINUX_SERVER or WINDOWS_SERVER"
+                    )
+
+            cursor.execute(
+                """
+                UPDATE localhosts
+                SET local_description = ?, icon = ?, acknowledged = 1,
+                    management_link = ?, mac_address = ?, ip_address = ?, docker_host = ?
+                WHERE ip_address = ?
+                """,
+                (
+                    description, icon, management_link, mac_address_upper,
+                    ip_address, docker_host, old_ip,
+                ),
+            )
+            cursor.execute(
+                "UPDATE localhosts SET docker_host = ? WHERE docker_host = ?",
+                (ip_address if icon in ("LINUX_SERVER", "WINDOWS_SERVER") else None, old_ip),
+            )
 
         log_info(
             logger,
             f"[INFO] Classifying localhost {ip_address} as '{description}' with icon '{icon}'"
             + (f" and MAC '{mac_address_upper}'" if mac_address_upper else ""),
         )
-        cursor.execute(
-            """
-            UPDATE localhosts
-            SET local_description = ?, icon = ?, acknowledged = 1, management_link = ?, mac_address = ?, ip_address = ?
-            WHERE ip_address = ? or mac_address = ?
-        """,
-            (
-                description,
-                icon,
-                management_link,
-                mac_address_upper,
-                ip_address,
-                ip_address,
-                mac_address_upper,
-            ),
-        )
-
-        if cursor.rowcount > 0:
-            conn.commit()
-            log_info(
-                logger,
-                f"[INFO] Successfully classified localhost {ip_address} as '{description}' with icon '{icon}'"
-                + (f" and MAC '{mac_address_upper}'" if mac_address_upper else ""),
-            )
-            return True
-        else:
-            log_warn(
-                logger, f"[WARN] No localhost found with IP {ip_address} to classify"
-            )
-            return False
+        return True
 
     except sqlite3.Error as e:
         log_error(
             logger,
             f"[ERROR] Database error while classifying localhost {ip_address}: {e}",
         )
-        return False
-    except Exception as e:
-        log_error(
-            logger,
-            f"[ERROR] Unexpected error while classifying localhost {ip_address}: {e}",
-        )
-        return False
+        raise
     finally:
         if "conn" in locals() and conn:
             disconnect_from_db(conn)
@@ -428,6 +473,15 @@ def delete_localhost_database(ip_address):
         cursor = conn.cursor()
 
         # Delete the localhost record
+        cursor.execute(
+            """
+            UPDATE localhosts SET docker_host = NULL
+            WHERE docker_host IN (
+                SELECT ip_address FROM localhosts WHERE ip_address = ? OR mac_address = ?
+            )
+            """,
+            (ip_address, ip_address),
+        )
         cursor.execute(
             "DELETE FROM localhosts WHERE ip_address = ? or mac_address = ?",
             (ip_address, ip_address),
@@ -886,7 +940,7 @@ def get_localhost(identifier):
         query = """
             SELECT ip_address, first_seen, original_flow,
                    mac_address, mac_vendor, dhcp_hostname, dns_hostname, os_fingerprint,
-                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, ip6_address, alert_if_offline
+                   lease_hostname, lease_hwaddr, lease_clientid, acknowledged, local_description, icon, tags, threat_score, alerts_enabled, management_link, ip6_address, alert_if_offline, docker_host
             FROM localhosts
             WHERE ip_address = ? OR mac_address = ?
         """
@@ -918,6 +972,15 @@ def delete_localhost(identifier):
             return False
 
         cursor = conn.cursor()
+        cursor.execute(
+            """
+            UPDATE localhosts SET docker_host = NULL
+            WHERE docker_host IN (
+                SELECT ip_address FROM localhosts WHERE ip_address = ? OR mac_address = ?
+            )
+            """,
+            (identifier, identifier),
+        )
         cursor.execute(
             "DELETE FROM localhosts WHERE ip_address = ? OR mac_address = ?",
             (identifier, identifier),
@@ -1220,6 +1283,8 @@ def get_localhost_as_dict(ip_address):
         "total_bytes_dst",
         "ip6_address",
         "alert_if_offline",
+        "domain_name",
+        "docker_host",
     ]
     return dict(zip(columns, row))
 
