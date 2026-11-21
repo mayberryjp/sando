@@ -166,6 +166,28 @@ non-container return HTTP `400` without changing the classification.
 Unknown devices return `404`; database failures return `500`.
 Schema version 23 adds the nullable column to existing installations.
 
+### Connected network metadata
+
+`GET /api/localhosts` and `GET /api/localhosts/<ip_address>` include two
+top-level fields derived from the host's `ip_address` and `LocalNetworks`:
+
+```json
+{
+  "ip_address": "10.1.10.2",
+  "connected_interface_name": "server_vlan",
+  "connected_network": "10.1.10.2/24"
+}
+```
+
+The matching network's `firewall_interface_name` is lowercased; its `cidr`
+is returned exactly as configured. CIDRs containing host bits are accepted.
+For overlapping networks, the longest prefix wins; the first configured
+entry wins ties. An unmatched host receives `null` for both fields; a
+matched network without an interface name still returns its CIDR.
+IPv4 and IPv6 host addresses are supported. Values are derived on each
+read, not saved to the host table. Invalid network configuration or lookup
+failures return HTTP `500` rather than claiming the host is unmatched.
+
 ### Available IP lookup
 
 `GET /api/localhosts/available-ip?network=192.168.1.0%2F24` returns:

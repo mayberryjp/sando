@@ -6,6 +6,7 @@ import sqlite3
 from bottle import Bottle, request, response
 
 from src.database.localhosts import (
+    add_connected_network_details,
     classify_localhost,
     delete_localhost_database,
     get_available_ip_address,
@@ -189,11 +190,18 @@ def setup_localhosts_routes(app):
 
             try:
                 docker_fields = (
-                    {"docker_host": data["docker_host"]} if "docker_host" in data else {}
+                    {"docker_host": data["docker_host"]}
+                    if "docker_host" in data
+                    else {}
                 )
                 classify_localhost(
-                    ip_address, local_description, icon, management_link, mac_address,
-                    identifier=identifier, **docker_fields,
+                    ip_address,
+                    local_description,
+                    icon,
+                    management_link,
+                    mac_address,
+                    identifier=identifier,
+                    **docker_fields,
                 )
 
                 if ip6_address is not None:
@@ -309,6 +317,7 @@ def setup_localhosts_routes(app):
                     "domain_name": host_record[27],
                     "docker_host": host_record[28],
                 }
+                add_connected_network_details([localhost_dict])
 
                 response.content_type = "application/json"
                 log_info(

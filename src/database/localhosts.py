@@ -5,12 +5,44 @@ import math
 import sqlite3
 from typing import Optional
 
-from src.database.configuration import get_config_settings, get_routers
+from src.database.configuration import get_config_settings, get_local_networks, get_routers
 from src.database.core import connect_to_db, disconnect_from_db
 from src.utils.locallogging import log_error, log_info, log_warn
 
-
 _UNSET = object()
+
+
+def add_connected_network_details(hosts):
+    """Enrich host dictionaries from the most specific configured subnet."""
+    if not hosts:
+        return
+
+    config = get_config_settings()
+    if config is None:
+        raise sqlite3.OperationalError("Unable to read network configuration")
+
+    networks = []
+    for scope in get_local_networks(config, strict=True):
+        network = ipaddress.ip_network(scope["cidr"], strict=False)
+        interface_name = scope.get("firewall_interface_name")
+        if interface_name is not None and not isinstance(interface_name, str):
+            raise ValueError("firewall_interface_name must be a string or null")
+        networks.append((network, scope["cidr"], interface_name))
+    networks.sort(key=lambda entry: entry[0].prefixlen, reverse=True)
+
+    for host in hosts:
+        host["connected_interface_name"] = None
+        host["connected_network"] = None
+        if not host.get("ip_address"):
+            continue
+        address = ipaddress.ip_address(host["ip_address"])
+        for network, cidr, interface_name in networks:
+            if address in network:
+                host["connected_interface_name"] = (
+                    interface_name.lower() if interface_name else None
+                )
+                host["connected_network"] = cidr
+                break
 
 
 def get_docker_hosts():
@@ -175,13 +207,14 @@ def get_localhosts_all():
             logger,
             f"[INFO] Retrieved {len(localhosts)} localhost records with full details",
         )
-        return localhosts
-
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Failed to retrieve localhost records: {e}")
         return []
     finally:
         disconnect_from_db(conn)
+
+    add_connected_network_details(localhosts)
+    return localhosts
 
 
 def get_localhosts():
@@ -350,8 +383,14 @@ def insert_localhost_basic(ip_address, original_flow=None):
 
 
 def classify_localhost(
-    ip_address, description, icon, management_link, mac_address,
-    *, docker_host=_UNSET, identifier=None,
+    ip_address,
+    description,
+    icon,
+    management_link,
+    mac_address,
+    *,
+    docker_host=_UNSET,
+    identifier=None,
 ):
     """
     Classify a localhost by setting its description, icon, acknowledged status, management link, and optionally mac_address.
@@ -396,12 +435,18 @@ def classify_localhost(
             if icon == "DOCKER CONTAINER":
                 icon = "DOCKER_CONTAINER"
             if docker_host is _UNSET:
-                docker_host = current_docker_host if icon == "DOCKER_CONTAINER" else None
+                docker_host = (
+                    current_docker_host if icon == "DOCKER_CONTAINER" else None
+                )
             if docker_host is not None:
                 if icon != "DOCKER_CONTAINER":
-                    raise ValueError("docker_host is only allowed for DOCKER_CONTAINER devices")
+                    raise ValueError(
+                        "docker_host is only allowed for DOCKER_CONTAINER devices"
+                    )
                 if not isinstance(docker_host, str) or not docker_host:
-                    raise ValueError("docker_host must be a server inventory IP or null")
+                    raise ValueError(
+                        "docker_host must be a server inventory IP or null"
+                    )
                 if docker_host in (old_ip, ip_address):
                     raise ValueError("A Docker container cannot host itself")
                 cursor.execute(
@@ -424,13 +469,21 @@ def classify_localhost(
                 WHERE ip_address = ?
                 """,
                 (
-                    description, icon, management_link, mac_address_upper,
-                    ip_address, docker_host, old_ip,
+                    description,
+                    icon,
+                    management_link,
+                    mac_address_upper,
+                    ip_address,
+                    docker_host,
+                    old_ip,
                 ),
             )
             cursor.execute(
                 "UPDATE localhosts SET docker_host = ? WHERE docker_host = ?",
-                (ip_address if icon in ("LINUX_SERVER", "WINDOWS_SERVER") else None, old_ip),
+                (
+                    ip_address if icon in ("LINUX_SERVER", "WINDOWS_SERVER") else None,
+                    old_ip,
+                ),
             )
 
         log_info(
@@ -951,13 +1004,16 @@ def get_localhost(identifier):
             return None
 
         columns = [column[0] for column in cursor.description]
-        return dict(zip(columns, row))
+        localhost = dict(zip(columns, row))
     except Exception as e:
         log_error(logger, f"[ERROR] Error retrieving localhost: {e}")
         return None
     finally:
         if "conn" in locals() and conn:
             disconnect_from_db(conn)
+
+    add_connected_network_details([localhost])
+    return localhost
 
 
 def delete_localhost(identifier):
@@ -1286,7 +1342,9 @@ def get_localhost_as_dict(ip_address):
         "domain_name",
         "docker_host",
     ]
-    return dict(zip(columns, row))
+    localhost = dict(zip(columns, row))
+    add_connected_network_details([localhost])
+    return localhost
 
 
 def get_whitelisted_localhosts():

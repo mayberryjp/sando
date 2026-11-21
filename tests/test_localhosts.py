@@ -23,8 +23,14 @@ class LocalhostsDatabaseTests(unittest.TestCase):
         setup_integrations_routes(app)
         homepage = next(route for route in app.routes if route.rule == "/api/homepage")
 
-        for scores, expected in [([12, 90, 35, None], 90), ([0, 0], 0), ([None], 0), ([], 0)]:
+        for scores, expected in [
+            ([12, 90, 35, None], 90),
+            ([0, 0], 0),
+            ([None], 0),
+            ([], 0),
+        ]:
             with self.subTest(scores=scores):
+
                 def connect(table_name):
                     conn = sqlite3.connect(":memory:")
                     if table_name in ("alerts", "actions"):
@@ -41,9 +47,13 @@ class LocalhostsDatabaseTests(unittest.TestCase):
                     )
                     return conn
 
-                with patch("src.database.common.connect_to_db", side_effect=connect), patch(
+                with patch(
+                    "src.database.common.connect_to_db", side_effect=connect
+                ), patch(
                     "src.database.common.get_average_threat_score", return_value=17
-                ), patch("src.database.common.get_row_count", return_value=0), patch(
+                ), patch(
+                    "src.database.common.get_row_count", return_value=0
+                ), patch(
                     "src.database.configuration.get_config_settings", return_value={}
                 ):
                     result = json.loads(homepage.callback())
@@ -76,6 +86,8 @@ class LocalhostsDatabaseTests(unittest.TestCase):
 
         with patch("src.database.localhosts.connect_to_db", return_value=conn), patch(
             "src.database.localhosts.disconnect_from_db"
+        ), patch(
+            "src.database.localhosts.get_config_settings", return_value={}
         ):
             result = localhosts.get_localhosts_all()
 
@@ -88,6 +100,8 @@ class LocalhostsDatabaseTests(unittest.TestCase):
                     "ip_address": "192.0.2.10",
                     "last_seen": "2026-05-31 07:49:00",
                     "alert_if_offline": 1,
+                    "connected_interface_name": None,
+                    "connected_network": None,
                 }
             ],
         )
@@ -255,6 +269,11 @@ class DockerHostTests(unittest.TestCase):
             ],
         )
         self.conn.commit()
+        config_patch = patch(
+            "src.database.localhosts.get_config_settings", return_value={}
+        )
+        self.config = config_patch.start()
+        self.addCleanup(config_patch.stop)
         for target in ("src.database.localhosts", "src.database.common"):
             for name, kwargs in [
                 ("connect_to_db", {"return_value": self.conn}),
@@ -277,33 +296,125 @@ class DockerHostTests(unittest.TestCase):
     def request(self, method, path, payload=None):
         statuses = []
         raw = json.dumps(payload).encode() if payload is not None else b""
-        body = b"".join(self.app({
-            "REQUEST_METHOD": method,
-            "PATH_INFO": path,
-            "QUERY_STRING": "",
-            "CONTENT_TYPE": "application/json",
-            "CONTENT_LENGTH": str(len(raw)),
-            "SERVER_NAME": "localhost",
-            "SERVER_PORT": "80",
-            "SERVER_PROTOCOL": "HTTP/1.1",
-            "wsgi.url_scheme": "http",
-            "wsgi.input": BytesIO(raw),
-            "wsgi.errors": StringIO(),
-        }, lambda status, headers, exc_info=None: statuses.append(status)))
+        body = b"".join(
+            self.app(
+                {
+                    "REQUEST_METHOD": method,
+                    "PATH_INFO": path,
+                    "QUERY_STRING": "",
+                    "CONTENT_TYPE": "application/json",
+                    "CONTENT_LENGTH": str(len(raw)),
+                    "SERVER_NAME": "localhost",
+                    "SERVER_PORT": "80",
+                    "SERVER_PROTOCOL": "HTTP/1.1",
+                    "wsgi.url_scheme": "http",
+                    "wsgi.input": BytesIO(raw),
+                    "wsgi.errors": StringIO(),
+                },
+                lambda status, headers, exc_info=None: statuses.append(status),
+            )
+        )
         return int(statuses[0].split()[0]), json.loads(body)
 
     def update(self, payload, ip="192.0.2.40"):
         return self.request("PUT", f"/api/localhosts/{ip}", payload)
 
+    def test_connected_network_metadata_is_consistent_across_host_readers(self):
+        scopes = [
+            {"cidr": "10.0.0.0/8", "firewall_interface_name": "BROAD"},
+            {"cidr": "10.1.10.2/24", "firewall_interface_name": "SERVER_VLAN"},
+            {"cidr": "10.1.10.0/24", "firewall_interface_name": "LATER"},
+            {"cidr": "2001:db8::2/64", "firewall_interface_name": "IPV6_VLAN"},
+            {"cidr": "198.51.100.0/24"},
+        ]
+        self.config.return_value = {"LocalNetworks": json.dumps(scopes)}
+        cases = [
+            ("10.1.10.2", "server_vlan", "10.1.10.2/24"),
+            ("2001:db8::10", "ipv6_vlan", "2001:db8::2/64"),
+            ("198.51.100.10", None, "198.51.100.0/24"),
+            ("203.0.113.10", None, None),
+        ]
+        for address, interface, network in cases:
+            self.conn.execute(
+                "INSERT INTO localhosts (ip_address) VALUES (?)", (address,)
+            )
+            with self.subTest(address=address):
+                status, detail = self.request("GET", f"/api/localhosts/{address}")
+                self.assertEqual(status, 200)
+                for host in [
+                    detail,
+                    localhosts.get_localhost(address),
+                    localhosts.get_localhost_as_dict(address),
+                ]:
+                    self.assertEqual(host["connected_interface_name"], interface)
+                    self.assertEqual(host["connected_network"], network)
+
+        self.config.reset_mock()
+        status, hosts = self.request("GET", "/api/localhosts")
+        self.assertEqual(status, 200)
+        self.config.assert_called_once_with()
+        by_ip = {host["ip_address"]: host for host in hosts}
+        for address, interface, network in cases:
+            self.assertEqual(by_ip[address]["connected_interface_name"], interface)
+            self.assertEqual(by_ip[address]["connected_network"], network)
+
+        self.config.return_value = {
+            "LocalNetworks": json.dumps(
+                [{"cidr": "10.1.10.0/24", "firewall_interface_name": "RENAMED"}]
+            )
+        }
+        self.assertEqual(
+            self.request("GET", "/api/localhosts/10.1.10.2")[1][
+                "connected_interface_name"
+            ],
+            "renamed",
+        )
+
+    def test_network_configuration_failures_are_not_reported_as_unmatched(self):
+        for config in [
+            None,
+            {"LocalNetworks": "not-json"},
+            {"LocalNetworks": "{}"},
+            {"LocalNetworks": '[{"router": "192.0.2.1"}]'},
+            {"LocalNetworks": '[{"cidr": "invalid"}]'},
+            {"LocalNetworks": '[{"cidr": "192.0.2.0/24", "firewall_interface_name": 1}]'},
+        ]:
+            with self.subTest(config=config), patch(
+                "src.database.configuration.log_error"
+            ):
+                self.config.return_value = config
+                for path in ["/api/localhosts", "/api/localhosts/192.0.2.40"]:
+                    status, body = self.request("GET", path)
+                    self.assertEqual(status, 500)
+                    self.assertIn("error", body)
+                for reader, args in [
+                    (localhosts.get_localhosts_all, ()),
+                    (localhosts.get_localhost, ("192.0.2.40",)),
+                    (localhosts.get_localhost_as_dict, ("192.0.2.40",)),
+                ]:
+                    with self.assertRaises(
+                        (sqlite3.OperationalError, ValueError)
+                    ):
+                        reader(*args)
+
     def test_dropdown_only_returns_linux_and_windows_servers(self):
         status, hosts = self.request("GET", "/api/localhosts/docker-hosts")
         self.assertEqual(status, 200)
-        self.assertEqual(hosts, [
-            {"ip_address": "192.0.2.10", "local_description": "Linux server",
-             "icon": "LINUX_SERVER"},
-            {"ip_address": "192.0.2.20", "local_description": "Windows server",
-             "icon": "WINDOWS_SERVER"},
-        ])
+        self.assertEqual(
+            hosts,
+            [
+                {
+                    "ip_address": "192.0.2.10",
+                    "local_description": "Linux server",
+                    "icon": "LINUX_SERVER",
+                },
+                {
+                    "ip_address": "192.0.2.20",
+                    "local_description": "Windows server",
+                    "icon": "WINDOWS_SERVER",
+                },
+            ],
+        )
         self.conn.execute("UPDATE localhosts SET icon = NULL")
         self.assertEqual(self.request("GET", "/api/localhosts/docker-hosts"), (200, []))
 
@@ -313,9 +424,15 @@ class DockerHostTests(unittest.TestCase):
             ("DOCKER CONTAINER", "192.0.2.20"),
         ]:
             with self.subTest(icon=icon):
-                self.assertEqual(self.update({
-                    "icon": icon, "docker_host": server,
-                })[0], 200)
+                self.assertEqual(
+                    self.update(
+                        {
+                            "icon": icon,
+                            "docker_host": server,
+                        }
+                    )[0],
+                    200,
+                )
                 status, host = self.request("GET", "/api/localhosts/192.0.2.40")
                 self.assertEqual(status, 200)
                 self.assertEqual(host["icon"], "DOCKER_CONTAINER")
@@ -328,14 +445,17 @@ class DockerHostTests(unittest.TestCase):
                     localhosts.get_localhost("192.0.2.40")["docker_host"], server
                 )
                 self.assertEqual(
-                    localhosts.get_localhost_as_dict("192.0.2.40")["docker_host"], server
+                    localhosts.get_localhost_as_dict("192.0.2.40")["docker_host"],
+                    server,
                 )
 
     def test_optional_reference_can_be_omitted_preserved_or_cleared(self):
         self.assertEqual(self.update({"icon": "DOCKER_CONTAINER"})[0], 200)
         self.assertIsNone(localhosts.get_localhost("192.0.2.40")["docker_host"])
         self.assertEqual(self.update({"docker_host": "192.0.2.10"})[0], 200)
-        self.assertEqual(self.update({"local_description": "Renamed container"})[0], 200)
+        self.assertEqual(
+            self.update({"local_description": "Renamed container"})[0], 200
+        )
         self.assertEqual(
             localhosts.get_localhost("192.0.2.40")["docker_host"], "192.0.2.10"
         )
@@ -368,12 +488,21 @@ class DockerHostTests(unittest.TestCase):
                 )
 
     def test_server_rename_and_reclassification_update_references(self):
-        self.assertEqual(self.update({
-            "icon": "DOCKER_CONTAINER", "docker_host": "192.0.2.10",
-        })[0], 200)
-        self.assertEqual(self.update(
-            {"ip_address": "192.0.2.11", "icon": "LINUX_SERVER"}, ip="192.0.2.10"
-        )[0], 200)
+        self.assertEqual(
+            self.update(
+                {
+                    "icon": "DOCKER_CONTAINER",
+                    "docker_host": "192.0.2.10",
+                }
+            )[0],
+            200,
+        )
+        self.assertEqual(
+            self.update(
+                {"ip_address": "192.0.2.11", "icon": "LINUX_SERVER"}, ip="192.0.2.10"
+            )[0],
+            200,
+        )
         self.assertEqual(
             localhosts.get_localhost("192.0.2.40")["docker_host"], "192.0.2.11"
         )
@@ -381,15 +510,24 @@ class DockerHostTests(unittest.TestCase):
         self.assertIsNone(localhosts.get_localhost("192.0.2.40")["docker_host"])
 
     def test_server_deletion_clears_references_by_ip_or_mac(self):
-        for function in (localhosts.delete_localhost, localhosts.delete_localhost_database):
+        for function in (
+            localhosts.delete_localhost,
+            localhosts.delete_localhost_database,
+        ):
             with self.subTest(function=function.__name__):
                 self.conn.execute(
                     "INSERT OR IGNORE INTO localhosts (ip_address, icon, mac_address) "
                     "VALUES ('192.0.2.10', 'LINUX_SERVER', 'AA:BB:CC:DD:EE:10')"
                 )
-                self.assertEqual(self.update({
-                    "icon": "DOCKER_CONTAINER", "docker_host": "192.0.2.10",
-                })[0], 200)
+                self.assertEqual(
+                    self.update(
+                        {
+                            "icon": "DOCKER_CONTAINER",
+                            "docker_host": "192.0.2.10",
+                        }
+                    )[0],
+                    200,
+                )
                 for sql in [
                     "CREATE TABLE IF NOT EXISTS alerts (ip_address TEXT)",
                     "CREATE TABLE IF NOT EXISTS allflows (src_ip TEXT, dst_ip TEXT)",
@@ -400,19 +538,25 @@ class DockerHostTests(unittest.TestCase):
                 self.assertIsNone(localhosts.get_localhost("192.0.2.40")["docker_host"])
 
     def test_missing_host_and_database_failures_are_not_successful(self):
-        self.assertEqual(self.update(
-            {"icon": "DOCKER_CONTAINER"}, ip="192.0.2.99"
-        )[0], 404)
+        self.assertEqual(
+            self.update({"icon": "DOCKER_CONTAINER"}, ip="192.0.2.99")[0], 404
+        )
         with patch("src.database.localhosts.connect_to_db", return_value=None):
             self.assertEqual(self.update({"icon": "DOCKER_CONTAINER"})[0], 500)
-            self.assertEqual(self.request("GET", "/api/localhosts/docker-hosts")[0], 500)
+            self.assertEqual(
+                self.request("GET", "/api/localhosts/docker-hosts")[0], 500
+            )
         with patch("src.database.common.connect_to_db", return_value=None):
             self.assertFalse(common.update_database_schema("22", "23"))
 
     def test_migration_preserves_existing_hosts_and_is_repeatable(self):
         self.conn.execute("DROP TABLE localhosts")
-        self.conn.execute("CREATE TABLE localhosts (ip_address TEXT PRIMARY KEY, icon TEXT)")
-        self.conn.execute("INSERT INTO localhosts VALUES ('192.0.2.10', 'LINUX_SERVER')")
+        self.conn.execute(
+            "CREATE TABLE localhosts (ip_address TEXT PRIMARY KEY, icon TEXT)"
+        )
+        self.conn.execute(
+            "INSERT INTO localhosts VALUES ('192.0.2.10', 'LINUX_SERVER')"
+        )
         self.conn.commit()
         self.assertTrue(common.update_database_schema("22", "23"))
         self.assertTrue(common.migrate_configurations_schema22_to_schema23())

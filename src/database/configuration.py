@@ -64,12 +64,13 @@ def get_local_network_cidrs(config_dict):
         return set()
 
 
-def get_local_networks(config_dict):
+def get_local_networks(config_dict, *, strict=False):
     """
     Extracts local network scopes from the LocalNetworks config entry.
     Each scope that is missing an ip_version flag defaults to 4.
     Args:
         config_dict (dict): Configuration dictionary containing 'LocalNetworks' as a JSON array.
+        strict (bool): Raise on malformed configuration instead of returning an empty list.
     Returns:
         list: Local network scope dictionaries with normalized ip_version values.
     """
@@ -78,6 +79,8 @@ def get_local_networks(config_dict):
     try:
         scopes = json.loads(raw)
         if not isinstance(scopes, list):
+            if strict:
+                raise ValueError("LocalNetworks must be a JSON array")
             log_error(
                 logger, "[ERROR] Could not parse LocalNetworks: expected a JSON array"
             )
@@ -86,6 +89,8 @@ def get_local_networks(config_dict):
         result = []
         for scope in scopes:
             if not isinstance(scope, dict) or "cidr" not in scope:
+                if strict:
+                    raise ValueError("Each LocalNetworks entry must contain a cidr")
                 continue
 
             network = dict(scope)
@@ -97,6 +102,8 @@ def get_local_networks(config_dict):
         return result
     except Exception as e:
         log_error(logger, f"[ERROR] Could not parse LocalNetworks: {e}")
+        if strict:
+            raise
         return []
 
 
