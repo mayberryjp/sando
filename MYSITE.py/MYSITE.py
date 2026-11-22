@@ -23,6 +23,7 @@ CONST_DEFAULT_CONFIGS = [
     ("TelegramChatId", ""),
     ("ScheduleProcessor", "0"),
     ("StartCollector", "1"),
+    ("StartIpfixCollector", "1"),
     ("CleanNewFlows", "0"),
     ("DeadConnectionDetection", "0"),
     ("IgnoreListEntries", ""),

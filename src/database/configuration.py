@@ -188,7 +188,7 @@ def update_config_setting(key, value, silent=False):
             disconnect_from_db(conn)
 
 
-def update_flow_metrics(last_packets, last_flows, last_bytes):
+def update_flow_metrics(last_packets, last_flows, last_bytes, source=None):
     """
     Update flow metrics in the configuration database.
     Stores/updates: Total Packets, Total Flows, Total Bytes, Last Packets, Last Flows, Last Bytes, Last Flow Seen.
@@ -197,61 +197,70 @@ def update_flow_metrics(last_packets, last_flows, last_bytes):
         last_packets (int): Number of packets in the last interval
         last_flows (int): Number of flows in the last interval
         last_bytes (int): Number of bytes in the last interval
+        source (str): Collector name, used to aggregate independent last intervals.
 
     Returns:
         bool: True if all updates were successful, False otherwise
     """
     logger = logging.getLogger(__name__)
+    conn = None
     try:
-        # Get current totals from config
-        config = get_config_settings()
+        conn = connect_to_db("configuration")
+        if not conn:
+            raise sqlite3.OperationalError("Unable to connect to configuration database")
+        conn.execute("BEGIN IMMEDIATE")
+        config = dict(conn.execute("SELECT key, value FROM configuration").fetchall())
         total_packets = int(config.get("TotalPackets", 0))
         total_flows = int(config.get("TotalFlows", 0))
         total_bytes = int(config.get("TotalBytes", 0))
 
-        # Update totals
-        new_total_packets = total_packets + last_packets
-        new_total_flows = total_flows + last_flows
-        new_total_bytes = total_bytes + last_bytes
+        updates = {
+            "TotalPackets": total_packets + last_packets,
+            "TotalFlows": total_flows + last_flows,
+            "TotalBytes": total_bytes + last_bytes,
+            "LastPackets": last_packets,
+            "LastFlows": last_flows,
+            "LastBytes": last_bytes,
+        }
+        if source is not None:
+            if source not in ("netflow", "ipfix"):
+                raise ValueError(f"Unknown collector metrics source: {source}")
+            for suffix, value in (
+                ("Packets", last_packets), ("Flows", last_flows), ("Bytes", last_bytes),
+            ):
+                key = f"{source}Last{suffix}"
+                updates[key] = value
+                other = "ipfix" if source == "netflow" else "netflow"
+                updates[f"Last{suffix}"] = value + int(config.get(f"{other}Last{suffix}", 0))
 
-        # Update each value in the config database
-        success = True
-        success &= update_config_setting(
-            "TotalPackets", str(new_total_packets), silent=True
-        )
-        success &= update_config_setting(
-            "TotalFlows", str(new_total_flows), silent=True
-        )
-        success &= update_config_setting(
-            "TotalBytes", str(new_total_bytes), silent=True
-        )
-        success &= update_config_setting("LastPackets", str(last_packets), silent=True)
-        success &= update_config_setting("LastFlows", str(last_flows), silent=True)
-        success &= update_config_setting("LastBytes", str(last_bytes), silent=True)
-        # Set Last Flow Seen to current timestamp
         from datetime import datetime
 
         last_flow_seen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         if last_flows > 0 and last_packets > 0 and last_bytes > 0:
-            success &= update_config_setting(
-                "LastFlowSeen", last_flow_seen, silent=True
-            )
-
-        if success:
-            log_info(
-                logger,
-                f"[INFO] Successfully updated flow metrics in configuration database. Packets: {last_packets}, Flows: {last_flows}, Bytes: {last_bytes}",
-            )
-        else:
-            log_error(
-                logger,
-                "[ERROR] Failed to update one or more flow metrics in configuration database.",
-            )
-        return success
-
-    except Exception as e:
+            updates["LastFlowSeen"] = last_flow_seen
+        conn.executemany(
+            """
+            INSERT INTO configuration (key, value, last_changed)
+            VALUES (?, ?, datetime('now', 'localtime'))
+            ON CONFLICT(key) DO UPDATE SET
+                value = excluded.value, last_changed = excluded.last_changed
+            """,
+            [(key, str(value)) for key, value in updates.items()],
+        )
+        conn.commit()
+        log_info(
+            logger,
+            f"[INFO] Successfully updated flow metrics. Packets: {last_packets}, Flows: {last_flows}, Bytes: {last_bytes}",
+        )
+        return True
+    except (sqlite3.Error, ValueError, TypeError) as e:
+        if conn:
+            conn.rollback()
         log_error(logger, f"[ERROR] Exception in update_flow_metrics: {e}")
         return False
+    finally:
+        if conn:
+            disconnect_from_db(conn)
 
 
 def get_all_configuration():

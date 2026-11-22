@@ -34,19 +34,19 @@ def update_all_flows(rows, config_dict):
                 total_packets += packets
                 total_bytes += bytes_
 
-                # Use datetime('now', 'localtime') for the current timestamp
                 allflows_cursor.execute(
                     """
                     INSERT INTO allflows (
                         src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes, flow_start, flow_end, times_seen, last_seen, tags
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'), 1, datetime('now', 'localtime'), ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT(src_ip, dst_ip, src_port, dst_port, protocol)
                     DO UPDATE SET
                         packets = packets + excluded.packets,
                         bytes = bytes + excluded.bytes,
-                        flow_end = excluded.flow_end,
-                        times_seen = times_seen + 1,
-                        last_seen = datetime('now', 'localtime'),
+                        flow_start = MIN(flow_start, excluded.flow_start),
+                        flow_end = MAX(flow_end, excluded.flow_end),
+                        times_seen = times_seen + excluded.times_seen,
+                        last_seen = MAX(last_seen, excluded.last_seen),
                         tags = excluded.tags
                 """,
                     (
@@ -57,6 +57,10 @@ def update_all_flows(rows, config_dict):
                         protocol,
                         packets,
                         bytes_,
+                        flow_start,
+                        flow_end,
+                        times_seen,
+                        last_seen,
                         tags,
                     ),
                 )

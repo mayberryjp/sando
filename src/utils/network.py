@@ -40,12 +40,33 @@ def ip_network_to_range(network):
         return None, None, None
 
 
-def ip_to_int(ip_addr):
-    """Convert an IP address to an integer."""
+def ip_to_int(ip_addr, ip_version=None):
+    """Convert an IP to an integer, optionally restricting the address family."""
     try:
-        return int(ipaddress.ip_address(ip_addr))
+        address = ipaddress.ip_address(ip_addr)
+        if ip_version is not None and address.version != ip_version:
+            return None
+        return int(address)
     except (ValueError, TypeError):
         return None
+
+
+def encode_ip_number(value, ip_version):
+    """Preserve IPv4 integers; encode IPv6 as sortable, lossless SQLite text."""
+    value = int(value)
+    return f"v6:{value:032x}" if ip_version == 6 else value
+
+
+def decode_ip_number(value):
+    return int(value[3:], 16) if isinstance(value, str) and value.startswith("v6:") else int(value)
+
+
+def encode_network_range(network, start_ip, end_ip, netmask):
+    version = ipaddress.ip_network(network, strict=False).version
+    return (
+        network, encode_ip_number(start_ip, version),
+        encode_ip_number(end_ip, version), encode_ip_number(netmask, version),
+    )
 
 
 def get_usable_ips(networks):

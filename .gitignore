@@ -22,4 +22,6 @@ tests/*
 !tests/test_ignorelist.py
 !tests/test_alerts_pagination.py
 !tests/test_localhosts.py
+!tests/test_ipfix.py
+!tests/test_flow_collectors.py
 test/

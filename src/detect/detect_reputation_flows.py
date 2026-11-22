@@ -1,3 +1,4 @@
+import ipaddress
 import logging
 
 from src.database.configuration import get_local_network_cidrs
@@ -27,12 +28,14 @@ def detect_reputation_flows(rows, config_dict, reputation_data):
     # Sort ranges by start_ip for efficient lookup
     reputation_ranges.sort(key=lambda x: x[0])
 
-    def find_match(ip_int):
+    def find_match(ip_int, version):
         """Find if an IP is in the reputation list."""
         if not ip_int:
             return None
 
         for network, start_ip, end_ip, netmask in reputation_ranges:
+            if ipaddress.ip_network(network).version != version:
+                continue
             if start_ip <= ip_int <= end_ip:
                 return (True, network)
             elif start_ip > ip_int:
@@ -60,7 +63,7 @@ def detect_reputation_flows(rows, config_dict, reputation_data):
         # Check if src_ip or dst_ip is in LOCAL_NETWORKS
         is_src_local = is_ip_in_range(src_ip, LOCAL_NETWORKS)
 
-        (reputation_match, match_network) = find_match(dst_ip_int)
+        (reputation_match, match_network) = find_match(dst_ip_int, ipaddress.ip_address(dst_ip).version)
 
         # If src_ip is local, check dst_ip against the reputation list
         if is_src_local and reputation_match:

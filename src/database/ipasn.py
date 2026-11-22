@@ -1,9 +1,13 @@
+import ipaddress
 import logging
 import sqlite3
 import time
 
 from src.database.core import connect_to_db, disconnect_from_db, run_timed_query
 from src.utils.locallogging import log_error, log_info, log_warn
+from src.utils.network import (
+    decode_ip_number, encode_ip_number, encode_network_range, ip_to_int,
+)
 
 
 def get_asn_for_ip(ip_address):
@@ -45,7 +49,7 @@ def get_asn_for_ip(ip_address):
         rows, _ = run_timed_query(
             cursor,
             query,
-            params=(ip_int,),
+            params=(encode_ip_number(ip_int, ipaddress.ip_address(ip_address).version),),
             description="get_asn_for_ip",
             fetch_all=True,
         )
@@ -78,32 +82,6 @@ def get_asn_for_ip(ip_address):
     finally:
         if "conn" in locals() and conn:
             disconnect_from_db(conn)
-
-
-def ip_to_int(ip_address):
-    """
-    Convert an IPv4 address string to its integer representation.
-
-    Args:
-        ip_address (str): The IP address in dotted-decimal notation (e.g. "192.168.1.1")
-
-    Returns:
-        int: Integer representation of the IP address
-             Returns None if the input is not a valid IPv4 address
-    """
-    try:
-        octets = ip_address.split(".")
-        if len(octets) != 4:
-            return None
-
-        return (
-            (int(octets[0]) << 24)
-            + (int(octets[1]) << 16)
-            + (int(octets[2]) << 8)
-            + int(octets[3])
-        )
-    except (ValueError, AttributeError):
-        return None
 
 
 def get_all_asn_records():
@@ -145,7 +123,10 @@ def get_all_asn_records():
         # Convert to list of dictionaries
         result = []
         for row in rows:
-            result.append(dict(zip(column_names, row)))
+            record = dict(zip(column_names, row))
+            for key in ("start_ip", "end_ip", "netmask"):
+                record[key] = decode_ip_number(record[key])
+            result.append(record)
 
         # Calculate and log total time
         total_time = time.time() - start_time
@@ -203,7 +184,8 @@ def insert_asn_records_batch(records, batch_size=1000):
         current_batch = []
 
         for record in records:
-            current_batch.append(record)
+            network, start, end, mask, asn, isp = record
+            current_batch.append((*encode_network_range(network, start, end, mask), asn, isp))
 
             # When batch size is reached, insert the batch
             if len(current_batch) >= batch_size:

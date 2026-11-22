@@ -6,7 +6,7 @@ import zipfile
 
 import requests  # Add this import
 
-from src.const import CONST_SITE, IS_CONTAINER
+from src.const import CONST_GEOLOCATION_DB, CONST_SITE, IS_CONTAINER
 from src.database.configuration import get_config_settings, get_local_network_cidrs
 from src.database.geolocation import (
     get_all_geolocations,
@@ -44,13 +44,16 @@ def create_geolocation_db():
     blocks_csv_url = "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key={api_key}&suffix=zip"
     locations_csv_url = "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key={api_key}&suffix=zip"
 
-    temp_dir = "/database"
+    temp_dir = os.path.dirname(CONST_GEOLOCATION_DB)
     BATCH_SIZE = 1000  # Number of records to process in each batch
 
     # Define paths for files
     blocks_zip_path = os.path.join(temp_dir, "GeoLite2-Country-Blocks.zip")
     locations_zip_path = os.path.join(temp_dir, "GeoLite2-Country-Locations.zip")
-    blocks_csv_path = os.path.join(temp_dir, "GeoLite2-Country-Blocks-IPv4.csv")
+    blocks_csv_paths = [
+        os.path.join(temp_dir, f"GeoLite2-Country-Blocks-IPv{version}.csv")
+        for version in (4, 6)
+    ]
     locations_csv_path = os.path.join(temp_dir, "GeoLite2-Country-Locations-en.csv")
 
     download_successful = True  # Flag to track if download was successful
@@ -130,7 +133,7 @@ def create_geolocation_db():
             extract_flat(locations_zip_path, temp_dir)
 
         # Check if the required CSV files exist (either from download or already locally)
-        if not os.path.exists(blocks_csv_path) or not os.path.exists(
+        if not os.path.exists(blocks_csv_paths[0]) or not os.path.exists(
             locations_csv_path
         ):
             log_error(
@@ -141,7 +144,7 @@ def create_geolocation_db():
 
         log_info(
             logger,
-            f"[INFO] Using geolocation data files: {blocks_csv_path} and {locations_csv_path}",
+            f"[INFO] Using geolocation data files: {blocks_csv_paths} and {locations_csv_path}",
         )
 
         # Step 3: Load the country locations data into a dictionary
@@ -161,33 +164,27 @@ def create_geolocation_db():
         geolocation_batch = []
         total_records = 0
 
-        with open(blocks_csv_path, "r", encoding="utf-8") as blocks_file:
-            reader = csv.DictReader(blocks_file)
-            for row in reader:
-                network = row["network"]
-                start_ip, end_ip, netmask = ip_network_to_range(network)
-                if start_ip is None:
-                    continue
+        for blocks_csv_path in blocks_csv_paths:
+            if not os.path.exists(blocks_csv_path):
+                log_warn(logger, f"[WARN] Missing {blocks_csv_path}; IPv6 country enrichment unavailable until data is refreshed")
+                continue
+            with open(blocks_csv_path, "r", encoding="utf-8") as blocks_file:
+                reader = csv.DictReader(blocks_file)
+                for row in reader:
+                    network = row["network"]
+                    start_ip, end_ip, netmask = ip_network_to_range(network)
+                    if start_ip is None:
+                        continue
 
-                geoname_id = row.get("geoname_id")
-                country_name = locations.get(
-                    geoname_id, None
-                )  # Get the country name from the locations dictionary
-
-                # Add to batch
-                geolocation_batch.append(
-                    (network, start_ip, end_ip, netmask, country_name)
-                )
-
-                # When batch size is reached, process the batch
-                if len(geolocation_batch) >= BATCH_SIZE:
-                    success_count, _ = insert_geolocation(geolocation_batch)
-                    total_records += success_count
-                    geolocation_batch = []  # Clear the batch
-                    log_info(
-                        logger,
-                        f"[INFO] Inserted {total_records} geolocation records so far...",
+                    country_name = locations.get(row.get("geoname_id"))
+                    geolocation_batch.append(
+                        (network, start_ip, end_ip, netmask, country_name)
                     )
+                    if len(geolocation_batch) >= BATCH_SIZE:
+                        success_count, _ = insert_geolocation(geolocation_batch)
+                        total_records += success_count
+                        geolocation_batch = []
+                        log_info(logger, f"[INFO] Inserted {total_records} geolocation records so far...")
 
         # Process any remaining records in the last batch
         if geolocation_batch:
@@ -213,9 +210,9 @@ def create_geolocation_db():
                     site_name = site_name.strip()
                     network = network.strip()
                     try:
-                        if ipaddress.ip_network(network, strict=False).version != 4:
-                            continue
-                    except ValueError:
+                        ipaddress.ip_network(network, strict=False)
+                    except ValueError as exc:
+                        log_warn(logger, f"[WARN] Invalid OtherNetworks entry {network}: {exc}")
                         continue
                     start_ip, end_ip, netmask = ip_network_to_range(network)
                     if start_ip is not None:
@@ -228,9 +225,9 @@ def create_geolocation_db():
             if network in other_networks_set:
                 continue  # Skip if already in other_networks
             try:
-                if ipaddress.ip_network(network, strict=False).version != 4:
-                    continue
-            except ValueError:
+                ipaddress.ip_network(network, strict=False)
+            except ValueError as exc:
+                log_warn(logger, f"[WARN] Invalid local network {network}: {exc}")
                 continue
             start_ip, end_ip, netmask = ip_network_to_range(network)
             if start_ip is None:
@@ -239,6 +236,9 @@ def create_geolocation_db():
 
         local_networks_batch.append(
             ("224.0.0.0/4", "3758096384", "4026531839", "4", "Multicast")
+        )
+        local_networks_batch.append(
+            ("ff00::/8", *ip_network_to_range("ff00::/8"), "Multicast")
         )
         log_info(logger, "[INFO] Adding Other Networks to geolocation database...")
 
@@ -290,7 +290,7 @@ def lookup_ip_country(ip_address):
             log_error(logger, f"[ERROR] Invalid IP address format: {ip_address}")
             return None
 
-        result = get_country_by_ip_int(ip_int)
+        result = get_country_by_ip_int(ip_int, ip_version=ipaddress.ip_address(ip_address).version)
 
         if result:
             return result

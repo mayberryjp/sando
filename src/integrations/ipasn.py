@@ -6,10 +6,11 @@ import zipfile
 
 import requests
 
+from src.const import CONST_IPASN_DB
 from src.utils.locallogging import log_error, log_info, log_warn
 from src.utils.network import ip_network_to_range
 
-ASN_DOWNLOAD_URL = "https://geoip.oxl.app/file/asn_ipv4_full.json.zip"
+ASN_DOWNLOAD_URL = "https://geoip.oxl.app/file/asn_full.json.zip"
 ASN_DOWNLOAD_MAX_ATTEMPTS = 10
 
 
@@ -115,12 +116,12 @@ def create_asn_database():
 
     try:
         # Step 1: Create temporary directory if it doesn't exist
-        temp_dir = "/database"
+        temp_dir = os.path.dirname(CONST_IPASN_DB)
         os.makedirs(temp_dir, exist_ok=True)
-        zip_path = os.path.join(temp_dir, "asn_ipv4_full.json.zip")
-        json_path = os.path.join(temp_dir, "asn_ipv4_full.json")
+        zip_path = os.path.join(temp_dir, "asn_full.json.zip")
+        json_path = os.path.join(temp_dir, "asn_full.json")
 
-        etag_path = os.path.join(temp_dir, "asn_ipv4_full.etag")
+        etag_path = os.path.join(temp_dir, "asn_full.etag")
 
         # Step 2: Skip if the remote file is unchanged since the last successful import
         remote_etag = _get_remote_etag(ASN_DOWNLOAD_URL)
@@ -164,7 +165,8 @@ def create_asn_database():
                     return
 
                 total_entries = sum(
-                    len(asn_data.get("ipv4", [])) for asn_data in data.values()
+                    len(asn_data.get("ipv4", [])) + len(asn_data.get("ipv6", []))
+                    for asn_data in data.values() if isinstance(asn_data, dict)
                 )
                 log_info(
                     logger,
@@ -182,9 +184,8 @@ def create_asn_database():
                         log_warn(logger, f"[WARN] Skipping invalid ASN data for {asn}")
                         continue
 
-                    # Get IPv4 networks
-                    ipv4_networks = asn_data.get("ipv4", [])
-                    if not ipv4_networks:
+                    networks = asn_data.get("ipv4", []) + asn_data.get("ipv6", [])
+                    if not networks:
                         continue
 
                     # Get organization info
@@ -194,7 +195,7 @@ def create_asn_database():
                     )
 
                     # Process each network for this ASN
-                    for network in ipv4_networks:
+                    for network in networks:
                         # Convert network CIDR to start_ip, end_ip, netmask
                         start_ip, end_ip, netmask = ip_network_to_range(network)
                         if start_ip is None:
@@ -210,8 +211,10 @@ def create_asn_database():
                             from src.database.ipasn import insert_asn_records_batch
 
                             success, inserted = insert_asn_records_batch(current_batch)
-                            if success:
-                                count += inserted
+                            if not success:
+                                log_error(logger, "[ERROR] ASN batch import failed; leaving ETag unchanged for retry")
+                                return
+                            count += inserted
                             current_batch = []
 
                 # Insert any remaining entries in the last batch
@@ -219,8 +222,10 @@ def create_asn_database():
                     from src.database.ipasn import insert_asn_records_batch
 
                     success, inserted = insert_asn_records_batch(current_batch)
-                    if success:
-                        count += inserted
+                    if not success:
+                        log_error(logger, "[ERROR] ASN batch import failed; leaving ETag unchanged for retry")
+                        return
+                    count += inserted
 
         except json.JSONDecodeError as e:
             log_error(logger, f"[ERROR] Invalid JSON format in ASN data file: {e}")

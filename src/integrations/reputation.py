@@ -48,7 +48,10 @@ def import_reputation_list(config_dict):
                 network = ip_network(line)
 
                 # Exclude networks in the excluded list
-                if any(network.overlaps(excluded) for excluded in excluded_networks):
+                if any(
+                    network.version == excluded.version and network.overlaps(excluded)
+                    for excluded in excluded_networks
+                ):
                     log_info(logger, f"[INFO] Excluding network: {line}")
                     continue
 

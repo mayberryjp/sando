@@ -1,3 +1,4 @@
+import ipaddress
 import logging
 
 from src.utils.locallogging import log_error, log_warn
@@ -63,6 +64,9 @@ def tag_broadcast(record, broadcast_addresses):
     """
     logger = logging.getLogger(__name__)
 
+    if ipaddress.ip_address(record["src_ip"]).version == 6:
+        return None
+
     if not broadcast_addresses:
         log_warn(logger, "[WARN] No broadcast addresses found for LOCAL_NETWORKS")
         return None
@@ -78,7 +82,7 @@ def tag_broadcast(record, broadcast_addresses):
 
 def tag_multicast(record):
     """
-    Tag flows where the destination IP is in multicast range (224.0.0.0 to 239.255.255.255).
+    Tag flows whose destination is IPv4 or IPv6 multicast.
 
     Args:
         record: Flow record to check
@@ -89,15 +93,11 @@ def tag_multicast(record):
     logger = logging.getLogger(__name__)
 
     try:
-        # Get first octet of destination IP
-        first_octet = int(record["dst_ip"].split(".")[0])
-
-        # Check if in multicast range (224-239)
-        if 224 <= first_octet <= 239:
+        if ipaddress.ip_address(record["dst_ip"]).is_multicast:
             return "Multicast;"
         return None
 
-    except (ValueError, IndexError) as e:
+    except ValueError as e:
         log_error(logger, f"[ERROR] Invalid IP address format in record: {e}")
         return None
 

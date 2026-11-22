@@ -24,7 +24,7 @@ COPY --from=builder /sando /sando
 WORKDIR /sando
 
 # Expose the required ports
-EXPOSE 2055 8044 53 67 8030
+EXPOSE 2055/udp 4739/udp 8044 53 67 8030
 
 # Ensure Python output is not buffered
 ENV PYTHONUNBUFFERED=1

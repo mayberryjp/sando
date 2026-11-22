@@ -14,6 +14,7 @@ required_processes = [
     "discovery",
     "api",
     "collector",
+    "ipfix",
     "fetch",
     "sinkholedns",
     "dhcpserver",

@@ -1,5 +1,6 @@
 import logging
 import sqlite3
+from datetime import datetime
 
 from src.database.core import connect_to_db, disconnect_from_db
 from src.utils.locallogging import log_error, log_info
@@ -80,13 +81,14 @@ def update_new_flows(records):
                 """
         INSERT INTO newflows (
             src_ip, dst_ip, src_port, dst_port, protocol, packets, bytes, flow_start, flow_end, last_seen, times_seen, tags
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'), datetime('now', 'localtime'), 1,?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1,?)
         ON CONFLICT(src_ip, dst_ip, src_port, dst_port, protocol)
         DO UPDATE SET
             packets = packets + excluded.packets,
             bytes = bytes + excluded.bytes,
-            flow_end = excluded.flow_end,
-            last_seen = excluded.last_seen,
+            flow_start = MIN(flow_start, excluded.flow_start),
+            flow_end = MAX(flow_end, excluded.flow_end),
+            last_seen = MAX(last_seen, excluded.last_seen),
             times_seen = times_seen + 1
     """,
                 [
@@ -98,6 +100,9 @@ def update_new_flows(records):
                         r["protocol"],
                         r["packets"],
                         r["bytes"],
+                        r.get("flow_start") or datetime.fromtimestamp(r["start_time"]).strftime("%Y-%m-%d %H:%M:%S"),
+                        r.get("flow_end") or datetime.fromtimestamp(r["end_time"]).strftime("%Y-%m-%d %H:%M:%S"),
+                        datetime.fromtimestamp(r["last_seen"]).strftime("%Y-%m-%d %H:%M:%S"),
                         r["tags"],
                     )
                     for r in records

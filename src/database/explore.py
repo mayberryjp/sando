@@ -1,4 +1,5 @@
 import bisect
+import ipaddress
 import logging
 
 from src.const import CONST_CREATE_EXPLORE_SQL, CONST_EXPLORE_DB
@@ -10,7 +11,7 @@ from src.database.core import (
 )
 from src.database.dnsqueries import get_ip_to_domain_mapping
 from src.utils.locallogging import log_error, log_info
-from src.utils.network import ip_to_int
+from src.utils.network import decode_ip_number, ip_to_int
 
 
 def bulk_populate_master_flow_view():
@@ -41,42 +42,62 @@ def bulk_populate_master_flow_view():
         log_info(logger, "[INFO] Loading geolocation...")
         src_conn = connect_to_db("geolocation")
         src_cursor = src_conn.cursor()
-        src_cursor.execute("SELECT start_ip, end_ip, country_name FROM geolocation")
+        src_cursor.execute("SELECT network, start_ip, end_ip, country_name FROM geolocation")
         geolocation_rows = src_cursor.fetchall()
-        geolocations = []
-        for start_ip, end_ip, country in geolocation_rows:
-            geolocations.append((int(start_ip), int(end_ip), country))
+        geolocations = {4: [], 6: []}
+        for network, start_ip, end_ip, country in geolocation_rows:
+            geolocations[ipaddress.ip_network(network, strict=False).version].append(
+                (decode_ip_number(start_ip), decode_ip_number(end_ip), country)
+            )
         disconnect_from_db(src_conn)
 
         # Prepare sorted lists for geolocation and ipasn
-        geolocations_sorted = sorted(geolocations, key=lambda x: x[0])
-        geo_starts = [start for start, end, country in geolocations_sorted]
+        geolocations_sorted = {
+            version: sorted(ranges, key=lambda x: x[0])
+            for version, ranges in geolocations.items()
+        }
+        geo_starts = {
+            version: [start for start, end, country in ranges]
+            for version, ranges in geolocations_sorted.items()
+        }
 
         log_info(logger, "[INFO] Loading ipasn...")
         src_conn = connect_to_db("ipasn")
         src_cursor = src_conn.cursor()
-        src_cursor.execute("SELECT start_ip, end_ip, asn, isp_name FROM ipasn")
+        src_cursor.execute("SELECT network, start_ip, end_ip, asn, isp_name FROM ipasn")
         ipasn_rows = src_cursor.fetchall()
-        ipasns = []
-        for start_ip, end_ip, asn, isp in ipasn_rows:
-            ipasns.append((int(start_ip), int(end_ip), asn, isp))
+        ipasns = {4: [], 6: []}
+        for network, start_ip, end_ip, asn, isp in ipasn_rows:
+            ipasns[ipaddress.ip_network(network, strict=False).version].append(
+                (decode_ip_number(start_ip), decode_ip_number(end_ip), asn, isp)
+            )
         disconnect_from_db(src_conn)
 
-        ipasns_sorted = sorted(ipasns, key=lambda x: x[0])
-        ipasn_starts = [start for start, end, asn, isp in ipasns_sorted]
+        ipasns_sorted = {
+            version: sorted(ranges, key=lambda x: x[0])
+            for version, ranges in ipasns.items()
+        }
+        ipasn_starts = {
+            version: [start for start, end, asn, isp in ranges]
+            for version, ranges in ipasns_sorted.items()
+        }
 
-        def lookup_geo(ip_int):
-            idx = bisect.bisect_right(geo_starts, ip_int) - 1
+        def lookup_geo(ip):
+            address = ipaddress.ip_address(ip)
+            ip_int = int(address)
+            idx = bisect.bisect_right(geo_starts[address.version], ip_int) - 1
             if idx >= 0:
-                start, end, country = geolocations_sorted[idx]
+                start, end, country = geolocations_sorted[address.version][idx]
                 if start <= ip_int <= end:
                     return country
             return None
 
-        def lookup_ipasn(ip_int):
-            idx = bisect.bisect_right(ipasn_starts, ip_int) - 1
+        def lookup_ipasn(ip):
+            address = ipaddress.ip_address(ip)
+            ip_int = int(address)
+            idx = bisect.bisect_right(ipasn_starts[address.version], ip_int) - 1
             if idx >= 0:
-                start, end, asn, isp = ipasns_sorted[idx]
+                start, end, asn, isp = ipasns_sorted[address.version][idx]
                 if start <= ip_int <= end:
                     return asn, isp
             return None, None
@@ -118,22 +139,19 @@ def bulk_populate_master_flow_view():
             if src_port <= dst_port:
                 continue
 
-            src_ip_int = ip_to_int(src_ip)
-            dst_ip_int = ip_to_int(dst_ip)
+            # Numeric enrichment/index columns are IPv4-only; IPv6 stays in text columns.
+            src_ip_int = ip_to_int(src_ip, ip_version=4)
+            dst_ip_int = ip_to_int(dst_ip, ip_version=4)
             src_dns = dnskeyvalue.get(src_ip) or localhosts.get(src_ip, {}).get(
                 "dns", ""
             )
             dst_dns = dnskeyvalue.get(dst_ip) or localhosts.get(dst_ip, {}).get(
                 "dns", ""
             )
-            src_country = lookup_geo(src_ip_int) if src_ip_int is not None else None
-            dst_country = lookup_geo(dst_ip_int) if dst_ip_int is not None else None
-            src_asn, src_isp = (
-                lookup_ipasn(src_ip_int) if src_ip_int is not None else (None, None)
-            )
-            dst_asn, dst_isp = (
-                lookup_ipasn(dst_ip_int) if dst_ip_int is not None else (None, None)
-            )
+            src_country = lookup_geo(src_ip) if ip_to_int(src_ip) is not None else None
+            dst_country = lookup_geo(dst_ip) if ip_to_int(dst_ip) is not None else None
+            src_asn, src_isp = lookup_ipasn(src_ip) if ip_to_int(src_ip) is not None else (None, None)
+            dst_asn, dst_isp = lookup_ipasn(dst_ip) if ip_to_int(dst_ip) is not None else (None, None)
             src_sandoname = localhosts.get(src_ip, {}).get("description", "")
             dst_sandoname = localhosts.get(dst_ip, {}).get("description", "")
 

@@ -88,16 +88,17 @@ Recent backend and dashboard updates include:
 
 Sando is split into two containers:
 
-- `sando`: Python backend. Runs the NetFlow collector, API, detections, integrations, discovery, watchdog, optional DHCP server, optional sinkhole DNS server, and MCP server.
+- `sando`: Python backend. Runs the NetFlow and IPFIX collectors, API, detections, integrations, discovery, watchdog, optional DHCP server, optional sinkhole DNS server, and MCP server.
 - `sando-website`: Vue 3/Vite frontend. Serves the dashboard on port `3030` and calls the backend API.
 
 Data flow:
 
 ```text
 Firewall/router NetFlow v5 -> UDP/2055 -> sando collector
-                                      -> SQLite databases in /database
-                                      -> API on TCP/8044
-                                      -> dashboard on TCP/3030
+Firewall/router IPFIX v10 -> UDP/4739 -> sando ipfix
+Both collectors -> shared tagging, flow/host statistics and SQLite databases
+                -> detection processor -> API on TCP/8044
+                                       -> dashboard on TCP/3030
 ```
 
 The backend is managed with supervisord and starts multiple processes. Most detections and optional services are controlled by settings and can be enabled or disabled from the dashboard.
@@ -111,6 +112,7 @@ The backend is managed with supervisord and starts multiple processes. Most dete
 | Dashboard | TCP/3030 | Yes | Served by `sando-website` |
 | Local API | TCP/8044 | Yes | Served by `sando` |
 | NetFlow v5 collector | UDP/2055 | Yes | Configure your firewall/router to export here |
+| IPFIX v10 collector | UDP/4739 | Yes, when exporting IPFIX | Runs alongside NetFlow; supports IPv4 and IPv6 flow records |
 | Sinkhole DNS | TCP/UDP 53 | Optional | Only if `SinkHoleDns` is enabled |
 | DHCP server | UDP/67 | Optional | Only if `DhcpServer` is enabled |
 | MCP server | TCP/8030 | Optional/experimental | Local MCP endpoint |
@@ -219,7 +221,7 @@ Sando is currently intended for trusted private networks. Not all production sec
 Recommended security posture:
 
 - Run Sando only on a private LAN or management VLAN.
-- Do not expose `3030`, `8044`, `8030`, `2055`, `53`, or `67` to the internet.
+- Do not expose `3030`, `8044`, `8030`, `2055`, `4739`, `53`, or `67` to the internet.
 - Use firewall rules to limit dashboard and API access to admin devices.
 - Back up the `/database` volume because it contains Sando's persistent state.
 - Review opt-in cloud/API settings before enabling them.
@@ -289,7 +291,7 @@ Use the `mayberry4477/sando:latest` and `mayberry4477/sando-website:latest` imag
 
 ## Initial Configuration
 
-After first startup, configure your router/firewall to export NetFlow v5 to the backend container on UDP port `2055`.
+After first startup, configure your router/firewall to export NetFlow v5 to UDP port `2055`, IPFIX v10 to UDP port `4739`, or both to the backend container.
 
 Then open the Sando dashboard and configure:
 
@@ -304,6 +306,31 @@ New host detection is enabled by default in the install configuration and is a g
 If you use Sando's DHCP server, it can work with DHCP relay across multiple VLANs or within one network. All relevant subnets must be configured as local networks.
 
 ---
+
+## Configure IPFIX v10
+
+Configure your exporter to send IPFIX **version 10 over UDP** to the backend host on port `4739`. NetFlow v9 is not IPFIX and is not accepted. Both collectors are enabled by default and run as separate supervisord processes (`collector` and `ipfix`), monitored by the watchdog.
+
+- The NetFlow collector owns database/configuration initialization. IPFIX waits at least 30 seconds and checks the initialization marker and required tables before listening; it does not reinitialize databases or clear queued flows. Bootstrap still runs when `StartCollector` is disabled.
+- `StartCollector` and `StartIpfixCollector` independently enable their respective listeners. Disabled processes remain alive for watchdog monitoring and recheck settings every 30 seconds. Restart the corresponding supervisor process after disabling an already-running listener.
+- Override bindings with `COLLECTOR_LISTEN_ADDRESS` / `COLLECTOR_LISTEN_PORT` and `IPFIX_LISTEN_ADDRESS` / `IPFIX_LISTEN_PORT`. Ports default to `2055` and `4739`; do not give both listeners the same binding. An IPv6 transport binding such as `IPFIX_LISTEN_ADDRESS=::` is supported; IPv6 flow records can also arrive over IPv4 UDP transport.
+- With bridge networking, publish both `2055:2055/udp` and `4739:4739/udp`. The host-network deployment example requires no additional port mappings.
+
+IPFIX templates are cached separately for each exporter IP/source port and observation domain. Exporters must send templates before data and refresh them more often than every 30 minutes, including after collector restarts. The cache holds up to 4,096 templates; missing/expired templates and malformed messages are logged rather than stopping other exports. UDP template withdrawals are ignored per RFC 7011.
+
+Flow templates must include source/destination IPv4 (`8`/`12`) or IPv6 (`27`/`28`) addresses, `protocolIdentifier` (`4`), `packetDeltaCount` (`2`), and `octetDeltaCount` (`1`). Transport ports (`7`/`11`) are optional and default to zero when absent. Netcontrol's ICMP type/code encoding is retained as the numeric destination-port value. Reduced-size integers, multiple records/sets, variable-length fields, and enterprise fields are supported; unknown/enterprise fields and options metadata are skipped. Total-counter-only templates are logged and not ingested. Export unsampled, delta-counter flows (`sampling_rate: 1` for Netcontrol). Unexpected sampled exports produce a warning; packet/octet counts remain observed values and are never multiplied. Counters larger than SQLite's signed 64-bit range are rejected with a log message.
+
+IPv4 and IPv6 flows follow the same tagging, transient-flow upsert, host statistics, detection, historical-flow, traffic statistics, and Explore/API workflow. IPFIX `flowStartMilliseconds` / `flowEndMilliseconds` (IEs `152`/`153`) populate the existing `flow_start` / `flow_end` columns as local-time strings with millisecond precision. `last_seen` records receiver arrival time separately, not delayed batch-processing time. Without exported timestamps, flow times use receipt time as NetFlow does. Repeated segments retain the earliest start, latest end, and latest receipt through transient and historical aggregation. Inverted exported times are warned about, not silently corrected; timestamps outside the supported datetime range are rejected.
+
+IPFIX is intentionally normalized into the existing NetFlow columns without a separate record model or schema migration. This is compatible ingestion for unsampled Netcontrol exports, **not full compliance with its lossless receiver specification**: TOS and exporter/session provenance are not stored in the five-tuple aggregation key; sampling metadata and sequence numbers are discarded; duplicates are not suppressed; missing context, ICMP/SCTP interpretation, counters and API number precision retain the legacy model's limitations. Use a trusted network and distinct monitored traffic to avoid ambiguous attribution or duplicate counting.
+
+Add IPv6 CIDRs to `LocalNetworks` with `"ip_version": 6`. IPv6 multicast and link-local tags are supported; country, ASN and reputation lookups keep IPv4 and IPv6 ranges separate. MaxMind imports both block CSVs and ASN imports the combined IPv4/IPv6 dataset; refresh these integrations after upgrading to obtain IPv6 enrichment.
+
+IPv6 range integers are stored losslessly as fixed-width `v6:` hexadecimal text in SQLite and decoded by database helpers; existing IPv4 storage is unchanged. Explore's IPv4 numeric index columns are `NULL` for IPv6, while address text columns remain searchable and enrichment is retained.
+
+Both collectors use `CollectorProcessingInterval`, `WriteNewFlowsToCsv`, and the same tags/detections. When CSV output is enabled, NetFlow writes `/database/newflows.csv` and IPFIX writes `/database/ipfix_newflows.csv` to avoid competing headers. Shared totals are updated transactionally; `LastPackets`, `LastFlows`, and `LastBytes` sum the latest independent interval from each collector.
+
+If both exporters report the same observed traffic, Sando adds both observations; it does not deduplicate across protocols. Avoid exporting the same traffic twice unless that is intentional.
 
 ## Configure NetFlow v5 on pfSense
 
@@ -351,7 +378,7 @@ Useful checks:
 - Dashboard: `http://YOUR_SANDO_HOST:3030`
 - API health: `http://YOUR_SANDO_HOST:8044/api/online/consolidated`
 - Explore database health: `http://YOUR_SANDO_HOST:8044/api/online/explore`
-- Confirm your firewall/router exports NetFlow v5 to `UDP/2055`.
+- Confirm your firewall/router exports NetFlow v5 to `UDP/2055` or IPFIX v10 to `UDP/4739`.
 - Confirm `SANDO_API_BASE_URL` points to a URL reachable from your browser.
 - Check backend and dashboard container logs.
 - Check for port conflicts before enabling sinkhole DNS on port `53` or DHCP on port `67`.
@@ -360,7 +387,7 @@ Useful checks:
 Common symptoms:
 
 - Dashboard loads but no data appears: check `SANDO_API_BASE_URL`, API health, and browser console errors.
-- API is online but no flows appear: check NetFlow export target IP/port and firewall rules.
+- API is online but no flows appear: check the NetFlow/IPFIX target IP/port and firewall rules. For IPFIX, also check template refresh and missing-template logs.
 - DNS sinkhole will not start: another DNS service may already be bound to port `53`.
 - DHCP server will not work: another DHCP service may already own port `67`, or relay/local network settings may be incomplete.
 - Multiple services exit immediately with status `0`, while DHCP/watchdog report a missing `insert_action` or sinkhole DNS reports a missing `insert_dns_queries_batch`: check for empty Python source modules. Commit `197c65e` accidentally emptied 37 modules. Use a corrected checkout or image, then rebuild/pull and recreate the backend container; restarting the same broken image will not fix it. Run `python -m pytest tests/test_process_startup.py` from the repository root to check source integrity and service imports without starting listeners.
@@ -424,9 +451,10 @@ Note: the current backend configuration key is spelled `IncorrectNtpStratrumDete
 | --- | --- | --- |
 | `LocalNetworks` | `[]` | Local network CIDRs. |
 | `StartCollector` | `1` | Start the NetFlow collector. |
+| `StartIpfixCollector` | `1` | Start the independent IPv4/IPv6 IPFIX v10 collector. |
 | `ScheduleProcessor` | `1` | Enable scheduled flow processing. |
 | `ProcessRunInterval` | `60` | Detection processor interval in seconds. |
-| `CollectorProcessingInterval` | `60` | Collector processing interval in seconds. |
+| `CollectorProcessingInterval` | `60` | Processing interval in seconds for both flow collectors. |
 | `ProcessingInterval` | `60` | General processing interval. |
 | `CleanNewFlows` | `1` | Clean transient new-flow records after processing. |
 | `RemoveBroadcastFlows` | `1` | Remove broadcast flows from processing. |

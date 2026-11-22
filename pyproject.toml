@@ -20,6 +20,7 @@ dependencies = [
 
 [project.scripts]
 collector = "src.processes.collector:main"
+ipfix = "src.processes.ipfix:main"
 processor = "src.processes.processor:main"
 api = "src.processes.api:main"
 discovery = "src.processes.discovery:main"

@@ -3,6 +3,7 @@ import sqlite3
 
 from src.database.core import connect_to_db, disconnect_from_db
 from src.utils.locallogging import log_error
+from src.utils.network import decode_ip_number, encode_network_range
 
 
 def insert_reputation(network, start_ip, end_ip, netmask):
@@ -33,7 +34,7 @@ def insert_reputation(network, start_ip, end_ip, netmask):
             INSERT OR IGNORE INTO reputationlist (network, start_ip, end_ip, netmask)
             VALUES (?, ?, ?, ?)
         """,
-            (network, start_ip, end_ip, netmask),
+            encode_network_range(network, start_ip, end_ip, netmask),
         )
         conn.commit()
         return True
@@ -64,7 +65,10 @@ def get_all_reputation_records():
         cursor = conn.cursor()
         cursor.execute("SELECT network, start_ip, end_ip, netmask FROM reputationlist")
         results = cursor.fetchall()
-        return results
+        return [
+            (network, decode_ip_number(start), decode_ip_number(end), decode_ip_number(mask))
+            for network, start, end, mask in results
+        ]
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Error retrieving reputation records: {e}")
         return None

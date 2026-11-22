@@ -39,7 +39,7 @@ from src.database.common import (
     store_site_name,
     store_version,
 )
-from src.database.configuration import get_config_settings
+from src.database.configuration import get_config_settings, update_config_setting, update_flow_metrics
 from src.database.core import (
     create_table,
     delete_aged_dbperformance,
@@ -62,7 +62,7 @@ parent_dir = Path(__file__).resolve().parent.parent
 
 
 # Entry point
-if __name__ == "__main__":
+def main():
 
     logger = logging.getLogger(__name__)
 
@@ -76,6 +76,9 @@ if __name__ == "__main__":
             f"[INFO] Configuration database not found, creating at {CONST_CONFIGURATION_DB}. We assume this is a first time install. ",
         )
         create_table(CONST_CREATE_CONFIG_SQL, "configuration")
+
+    if not update_config_setting("CollectorInitialized", 0, silent=True):
+        raise RuntimeError("Cannot mark collector initialization as pending")
 
     if not os.path.exists(CONST_ACTIONS_DB):
         log_info(
@@ -121,7 +124,6 @@ if __name__ == "__main__":
     create_table(CONST_CREATE_ALERTS_SQL, "alerts")
     create_table(CONST_CREATE_ALLFLOWS_SQL, "allflows")
     create_table(CONST_CREATE_NEWFLOWS_SQL, "newflows")
-    delete_all_records("newflows")
     create_table(CONST_CREATE_LOCALHOSTS_SQL, "localhosts")
     create_table(CONST_CREATE_GEOLOCATION_SQL, "geolocation")
     create_table(CONST_CREATE_REPUTATIONLIST_SQL, "reputationlist")
@@ -134,8 +136,7 @@ if __name__ == "__main__":
 
     # Seed default config values on every startup — INSERT OR IGNORE is safe for existing installs.
     # This also backfills any new keys added in upgrades.
-    if not os.path.exists(site_config_path):
-        init_configurations_from_variable()
+    init_configurations_from_variable()
 
     store_machine_unique_identifier()
     store_version()
@@ -148,7 +149,8 @@ if __name__ == "__main__":
         f"[INFO] Current configuration at start, config will refresh automatically every time processor runs:\n {dump_json(config_dict)}",
     )
 
-    check_update_database_schema(config_dict)
+    if not check_update_database_schema(config_dict):
+        raise RuntimeError("Collector database schema initialization failed")
     delete_aged_dbperformance(days=45)
 
     # Add NTP whitelists if bypass detection is enabled and servers are configured
@@ -181,7 +183,19 @@ if __name__ == "__main__":
         log_error(logger, "[ERROR] Failed to load configuration settings")
         exit(1)
 
+    if not update_config_setting("CollectorInitialized", 1, silent=True):
+        raise RuntimeError("Cannot mark collector initialization as ready")
+
     log_info(logger, f"[INFO] Starting NetFlow v5 collector {VERSION} at {SITE}")
-    if config_dict["StartCollector"] == 1:
-        # Start the collector
-        handle_netflow_v5()
+    while not config_dict or int(config_dict.get("StartCollector", 1)) != 1:
+        update_flow_metrics(0, 0, 0, source="netflow")
+        log_info(logger, "[INFO] NetFlow collector disabled; checking again in 30 seconds")
+        time.sleep(30)
+        config_dict = get_config_settings()
+        if not config_dict:
+            log_error(logger, "[ERROR] Failed to load configuration settings")
+    handle_netflow_v5()
+
+
+if __name__ == "__main__":
+    main()

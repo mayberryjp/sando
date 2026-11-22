@@ -3,6 +3,7 @@ import sqlite3
 
 from src.database.core import connect_to_db, disconnect_from_db, run_timed_query
 from src.utils.locallogging import log_error
+from src.utils.network import decode_ip_number, encode_ip_number, encode_network_range
 
 
 def insert_geolocation(rows):
@@ -38,7 +39,7 @@ def insert_geolocation(rows):
                         network, start_ip, end_ip, netmask, country_name
                     ) VALUES (?, ?, ?, ?, ?)
                 """,
-                    (network, start_ip, end_ip, netmask, country_name),
+                    (*encode_network_range(network, start_ip, end_ip, netmask), country_name),
                 )
                 success_count += 1
             except sqlite3.Error as e:
@@ -83,7 +84,10 @@ def get_all_geolocations():
             "SELECT network, start_ip, end_ip, netmask, country_name FROM geolocation"
         )
         results = cursor.fetchall()
-        return results
+        return [
+            (network, decode_ip_number(start), decode_ip_number(end), decode_ip_number(mask), country)
+            for network, start, end, mask, country in results
+        ]
     except sqlite3.Error as e:
         log_error(logger, f"[ERROR] Error retrieving geolocation records: {e}")
         return None
@@ -92,7 +96,7 @@ def get_all_geolocations():
         disconnect_from_db(conn)
 
 
-def get_country_by_ip_int(ip_int):
+def get_country_by_ip_int(ip_int, ip_version=4):
     """
     Look up the country for an IP address represented as an integer.
 
@@ -123,7 +127,7 @@ def get_country_by_ip_int(ip_int):
         rows, _ = run_timed_query(
             cursor,
             query,
-            params=(ip_int,),
+            params=(encode_ip_number(ip_int, ip_version),),
             description="get_country_by_ip_int",
             fetch_all=True,
         )

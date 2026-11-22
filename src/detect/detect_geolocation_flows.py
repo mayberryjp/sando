@@ -1,3 +1,4 @@
+import ipaddress
 import logging
 
 from src.notifications.core import handle_alert
@@ -36,12 +37,12 @@ def detect_geolocation_flows(rows, config_dict, geolocation_data):
                 :5
             ]  # Take first 4 elements
             if country in banned_countries:
-                geo_ranges.append((start_ip, end_ip, netmask, country))
+                geo_ranges.append((start_ip, end_ip, netmask, country, ipaddress.ip_network(network).version))
 
     # Sort ranges by start_ip for efficient lookup
     geo_ranges.sort(key=lambda x: x[0])
 
-    def find_matching_country(ip_int):
+    def find_matching_country(ip_int, version):
         """Find matching country for an IP using linear search with early exit"""
         if not ip_int:
             return None
@@ -49,7 +50,9 @@ def detect_geolocation_flows(rows, config_dict, geolocation_data):
         best_match = None
         best_netmask = -1
 
-        for start_ip, end_ip, netmask, country in geo_ranges:
+        for start_ip, end_ip, netmask, country, family in geo_ranges:
+            if family != version:
+                continue
             if start_ip <= ip_int <= end_ip:
                 if netmask > best_netmask:
                     best_match = country
@@ -80,8 +83,8 @@ def detect_geolocation_flows(rows, config_dict, geolocation_data):
             continue
 
         # Find matching countries
-        src_country = find_matching_country(src_ip_int)
-        dst_country = find_matching_country(dst_ip_int)
+        src_country = find_matching_country(src_ip_int, ipaddress.ip_address(src_ip).version)
+        dst_country = find_matching_country(dst_ip_int, ipaddress.ip_address(dst_ip).version)
 
         # log_info(logger, f"[DEBUG] src_ip: {src_ip}, dst_ip: {dst_ip}, src_country: {src_country}, dst_country: {dst_country}")
         if src_country or dst_country:
