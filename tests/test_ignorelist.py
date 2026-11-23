@@ -7,14 +7,19 @@ from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch
 
-from bottle import Bottle
+from bottle import Bottle, HeaderDict
 
 from src.const import (
     CONST_CREATE_ALERTS_SQL,
     CONST_CREATE_ALLFLOWS_SQL,
     CONST_CREATE_IGNORELIST_SQL,
 )
-from src.database.ignorelist import delete_stale_ignorelist_entries, get_ignorelist
+from src.database.core import delete_all_records
+from src.database.ignorelist import (
+    delete_stale_ignorelist_entries,
+    get_ignorelist,
+    import_ignorelists,
+)
 from src.routers.ignorelist import setup_ignorelist_routes
 from src.utils.tags import tag_ignorelist
 
@@ -229,6 +234,274 @@ class IgnorelistPortTests(unittest.TestCase):
                     self.assertEqual(remaining, {"1", "2", "3"})
             finally:
                 conn.close()
+
+
+class IgnorelistConditionalGetTests(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.database = Path(directory.name) / "ignorelist.db"
+        self.conn = sqlite3.connect(self.database)
+        self.addCleanup(self.conn.close)
+        self.conn.execute("PRAGMA journal_mode=WAL")
+        self.conn.executescript(CONST_CREATE_IGNORELIST_SQL)
+        database_patch = patch.dict(
+            "src.database.core.TABLE_DB_MAP", {"ignorelist": str(self.database)}
+        )
+        database_patch.start()
+        self.addCleanup(database_patch.stop)
+        for module in ("src.database.ignorelist", "src.routers.ignorelist",
+                       "src.database.core"):
+            for name in ("log_info", "log_error"):
+                logger_patch = patch(f"{module}.{name}")
+                logger_patch.start()
+                self.addCleanup(logger_patch.stop)
+        self.app = Bottle()
+        setup_ignorelist_routes(self.app)
+
+    def request(self, method="GET", path="/api/ignorelist", payload=None, etag=None):
+        encoded = b"" if payload is None else json.dumps(payload).encode()
+        environ = {
+            "REQUEST_METHOD": method,
+            "PATH_INFO": path,
+            "SERVER_NAME": "localhost",
+            "SERVER_PORT": "80",
+            "SERVER_PROTOCOL": "HTTP/1.1",
+            "CONTENT_TYPE": "application/json",
+            "CONTENT_LENGTH": str(len(encoded)),
+            "wsgi.url_scheme": "http",
+            "wsgi.input": BytesIO(encoded),
+            "wsgi.errors": BytesIO(),
+        }
+        if etag is not None:
+            environ["HTTP_IF_NONE_MATCH"] = etag
+        result = []
+        body = b"".join(
+            self.app(
+                environ,
+                lambda status, headers, exc_info=None: result.append(
+                    (int(status.split()[0]), HeaderDict(headers))
+                ),
+            )
+        )
+        return result[0][0], result[0][1], body
+
+    def insert_entry(self, identifier="rule"):
+        self.conn.execute(
+            """INSERT INTO ignorelist (
+                ignorelist_id, ignorelist_src_ip, ignorelist_dst_ip,
+                ignorelist_dst_port, ignorelist_protocol, ignorelist_added
+            ) VALUES (?, '10.0.0.1', '10.0.0.2', 443, 6, '2026-11-23 10:00:00')""",
+            (identifier,),
+        )
+        self.conn.commit()
+
+    def test_initial_get_returns_array_and_stable_etag(self):
+        status, headers, body = self.request()
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body), [])
+        self.assertRegex(headers["ETag"], r'^"ignorelist-[0-9a-f]{64}"$')
+        self.insert_entry()
+        status, headers, body = self.request(etag=headers["ETag"])
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body), [{
+            "ignorelist_id": "rule",
+            "src_ip": "10.0.0.1",
+            "dst_ip": "10.0.0.2",
+            "dst_port": 443,
+            "protocol": 6,
+            "added": "2026-11-23 10:00:00",
+        }])
+        self.assertEqual(self.request(), (status, headers, body))
+
+    def test_matching_etag_skips_list_query_and_serialization(self):
+        for populated in (False, True):
+            if populated:
+                self.insert_entry()
+            etag = self.request()[1]["ETag"]
+            for validator in (etag, "W/" + etag, f'"old", W/{etag}', "*"):
+                with self.subTest(populated=populated, validator=validator):
+                    conn = sqlite3.connect(self.database)
+                    statements = []
+                    conn.set_trace_callback(statements.append)
+                    with patch(
+                        "src.database.ignorelist.connect_to_db", return_value=conn
+                    ), patch("src.routers.ignorelist.json.dumps") as serialize:
+                        status, headers, body = self.request(etag=validator)
+                    self.assertEqual(status, 304)
+                    self.assertEqual(headers["ETag"], etag)
+                    self.assertEqual(body, b"")
+                    serialize.assert_not_called()
+                    selects = [
+                        sql for sql in statements
+                        if sql.lstrip().upper().startswith("SELECT")
+                    ]
+                    self.assertEqual(
+                        selects, ["SELECT token FROM ignorelist_revision WHERE id = 1"]
+                    )
+
+    def test_add_edit_and_delete_last_entry_invalidate_etag(self):
+        etag = self.request()[1]["ETag"]
+        with patch("src.database.ignorelist.apply_ignorelist_entry"), patch(
+            "src.database.ignorelist.delete_ignorelisted_alerts"
+        ):
+            status, _, _ = self.request(method="POST", payload={
+                "ignorelist_id": "new-rule",
+                "src_ip": "10.0.0.1",
+                "dst_ip": "10.0.0.2",
+                "dst_port": 443,
+                "protocol": 6,
+            })
+        self.assertEqual(status, 200)
+        status, headers, body = self.request(etag=etag)
+        self.assertEqual(status, 200)
+        self.assertNotEqual(headers["ETag"], etag)
+        identifier = json.loads(body)[0]["ignorelist_id"]
+        etag = headers["ETag"]
+        self.conn.execute("UPDATE ignorelist SET ignorelist_dst_port = 80")
+        self.conn.commit()
+        status, headers, body = self.request(etag=etag)
+        self.assertEqual(status, 200)
+        self.assertNotEqual(headers["ETag"], etag)
+        self.assertEqual(json.loads(body)[0]["dst_port"], 80)
+        etag = headers["ETag"]
+        self.assertEqual(
+            self.request(method="DELETE", path=f"/api/ignorelist/{identifier}")[0],
+            200,
+        )
+        status, headers, body = self.request(etag=etag)
+        self.assertEqual(status, 200)
+        self.assertNotEqual(headers["ETag"], etag)
+        self.assertEqual(json.loads(body), [])
+
+    def test_import_bulk_delete_and_disable_invalidate_etag(self):
+        etag = self.request()[1]["ETag"]
+        import_ignorelists({
+            "IgnoreListEntries": json.dumps([
+                ["one", "*", "10.0.0.1", 53, 17],
+                ["two", "*", "10.0.0.2", 53, 17],
+            ])
+        })
+        status, headers, body = self.request(etag=etag)
+        self.assertEqual(status, 200)
+        self.assertNotEqual(headers["ETag"], etag)
+        self.assertEqual(len(json.loads(body)), 2)
+        etag = headers["ETag"]
+        self.conn.execute(
+            "UPDATE ignorelist SET ignorelist_enabled = 0 WHERE ignorelist_id = 'one'"
+        )
+        self.conn.commit()
+        status, headers, body = self.request(etag=etag)
+        self.assertEqual(status, 200)
+        self.assertNotEqual(headers["ETag"], etag)
+        self.assertEqual(len(json.loads(body)), 1)
+        etag = headers["ETag"]
+        delete_all_records("ignorelist")
+        status, headers, body = self.request(etag=etag)
+        self.assertEqual(status, 200)
+        self.assertNotEqual(headers["ETag"], etag)
+        self.assertEqual(json.loads(body), [])
+
+    def test_stale_cleanup_invalidates_etag(self):
+        flows_path = self.database.with_name("flows.db")
+        flows = sqlite3.connect(flows_path)
+        try:
+            flows.execute("CREATE TABLE allflows (tags TEXT, last_seen TEXT)")
+        finally:
+            flows.close()
+        self.insert_entry()
+        etag = self.request()[1]["ETag"]
+        with patch.dict(
+            "src.database.ignorelist.TABLE_DB_MAP", {"allflows": str(flows_path)}
+        ):
+            self.assertEqual(delete_stale_ignorelist_entries(), 1)
+        status, headers, body = self.request(etag=etag)
+        self.assertEqual(status, 200)
+        self.assertNotEqual(headers["ETag"], etag)
+        self.assertEqual(json.loads(body), [])
+
+    def test_revision_rolls_back_with_policy_and_survives_schema_reinitialization(self):
+        self.insert_entry()
+        original = self.request()
+        self.conn.execute("DELETE FROM ignorelist")
+        uncommitted_token = self.conn.execute(
+            "SELECT token FROM ignorelist_revision WHERE id = 1"
+        ).fetchone()[0]
+        self.assertNotEqual(
+            f'"ignorelist-{uncommitted_token}"', original[1]["ETag"]
+        )
+        self.assertEqual(self.request(), original)
+        self.conn.rollback()
+        self.conn.executescript(CONST_CREATE_IGNORELIST_SQL)
+        self.assertEqual(self.request(), original)
+
+    def test_existing_database_upgrade_preserves_entries_and_tracks_edits(self):
+        self.insert_entry()
+        self.conn.executescript("""
+            DROP TRIGGER ignorelist_revision_insert;
+            DROP TRIGGER ignorelist_revision_update;
+            DROP TRIGGER ignorelist_revision_delete;
+            DROP TABLE ignorelist_revision;
+        """)
+        self.conn.executescript(CONST_CREATE_IGNORELIST_SQL)
+        status, headers, body = self.request()
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body)[0]["ignorelist_id"], "rule")
+        etag = headers["ETag"]
+        self.conn.execute("UPDATE ignorelist SET ignorelist_dst_port = 80")
+        self.conn.commit()
+        status, headers, body = self.request(etag=etag)
+        self.assertEqual(status, 200)
+        self.assertNotEqual(headers["ETag"], etag)
+        self.assertEqual(json.loads(body)[0]["dst_port"], 80)
+
+    def test_restored_database_does_not_repeat_future_tokens(self):
+        self.insert_entry()
+        backup = sqlite3.connect(":memory:")
+        try:
+            self.conn.backup(backup)
+            self.conn.execute("UPDATE ignorelist SET ignorelist_dst_port = 80")
+            self.conn.commit()
+            discarded_etag = self.request()[1]["ETag"]
+            backup.backup(self.conn)
+            self.conn.execute("UPDATE ignorelist SET ignorelist_dst_port = 8080")
+            self.conn.commit()
+            status, headers, body = self.request(etag=discarded_etag)
+            self.assertEqual(status, 200)
+            self.assertNotEqual(headers["ETag"], discarded_etag)
+            self.assertEqual(json.loads(body)[0]["dst_port"], 8080)
+        finally:
+            backup.close()
+
+    def test_concurrent_edit_keeps_list_and_etag_in_same_snapshot(self):
+        self.insert_entry()
+        original = self.request()
+        reader = sqlite3.connect(self.database)
+        writes = []
+
+        def edit_before_list_read(sql):
+            if "SELECT ignorelist_id" in sql:
+                self.conn.execute("UPDATE ignorelist SET ignorelist_dst_port = 80")
+                self.conn.commit()
+                writes.append(True)
+
+        reader.set_trace_callback(edit_before_list_read)
+        with patch("src.database.ignorelist.connect_to_db", return_value=reader):
+            status, headers, body = self.request(etag='"outdated"')
+        self.assertEqual(writes, [True])
+        self.assertEqual((status, headers, body), original)
+        status, headers, body = self.request(etag=original[1]["ETag"])
+        self.assertEqual(status, 200)
+        self.assertNotEqual(headers["ETag"], original[1]["ETag"])
+        self.assertEqual(json.loads(body)[0]["dst_port"], 80)
+
+    def test_unavailable_revision_returns_error_not_not_modified(self):
+        self.conn.execute("DELETE FROM ignorelist_revision")
+        self.conn.commit()
+        status, headers, body = self.request(etag="*")
+        self.assertEqual(status, 500)
+        self.assertNotIn("ETag", headers)
+        self.assertIn("error", json.loads(body))
 
 
 class StaleIgnorelistTests(unittest.TestCase):

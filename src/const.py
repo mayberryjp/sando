@@ -193,6 +193,7 @@ CONST_CREATE_ALERTS_SQL = """
 """
 
 CONST_CREATE_IGNORELIST_SQL = """
+    BEGIN;
     CREATE TABLE IF NOT EXISTS ignorelist (
         ignorelist_id TEXT PRIMARY KEY,
         ignorelist_src_ip TEXT,
@@ -205,6 +206,28 @@ CONST_CREATE_IGNORELIST_SQL = """
         ignorelist_added TEXT
     );
     CREATE INDEX IF NOT EXISTS idx_ignorelist_enabled ON ignorelist (ignorelist_enabled);
+    CREATE TABLE IF NOT EXISTS ignorelist_revision (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        token TEXT NOT NULL
+    );
+    INSERT OR IGNORE INTO ignorelist_revision (id, token)
+    VALUES (1, lower(hex(randomblob(32))));
+    CREATE TRIGGER IF NOT EXISTS ignorelist_revision_insert
+    AFTER INSERT ON ignorelist
+    BEGIN
+        UPDATE ignorelist_revision SET token = lower(hex(randomblob(32))) WHERE id = 1;
+    END;
+    CREATE TRIGGER IF NOT EXISTS ignorelist_revision_update
+    AFTER UPDATE ON ignorelist
+    BEGIN
+        UPDATE ignorelist_revision SET token = lower(hex(randomblob(32))) WHERE id = 1;
+    END;
+    CREATE TRIGGER IF NOT EXISTS ignorelist_revision_delete
+    AFTER DELETE ON ignorelist
+    BEGIN
+        UPDATE ignorelist_revision SET token = lower(hex(randomblob(32))) WHERE id = 1;
+    END;
+    COMMIT;
 """
 
 CONST_CREATE_CUSTOMTAGS_SQL = """

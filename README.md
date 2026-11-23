@@ -458,6 +458,23 @@ Common symptoms:
 
 Issues and feature requests can be submitted on GitHub.
 
+### Conditional ignore-list polling
+
+`GET /api/ignorelist` returns HTTP 200 with the existing JSON array (including
+`[]` when empty) and a quoted `ETag` header. Send that header value back in
+`If-None-Match` on subsequent polls. An unchanged policy returns HTTP 304 with
+the same ETag and no body, without loading or serializing the list. A changed
+policy returns HTTP 200 with the complete current array and its new ETag.
+Weak validators and comma-separated validator lists are accepted, as is `*`.
+
+The persistent revision uses random tokens updated by SQLite triggers in the
+same transaction as every insert, update, or delete, including imports and bulk
+cleanup. Normal collector startup installs this schema for existing databases.
+Tokens survive restarts, and new changes after a database restore do not reuse
+an incrementing revision number. The list and ETag are read from one database
+snapshot. The `added` field uses the stored added/insert timestamp (or null for
+legacy entries without either), not the request time.
+
 ### Ignore-list port values
 
 `POST /api/ignorelist` accepts destination ports from `0` through `65535`,

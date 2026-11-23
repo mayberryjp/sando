@@ -11,6 +11,44 @@ from src.database.core import connect_to_db, disconnect_from_db
 from src.utils.locallogging import log_error, log_info, log_warn
 
 
+def get_ignorelist_snapshot(if_none_match=None):
+    """Return (ETag, rows), with rows=None when the client's policy is current."""
+    conn = connect_to_db("ignorelist")
+    if conn is None:
+        raise sqlite3.OperationalError("Unable to connect to ignorelist database")
+    try:
+        # Pin both reads to one WAL snapshot, even if another instance commits.
+        conn.execute("BEGIN")
+        revision = conn.execute(
+            "SELECT token FROM ignorelist_revision WHERE id = 1"
+        ).fetchone()
+        if revision is None:
+            raise sqlite3.DatabaseError("Ignorelist revision is missing")
+        etag = f'"ignorelist-{revision[0]}"'
+        if if_none_match is not None and (
+            if_none_match.strip() == "*"
+            or any(
+                candidate.strip() in (etag, "W/" + etag)
+                for candidate in if_none_match.split(",")
+            )
+        ):
+            return etag, None
+
+        entries = conn.execute(
+            """
+            SELECT ignorelist_id, ignorelist_src_ip, ignorelist_dst_ip,
+                   ignorelist_dst_port, ignorelist_protocol,
+                   COALESCE(ignorelist_added, ignorelist_insert_date)
+            FROM ignorelist
+            WHERE ignorelist_enabled = 1
+            ORDER BY ignorelist_id
+            """
+        ).fetchall()
+        return etag, entries
+    finally:
+        disconnect_from_db(conn)
+
+
 def get_ignorelist():
     """
     Retrieve active entries from the ignorelist database.

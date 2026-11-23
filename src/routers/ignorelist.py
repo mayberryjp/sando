@@ -1,14 +1,13 @@
 import json
 import logging
-from datetime import datetime
 
 from bottle import Bottle, request, response
 
 from src.database.ignorelist import (
     delete_ignorelist_entry,
     delete_stale_ignorelist_entries,
-    get_ignorelist,
     get_ignorelist_for_ip,
+    get_ignorelist_snapshot,
     insert_ignorelist_entry,
 )
 from src.utils.locallogging import log_error, log_info
@@ -31,13 +30,13 @@ def setup_ignorelist_routes(app):
 
         if request.method == "GET":
             try:
-                # Use the database function to get all ignorelist entries
-                ignorelist_entries = get_ignorelist()
-
+                etag, ignorelist_entries = get_ignorelist_snapshot(
+                    request.headers.get("If-None-Match")
+                )
                 if ignorelist_entries is None:
-                    log_error(logger, "[ERROR] Failed to retrieve ignorelist entries")
-                    response.status = 500
-                    return {"error": "Failed to retrieve ignorelist entries"}
+                    response.set_header("ETag", etag)
+                    response.status = 304
+                    return ""
 
                 # Format the response to match the expected structure
                 formatted_entries = []
@@ -48,18 +47,18 @@ def setup_ignorelist_routes(app):
                         "dst_ip": entry[2],
                         "dst_port": entry[3],
                         "protocol": entry[4],
-                        "added": datetime.now().strftime(
-                            "%Y-%m-%d %H:%M:%S"
-                        ),  # Use current time as fallback
+                        "added": entry[5],
                     }
                     formatted_entries.append(formatted_entry)
 
+                body = json.dumps(formatted_entries)
                 response.content_type = "application/json"
+                response.set_header("ETag", etag)
                 log_info(
                     logger,
                     f"[INFO] Fetched {len(formatted_entries)} ignorelist entries successfully",
                 )
-                return json.dumps(formatted_entries)
+                return body
 
             except Exception as e:
                 log_error(logger, f"[ERROR] Failed to fetch ignorelist entries: {e}")
