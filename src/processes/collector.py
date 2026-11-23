@@ -13,6 +13,7 @@ from src.const import (
     CONST_CREATE_CONFIG_SQL,
     CONST_CREATE_CUSTOMTAGS_SQL,
     CONST_CREATE_DBPERFORMANCE_SQL,
+    CONST_CREATE_DHCPLOGS_SQL,
     CONST_CREATE_DNSKEYVALUE_SQL,
     CONST_CREATE_DNSQUERIES_SQL,
     CONST_CREATE_EXPLORE_SQL,
@@ -133,6 +134,7 @@ def main():
     create_table(CONST_CREATE_EXPLORE_SQL, "explore")
     create_table(CONST_CREATE_DNSKEYVALUE_SQL, "dnskeyvalue")
     create_table(CONST_CREATE_DBPERFORMANCE_SQL, "dbperformance")
+    create_table(CONST_CREATE_DHCPLOGS_SQL, "dhcplogs")
 
     # Seed default config values on every startup — INSERT OR IGNORE is safe for existing installs.
     # This also backfills any new keys added in upgrades.

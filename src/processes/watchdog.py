@@ -1,10 +1,12 @@
 import logging
+import sqlite3
 import time
 
 import psutil
 import requests
 
 from src.database.actions import insert_action
+from src.database.dhcplogs import delete_aged_dhcp_logs
 from src.detached import insert_action_detached
 from src.utils.locallogging import log_error, log_info
 
@@ -126,4 +128,8 @@ if __name__ == "__main__":
     while True:
         check_processes()
         check_api_health_and_restart()
+        try:
+            delete_aged_dhcp_logs()
+        except sqlite3.Error as exc:
+            log_error(logger, f"[ERROR] Failed to expire DHCP logs: {exc}")
         time.sleep(60)

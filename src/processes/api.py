@@ -18,6 +18,7 @@ from src.routers.agent import setup_agent_routes
 from src.routers.alerts import setup_alerts_routes
 from src.routers.configurations import setup_configurations_routes
 from src.routers.devices import setup_devices_routes
+from src.routers.dhcplogs import setup_dhcplogs_routes
 from src.routers.explore import setup_explore_routes
 from src.routers.ignorelist import setup_ignorelist_routes
 from src.routers.integrations import setup_integrations_routes
@@ -51,6 +52,7 @@ setup_services_routes(app)
 setup_trafficstats_routes(app)
 setup_configurations_routes(app)
 setup_devices_routes(app)
+setup_dhcplogs_routes(app)
 setup_threatscore_routes(app)
 setup_explore_routes(app)
 setup_liveflows_routes(app)

@@ -3,11 +3,13 @@ import json
 import logging
 import os
 import socket
+import sqlite3
 import struct
 import time
 
 from src.database.actions import insert_action
 from src.database.configuration import get_config_settings
+from src.database.dhcplogs import insert_dhcp_log
 from src.database.localhosts import (
     get_localhosts_all,
     update_localhost_last_dhcp_discover,
@@ -23,6 +25,16 @@ DHCP_ACK = 5
 DHCP_NAK = 6
 DHCP_RELEASE = 7
 DHCP_INFORM = 8
+DHCP_MESSAGE_NAMES = {
+    DHCP_DISCOVER: "Discover",
+    DHCP_OFFER: "Offer",
+    DHCP_REQUEST: "Request",
+    DHCP_DECLINE: "Decline",
+    DHCP_ACK: "ACK",
+    DHCP_NAK: "NAK",
+    DHCP_RELEASE: "Release",
+    DHCP_INFORM: "Inform",
+}
 
 # DHCP Options
 DHCP_OPTION_PAD = 0
@@ -136,10 +148,62 @@ class DHCPServer:
         """Convert MAC address bytes to string."""
         return ":".join([f"{b:02x}" for b in mac_bytes])
 
+    def _record_event(self, event, packet=None, addr=None, reason=None):
+        fields = {
+            "peer": f"{addr[0]}:{addr[1]}" if addr else None,
+            "reason": reason,
+        }
+        if packet:
+            option = packet["options"].get(DHCP_OPTION_MESSAGE_TYPE, b"")
+            requested = packet["options"].get(DHCP_OPTION_REQUESTED_IP)
+            requested_ip = self._bytes_to_ip(requested) if requested else None
+            scope = self._resolve_scope(
+                packet["giaddr"],
+                packet["yiaddr"] if packet["yiaddr"] != "0.0.0.0"
+                else requested_ip or packet["ciaddr"],
+            )
+            details = DHCPServer.make_json_serializable(packet)
+            details["hostname"] = packet["options"].get(
+                DHCP_OPTION_HOSTNAME, b""
+            ).decode("utf-8", errors="replace") or None
+            details["requested_ip"] = requested_ip
+            lease = packet["options"].get(DHCP_OPTION_LEASE_TIME)
+            details["lease_time"] = struct.unpack("!I", lease)[0] if lease and len(lease) == 4 else None
+            fields.update(
+                interface=scope.get("firewall_interface_name") if scope else None,
+                dhcp_message=DHCP_MESSAGE_NAMES.get(option[0], "Unknown")
+                if option else None,
+                transaction_id=f"{packet['xid']:08x}",
+                client_mac=packet["mac"],
+                details=details,
+            )
+        else:
+            fields["details"] = {
+                "listen_ip": self.listen_ip,
+                "listen_port": self.listen_port,
+                "server_ip": self.server_ip,
+            }
+        try:
+            insert_dhcp_log(event, **fields)
+        except sqlite3.Error as exc:
+            # Logging failures must not prevent a DHCP reply.
+            log_error(self.logger, f"[ERROR] Failed to persist DHCP event: {exc}")
+
+    def _send_reply(self, data, dest_addr, reason=None):
+        packet = self._parse_dhcp_packet(data)
+        try:
+            self.sock.sendto(data, dest_addr)
+        except OSError as exc:
+            self._record_event("send_failed", packet, dest_addr, str(exc))
+            raise
+        self._record_event("reply_sent", packet, dest_addr, reason)
+
     def _parse_dhcp_packet(self, data):
         """Parse a DHCP packet."""
         if len(data) < 240:
-            return None
+            raise ValueError("DHCP packet is shorter than 240 bytes")
+        if data[236:240] != b"\x63\x82\x53\x63":
+            raise ValueError("Invalid DHCP magic cookie")
 
         packet = {
             "op": data[0],
@@ -168,8 +232,16 @@ class DHCPServer:
                 i += 1
                 continue
 
+            if i + 1 >= len(data):
+                raise ValueError("Truncated DHCP option length")
             length = data[i + 1]
+            if i + 2 + length > len(data):
+                raise ValueError("Truncated DHCP option value")
             value = data[i + 2 : i + 2 + length]
+            if option == DHCP_OPTION_MESSAGE_TYPE and length != 1:
+                raise ValueError("DHCP message type must be one byte")
+            if option in (DHCP_OPTION_REQUESTED_IP, DHCP_OPTION_SERVER_ID) and length != 4:
+                raise ValueError("DHCP IP option must be four bytes")
             packet["options"][option] = value
             i += 2 + length
 
@@ -254,6 +326,7 @@ class DHCPServer:
                     "domain_name": domain_name,
                     "lease_time": lease_time,  # <-- NEW: store lease_time in scope
                     "ip_version": ip_version,
+                    "firewall_interface_name": scope.get("firewall_interface_name"),
                 }
             )
         return normalized
@@ -501,6 +574,7 @@ class DHCPServer:
             assigned_ip = self._get_registered_ip(
                 mac, packet
             )  # Still record new localhosts
+            self._record_event("request_ignored", packet, addr, "Passive monitoring enabled")
             return
 
         assigned_ip = self._get_registered_ip(mac, packet)
@@ -508,6 +582,7 @@ class DHCPServer:
             log_warn(
                 self.logger, f"[WARN] Ignoring DISCOVER from unregistered MAC: {mac}"
             )
+            self._record_event("request_ignored", packet, addr, "Unregistered MAC")
             return
 
         scope = self._resolve_scope(packet["giaddr"], assigned_ip)
@@ -516,6 +591,7 @@ class DHCPServer:
                 self.logger,
                 f"[WARN] No matching scope for giaddr={packet['giaddr']} ip={assigned_ip}; dropping DISCOVER",
             )
+            self._record_event("request_ignored", packet, addr, "No matching scope")
             return
 
         offer = self._build_dhcp_packet(DHCP_OFFER, packet, assigned_ip, scope)
@@ -533,7 +609,7 @@ class DHCPServer:
             dest_addr = (bcast, 68)
 
         try:
-            self.sock.sendto(offer, dest_addr)
+            self._send_reply(offer, dest_addr)
             log_info(self.logger, f"[INFO] Sent DHCP OFFER to {dest_addr}")
         except OSError as e:
             log_error(self.logger, f"[ERROR] Failed to send OFFER to {dest_addr}: {e}")
@@ -561,6 +637,7 @@ class DHCPServer:
             assigned_ip = self._get_registered_ip(
                 mac, packet
             )  # Still record new localhosts
+            self._record_event("request_ignored", packet, addr, "Passive monitoring enabled")
             return
 
         requested_ip = None
@@ -586,7 +663,7 @@ class DHCPServer:
                     if packet["giaddr"] != "0.0.0.0"
                     else ("255.255.255.255", 68)
                 )
-                self.sock.sendto(nak, dest_addr)
+                self._send_reply(nak, dest_addr, "Unregistered MAC")
                 log_info(self.logger, f"[INFO] Sent DHCP NAK to {dest_addr}")
             except OSError as e:
                 log_error(self.logger, f"[ERROR] Failed to send NAK: {e}")
@@ -604,7 +681,7 @@ class DHCPServer:
                     if packet["giaddr"] != "0.0.0.0"
                     else ("255.255.255.255", 68)
                 )
-                self.sock.sendto(nak, dest_addr)
+                self._send_reply(nak, dest_addr, "Requested IP differs from registered IP")
                 log_info(self.logger, f"[INFO] Sent DHCP NAK to {dest_addr}")
             except OSError as e:
                 log_error(self.logger, f"[ERROR] Failed to send NAK: {e}")
@@ -616,6 +693,7 @@ class DHCPServer:
                 self.logger,
                 f"[WARN] No matching scope for giaddr={packet['giaddr']} ip={assigned_ip}; dropping REQUEST",
             )
+            self._record_event("request_ignored", packet, addr, "No matching scope")
             return
 
         ack = self._build_dhcp_packet(DHCP_ACK, packet, assigned_ip, scope)
@@ -634,7 +712,7 @@ class DHCPServer:
             dest_addr = (bcast, 68)
 
         try:
-            self.sock.sendto(ack, dest_addr)
+            self._send_reply(ack, dest_addr)
             log_info(self.logger, f"[INFO] Sent DHCP ACK to {dest_addr}")
         except OSError as e:
             log_error(self.logger, f"[ERROR] Failed to send ACK to {dest_addr}: {e}")
@@ -661,6 +739,7 @@ class DHCPServer:
             log_warn(
                 self.logger, f"[WARN] Ignoring INFORM from unregistered MAC: {mac}"
             )
+            self._record_event("request_ignored", packet, addr, "Unregistered MAC")
             return
 
         scope = self._resolve_scope(packet["giaddr"], client_ip or assigned_ip)
@@ -669,12 +748,13 @@ class DHCPServer:
                 self.logger,
                 f"[WARN] No matching scope for INFORM giaddr={packet['giaddr']} ip={client_ip}; dropping",
             )
+            self._record_event("request_ignored", packet, addr, "No matching scope")
             return
 
         ack = self._build_dhcp_packet(DHCP_ACK, packet, client_ip, scope)
         try:
             if packet["giaddr"] and packet["giaddr"] != "0.0.0.0":
-                self.sock.sendto(ack, (packet["giaddr"], 67))
+                self._send_reply(ack, (packet["giaddr"], 67))
             else:
                 mask = scope.get("subnet_mask")
                 bcast = (
@@ -682,7 +762,7 @@ class DHCPServer:
                     if mask
                     else "255.255.255.255"
                 )
-                self.sock.sendto(ack, (bcast, 68))
+                self._send_reply(ack, (bcast, 68))
             log_info(self.logger, f"[INFO] Sent DHCP ACK (INFORM) for {mac}")
         except OSError as e:
             log_error(self.logger, f"[ERROR] Failed to send INFORM ACK: {e}")
@@ -691,14 +771,22 @@ class DHCPServer:
         """Main DHCP server loop. Interruptible by KeyboardInterrupt."""
         self.running = True
         while self.running:
+            packet = None
+            addr = None
             try:
                 data, addr = self.sock.recvfrom(4096)
                 packet = self._parse_dhcp_packet(data)
-                if not packet:
-                    continue
                 if DHCP_OPTION_MESSAGE_TYPE not in packet["options"]:
+                    self._record_event("packet_dropped", packet, addr, "Missing DHCP message type")
                     continue
                 msg_type = packet["options"][DHCP_OPTION_MESSAGE_TYPE][0]
+                self._record_event(
+                    "reply_received" if packet["op"] == 2 else "request_received",
+                    packet, addr,
+                )
+                if packet["op"] != 1:
+                    self._record_event("packet_dropped", packet, addr, "Not a client request")
+                    continue
                 if msg_type == DHCP_DISCOVER:
                     self._handle_discover(packet, addr)
                 elif msg_type == DHCP_REQUEST:
@@ -707,8 +795,11 @@ class DHCPServer:
                     self._handle_release(packet, addr)
                 elif msg_type == DHCP_INFORM:
                     self._handle_inform(packet, addr)
+                else:
+                    self._record_event("request_ignored", packet, addr, "Unsupported DHCP message type")
             except Exception as e:
                 log_error(self.logger, f"[ERROR] Error processing DHCP packet: {e}")
+                self._record_event("processing_error", packet, addr, str(e))
 
     def start(self):
         """Start the DHCP server and bind socket."""
@@ -720,6 +811,7 @@ class DHCPServer:
             self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
             self.sock.bind((self.listen_ip, self.listen_port))
+            self._record_event("worker_started")
             log_info(
                 self.logger,
                 f"[INFO] DHCP server listening on {self.listen_ip}:{self.listen_port}",
@@ -743,6 +835,7 @@ class DHCPServer:
                 )
         except Exception as e:
             log_error(self.logger, f"[ERROR] Failed to start DHCP server: {e}")
+            self._record_event("worker_failed", reason=str(e))
             self.stop()
             raise
 
@@ -752,6 +845,8 @@ class DHCPServer:
         self.running = False
         if self.sock:
             self.sock.close()
+            self.sock = None
+            self._record_event("worker_stopped")
         log_info(self.logger, "[INFO] DHCP server stopped")
 
     def reload_scopes(self):

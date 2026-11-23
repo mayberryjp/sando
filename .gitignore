@@ -24,4 +24,5 @@ tests/*
 !tests/test_localhosts.py
 !tests/test_ipfix.py
 !tests/test_flow_collectors.py
+!tests/test_dhcplogs.py
 test/

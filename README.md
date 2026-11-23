@@ -135,6 +135,70 @@ Results are ordered by `first_seen` descending, then `id` descending for stable
 ordering when timestamps match. Offset-based pages may shift if alerts are
 inserted or deleted between requests.
 
+### Structured DHCP history
+
+`GET /api/dhcp/logs` returns structured DHCP server events in a JSON object:
+
+```json
+{
+  "logs": [{
+    "id": 42,
+    "timestamp": "2026-11-23T10:03:27.123+09:00",
+    "interface": "VLAN30",
+    "event": "reply_sent",
+    "dhcp_message": "ACK",
+    "peer": "10.2.30.1:67",
+    "transaction_id": "0e5c33f4",
+    "client_mac": "98:17:3C:A6:86:28",
+    "reason": null,
+    "details": {}
+  }],
+  "total": 1,
+  "limit": null,
+  "offset": 0
+}
+```
+
+History is persisted in `/database/dhcplogs.db` and retained for **seven days**.
+Expired entries are removed when events are written or history is retrieved,
+and by the watchdog's 60-second maintenance loop even when DHCP is idle or
+disabled. The collector initializes this
+database on startup for both new and existing installations.
+
+Optional exact-match filters are `client_mac`, `event`, `transaction_id`, and
+`interface`; combine them with `&`. MAC addresses and eight-digit hexadecimal
+transaction IDs are case-insensitive. For example:
+
+```text
+GET /api/dhcp/logs?client_mac=98:17:3C:A6:86:28&event=reply_sent&limit=50&offset=0
+```
+
+Without `limit`, all retained matching events are returned. `limit` and `offset`
+must be non-negative integers within SQLite's signed 64-bit range; `limit=0`
+returns no rows. `total` counts matching events before pagination. Invalid
+queries return HTTP `400`, and database failures return `500` rather than an
+empty success response. Results are newest first, then descending `id` for
+timestamp ties; offset pages may shift as new events arrive.
+
+Events are `worker_started`, `worker_stopped`, `worker_failed`,
+`request_received`, `reply_received`, `reply_sent`, `request_ignored`,
+`packet_dropped`, `send_failed`, and `processing_error`. Reasons explain passive
+monitoring, unknown clients, scope mismatches, NAKs, malformed packets, and
+failures. DHCP names include Discover, Offer, Request, ACK, NAK, Release,
+Decline, and Inform. `details` contains parsed packet fields (including relay,
+client, and offered IPs), raw DHCP options keyed by option number with
+hexadecimal values, decoded hostname/requested IP, and lease time in seconds.
+Worker events instead include listen/server configuration.
+
+Timestamps include the backend's local UTC offset; a frontend can render them
+in Asia/Tokyo or another selected timezone. `interface` comes from the matching
+`LocalNetworks` scope's `firewall_interface_name`, or is `null` when unknown.
+Other unavailable fields are also `null`, not fabricated values. Sando is a
+server receiving requests via relays, so it records replies **sent**, not
+Modan-style forwarding hops it cannot observe. Logging does not change lease
+decisions, and persistence failures are reported without preventing replies.
+This endpoint supplies backend data only; a dashboard table is not included.
+
 ### Docker container hosts
 
 Device classifications use the existing `icon` field. Set `icon` to

@@ -18,6 +18,8 @@ CONST_ALERTS_DB = "/database/alerts.db"
 CONST_ALLFLOWS_DB = "/database/allflows.db"
 CONST_CUSTOMTAGS_DB = "/database/customtags.db"
 CONST_DNSQUERIES_DB = "/database/dnsqueries.db"
+CONST_DHCPLOGS_DB = "/database/dhcplogs.db"
+CONST_DHCPLOG_RETENTION_DAYS = 7
 CONST_GEOLOCATION_DB = "/database/geolocation.db"
 CONST_IGNORELIST_DB = "/database/ignorelist.db"
 CONST_IPASN_DB = "/database/ipasn.db"
@@ -36,6 +38,7 @@ TABLE_DB_MAP = {
     "allflows": CONST_ALLFLOWS_DB,
     "customtags": CONST_CUSTOMTAGS_DB,
     "dnsqueries": CONST_DNSQUERIES_DB,
+    "dhcplogs": CONST_DHCPLOGS_DB,
     "explore": CONST_EXPLORE_DB,
     "geolocation": CONST_GEOLOCATION_DB,
     "ignorelist": CONST_IGNORELIST_DB,
@@ -72,6 +75,23 @@ CONST_CREATE_DNSKEYVALUE_SQL = """
                 ip TEXT PRIMARY KEY,
                 domain TEXT
             )"""
+CONST_CREATE_DHCPLOGS_SQL = """
+    CREATE TABLE IF NOT EXISTS dhcplogs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp REAL NOT NULL,
+        interface TEXT,
+        event TEXT NOT NULL,
+        dhcp_message TEXT,
+        peer TEXT,
+        transaction_id TEXT,
+        client_mac TEXT,
+        reason TEXT,
+        details TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_dhcplogs_time ON dhcplogs(timestamp, id);
+    CREATE INDEX IF NOT EXISTS idx_dhcplogs_mac ON dhcplogs(client_mac, timestamp);
+    CREATE INDEX IF NOT EXISTS idx_dhcplogs_transaction ON dhcplogs(transaction_id, timestamp);
+"""
 CONST_CREATE_EXPLORE_SQL = """
             CREATE TABLE IF NOT EXISTS explore (
                 src_ip TEXT,
