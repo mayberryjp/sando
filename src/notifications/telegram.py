@@ -5,13 +5,14 @@ import requests
 
 from src.const import CONST_SITE, IS_CONTAINER, VERSION
 from src.database.configuration import get_config_settings
+from src.notifications.formatting import format_alert_message
 from src.utils.locallogging import log_error, log_info, log_warn
 
 if IS_CONTAINER:
     SITE = os.getenv("SITE", CONST_SITE)
 
 
-def send_telegram_message(message, flow):
+def send_telegram_message(message, flow, local_ip=None, local_description=None):
     """
     Sends a message to a Telegram group chat.
 
@@ -30,7 +31,10 @@ def send_telegram_message(message, flow):
 
             # Create header with warning emoji and site name
             header = f"⚠️ SANDO Security Alert - {SITE}\n\n"
-            formatted_message = header + message
+            enriched_message = format_alert_message(
+                message, flow, local_ip, local_description, escape_descriptions=True
+            )
+            formatted_message = header + enriched_message
 
             url = f"https://api.telegram.org/bot{config_dict['TelegramBotToken']}/sendMessage"
             payload = {

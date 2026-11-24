@@ -1,11 +1,11 @@
 import logging
 import os
-import re
 
 import requests
 
 from src.const import CONST_SITE, IS_CONTAINER, VERSION
 from src.database.configuration import get_config_settings
+from src.notifications.formatting import format_alert_message
 from src.utils.locallogging import log_error, log_info, log_warn
 
 if IS_CONTAINER:
@@ -28,19 +28,6 @@ def _discord_configured(config_dict):
     return bool(config_dict.get("DiscordWebhookUrl")) and _discord_enabled(config_dict)
 
 
-def _format_alert_message_with_local_description(message, local_ip, local_description):
-    message = message or ""
-    local_ip = (local_ip or "").strip()
-    local_description = (local_description or "").strip()
-
-    if not local_ip or not local_description:
-        return message
-
-    pattern = rf"\b{re.escape(local_ip)}\b"
-    replacement = f"{local_ip} ({local_description})"
-    return re.sub(pattern, replacement, message, count=1)
-
-
 def send_discord_message(message, flow, local_ip=None, local_description=None):
     """
     Sends a message to Discord using a webhook.
@@ -57,8 +44,8 @@ def send_discord_message(message, flow, local_ip=None, local_description=None):
 
     try:
         header = f"SANDO Security Alert - {SITE}\n\n"
-        enriched_message = _format_alert_message_with_local_description(
-            message, local_ip, local_description
+        enriched_message = format_alert_message(
+            message, flow, local_ip, local_description
         )
         formatted_message = header + enriched_message
         payload = {"content": formatted_message}

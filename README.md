@@ -622,6 +622,10 @@ The obsolete `MirenFetchInterval` setting is removed at startup. Miren uses
 
 Sensitive notification values are obscured by default in the dashboard configuration UI.
 
+Telegram and Discord flow notifications include uppercase local inventory descriptions
+beside both source and destination IP addresses when available. Endpoints without a
+local description retain their original formatting.
+
 ### Optional services
 
 | Key | Default | Description |
